@@ -104,3 +104,44 @@ export function drawLandscape(c, w, h) {
     path(c,[[px-4,py+9],[px,py],[px+3,py+8]],null,'#568465',2);
   }
 }
+
+// 말다래와 유리잔 역시 사진을 사용하지 않은 교육용 도판이다.
+export function drawArtifact(c, id, x, y, w, h) {
+  if(id==='crown'){drawCrown(c,x,y,w,h);return;}
+  const s=Math.min(w/360,h/300);
+  c.save();c.translate(x+(w-360*s)/2,y+(h-300*s)/2);c.scale(s,s);
+  if(id==='saddle') {
+    path(c,[[44,46],[303,46],[327,252],[29,252]],'#8a5937','#4d3627',4);
+    path(c,[[57,59],[291,59],[311,236],[46,236]],'#b3824e','#d1aa70',3);
+    for(let i=0;i<10;i++){
+      const px=64+i*25;c.strokeStyle='#5b422d';c.lineWidth=3;
+      c.beginPath();c.arc(px,76,7,0,Math.PI);c.stroke();c.beginPath();c.arc(px,220,7,Math.PI,Math.PI*2);c.stroke();
+    }
+    for(const px of [108,250]){path(c,[[px-8,50],[px-8,24],[px+8,24],[px+8,50]],null,'#6a482d',6);}
+    // 달리는 동물, 뒤로 날리는 갈기와 꼬리. 실제 도상 세부를 실측 복제하지 않는다.
+    c.fillStyle='#eee2bd';c.beginPath();c.moveTo(104,132);c.bezierCurveTo(128,106,179,112,204,132);
+    c.lineTo(232,93);c.lineTo(255,99);c.lineTo(268,117);c.lineTo(248,128);c.lineTo(231,126);
+    c.lineTo(215,163);c.bezierCurveTo(193,179,146,180,116,162);c.closePath();c.fill();
+    path(c,[[237,99],[230,78],[247,97]],'#eee2bd');
+    for(const pts of [[[208,158],[237,175],[261,161]],[[196,168],[216,198],[242,203]],[[132,164],[103,190],[72,184]],[[117,153],[89,170],[64,160]]])
+      path(c,pts,null,'#eee2bd',9);
+    path(c,[[110,139],[84,115],[58,128],[78,133]],null,'#eee2bd',9);
+    for(let k=0;k<4;k++)path(c,[[228-k*3,108+k*7],[207-k*7,91+k*8]],null,'#eee2bd',4);
+    ellipse(c,250,109,2,2,'#715038');
+    for(const [px,py] of [[61,98],[295,96],[67,202],[290,203]])for(let k=0;k<4;k++){
+      const a=k*Math.PI/2;ellipse(c,px+Math.cos(a)*5,py+Math.sin(a)*5,3,3,'#d9c391');}
+  } else if(id==='glass') {
+    const blue=c.createLinearGradient(92,0,265,0);blue.addColorStop(0,'#163a64');blue.addColorStop(.3,'#326f91');blue.addColorStop(.6,'#24567d');blue.addColorStop(1,'#102e58');
+    c.beginPath();c.moveTo(93,47);c.bezierCurveTo(103,140,112,235,141,264);
+    c.quadraticCurveTo(180,282,219,264);c.bezierCurveTo(248,235,257,140,267,47);c.closePath();c.fillStyle=blue;c.fill();c.strokeStyle='#74a6b1';c.lineWidth=3;c.stroke();
+    ellipse(c,180,47,87,18,'#163953','#8fbcc3');ellipse(c,180,48,73,11,'#102e48');
+    c.save();c.beginPath();c.moveTo(98,66);c.lineTo(263,66);c.lineTo(236,239);c.quadraticCurveTo(180,285,124,239);c.closePath();c.clip();
+    for(let i=0;i<17;i++)path(c,[[105+i*9,63],[115+i*8,119]],null,'#4f8ea9',2);
+    for(let row=0;row<5;row++)for(let col=0;col<7;col++){
+      const px=106+col*25+(row%2)*12,py=132+row*26,pts=[];
+      for(let k=0;k<6;k++){const a=k*Math.PI/3;pts.push([px+Math.cos(a)*14,py+Math.sin(a)*14]);}pts.push(pts[0]);path(c,pts,null,'#467c99',2);
+    }c.restore();
+    c.beginPath();c.moveTo(112,79);c.quadraticCurveTo(116,165,139,231);c.strokeStyle='rgba(183,222,221,.35)';c.lineWidth=7;c.stroke();
+  }
+  c.restore();
+}

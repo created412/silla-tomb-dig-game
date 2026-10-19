@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>토우 친구들과 무덤 주인 찾기 — 시제품</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="story.css">
 </head>
 <body>
   <main id="stage" data-phase="title">
@@ -39,12 +40,14 @@
       <div class="title-copy">
         <p class="intro">땅속에 잠든 신라의 이야기</p>
         <h1><span>토우 친구들과</span><br>무덤 주인 찾기</h1>
-        <p class="sub">쓱쓱, 톡톡, 살살.<br>우리 손으로 첫 유물을 찾아보자!</p>
+        <p class="sub">금관, 말다래, 푸른 유리잔.<br>세 흔적으로 잊힌 주인의 이야기를 찾아보자!</p>
         <button id="btn-start" class="big">파러 가자! <span aria-hidden="true">↗</span></button>
+        <button id="btn-exhibit" class="hidden" type="button">내가 만든 전시 보기</button>
       </div>
       <p class="title-note">천마총에서 착안한 가상 발굴 놀이</p>
     </div>
 
+    <section id="story" class="hidden" aria-label="주인의 이야기" aria-labelledby="story-title"></section>
     <div id="again" class="overlay hidden">
       <div class="again-copy">
         <p class="sub">우리 손으로 금관을 찾았어!</p>

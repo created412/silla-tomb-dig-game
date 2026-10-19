@@ -1,4 +1,4 @@
-// 상태 기계: title → wake → dig → found → again
+// 발굴 → 관찰 → 추리 → 세 단서 → 전시. 발굴 입력 모델은 그대로 사용한다.
 import { createDig, progress, topLayer } from './dig-model.js';
 import { hintForLayer } from './hud.js';
 import { layoutGrid } from './grid.js';
@@ -7,10 +7,12 @@ import { createDialogue } from './dialogue.js';
 import { createRenderer } from './renderer.js';
 import { createSfx } from './sfx.js';
 import { attachInput } from './input.js';
+import { ARTIFACTS, STORY_TALKS } from './story-data.js';
+import { createStory, discover, nextArtifact, saveExhibit, loadExhibit } from './story-model.js';
+import { createStoryUI } from './story-ui.js';
 
 const COLS = 12, ROWS = 7, PADDING = 24;
 const TOP_PAD = 112, BOTTOM_PAD = 142; // HUD·토우·말풍선 자리 (CSS px)
-const ARTIFACT_CELLS = [39, 40, 41, 42, 43, 44]; // 4행(0부터 3) 3~8열, 가로 6칸 금관
 const REACTION_MS = 2000;
 const FOUND_PAUSE_MS = 2600;
 const LOG_KEY = 'silla-proto-log';
@@ -29,7 +31,43 @@ const el = {
 
 const renderer = createRenderer(canvas);
 const sfx = createSfx();
-const dialogue = createDialogue(LINES);
+const dialogue = createDialogue({ ...LINES, ...STORY_TALKS });
+let story = createStory(), talkThen = null, totalDigMs = 0, completedRun = false;
+let storage = null;
+try { storage = window.localStorage; } catch { /* 저장 차단 환경에서도 진행 */ }
+const storyUI = createStoryUI($('story'), {
+  onNext() {
+    if (story.index === 2) { storyUI.board(story); return; }
+    runStoryTalk(story.index === 0 ? 'toSaddle' : 'toGlass', () => {
+      if (!nextArtifact(story)) return;
+      prepareDig(); startDig();
+    });
+  },
+  onComplete(exhibit) {
+    const saved = saveExhibit(storage, exhibit);
+    completedRun = true; setPhase('museum'); storyUI.museum(exhibit, saved); refreshExhibit();
+  },
+  onRestart() { finishChoice('again'); startWake(); },
+  onHome() { finishChoice('no'); setPhase('title'); },
+});
+function refreshExhibit() { $('btn-exhibit').classList.toggle('hidden', !loadExhibit(storage)); }
+function finishChoice(choice) { if (completedRun) { logChoice(choice); completedRun = false; } }
+function prepareDig() {
+  const artifact = ARTIFACTS[story.index];
+  state = createDig({ cols: COLS, rows: ROWS, artifactCells: artifact.cells });
+  if (story.index > 0) {
+    state.soil.fill(0); state.rock.fill(0);
+    artifact.cells.forEach(cell => state.glimmered.add(cell));
+  }
+  renderer.setArtifact(artifact.id);
+  el.heading.querySelector('.site-name').textContent = artifact.location;
+  el.discovery.querySelector('h2').textContent = artifact.foundTitle;
+  el.discovery.querySelector('p').textContent = artifact.foundHint;
+}
+function inspectArtifact() { setPhase('story'); showLine(null); storyUI.inspect(story); }
+function runStoryTalk(id, then) {
+  talkThen = then; playTalk(id); setPhase('storyTalk'); showLine(dialogue.current(), true);
+}
 
 let phase = 'title';
 let state = null;
@@ -65,7 +103,7 @@ function showLine(line, tappable) {
   el.dialogue.classList.remove('hidden');
   el.dialogue.dataset.speaker = line.who;
   el.dialogue.disabled = !tappable;
-  el.speaker.textContent = line.who === 'frog' ? '개구리' : '뱀';
+  el.speaker.textContent = { frog: '개구리', snake: '뱀', turtle: '거북' }[line.who];
   el.line.textContent = line.text;
   el.tapHint.classList.toggle('hidden', !tappable);
 }
@@ -84,12 +122,14 @@ function playReaction(id) {
 function setPhase(next) {
   phase = next;
   el.stage.dataset.phase = phase;
+  if (phase === 'museum') el.heading.querySelector('.site-name').textContent = '우리의 첫 전시';
   el.title.classList.toggle('hidden', phase !== 'title');
   el.again.classList.toggle('hidden', phase !== 'again');
   el.hud.classList.toggle('hidden', phase !== 'dig');
   el.heading.classList.toggle('hidden', phase === 'title' || phase === 'again');
   el.discovery.classList.toggle('hidden', phase !== 'found');
-  if (phase === 'title' || phase === 'again') showLine(null);
+  if (phase !== 'story' && phase !== 'museum') storyUI.hide();
+  if (['title', 'again', 'story', 'museum'].includes(phase)) showLine(null);
 }
 
 function playTalk(id) {
@@ -103,7 +143,8 @@ function startWake() {
   clearTimeout(foundTimer);
   revealReady = false;
   renderer.reset();
-  state = createDig({ cols: COLS, rows: ROWS, artifactCells: ARTIFACT_CELLS });
+  story = createStory(); totalDigMs = 0; completedRun = false; talkThen = null;
+  prepareDig();
   playTalk('wake');
   setPhase('wake');
   showLine(dialogue.current(), true);
@@ -111,13 +152,15 @@ function startWake() {
 
 function startDig() {
   digStartedAt = performance.now();
-  lastTouchedCell = -1;
+  lastTouchedCell = story.index > 0 ? ARTIFACTS[story.index].cells[0] : -1;
   setPhase('dig');
   showLine(null);
 }
 
 function onArtifactRevealed(now) {
   foundAt = now;
+  totalDigMs += now - digStartedAt;
+  discover(story);
   clearTimeout(reactionTimer);
   showLine(null);
   revealReady = false;
@@ -126,7 +169,7 @@ function onArtifactRevealed(now) {
   renderer.flash(650, now);
   sfx.found();
   foundTimer = setTimeout(() => {
-    playTalk('found');
+    playTalk(['found', 'saddleFound', 'glassFound'][story.index]);
     revealReady = true;
     showLine(dialogue.current(), true);
   }, FOUND_PAUSE_MS);
@@ -135,7 +178,7 @@ function onArtifactRevealed(now) {
 function logChoice(choice) {
   try {
     const arr = JSON.parse(localStorage.getItem(LOG_KEY) || '[]');
-    arr.push({ choice, digMs: Math.round(foundAt - digStartedAt), at: new Date().toISOString() });
+    arr.push({ choice, digMs: Math.round(totalDigMs), at: new Date().toISOString() });
     localStorage.setItem(LOG_KEY, JSON.stringify(arr));
   } catch { /* 저장 불가 환경 */ }
 }
@@ -176,7 +219,12 @@ function advance() {
     else startDig();
   } else if (phase === 'found' && revealReady) {
     if (dialogue.next()) showLine(dialogue.current(), true);
-    else setPhase('again');
+    else if (story.index === 0) {
+      renderer.setCompanion(true); runStoryTalk('join', inspectArtifact);
+    } else inspectArtifact();
+  } else if (phase === 'storyTalk') {
+    if (dialogue.next()) showLine(dialogue.current(), true);
+    else { const then = talkThen; talkThen = null; then?.(); }
   }
 }
 canvas.addEventListener('pointerdown', advance);
@@ -184,6 +232,10 @@ el.dialogue.addEventListener('pointerdown', (ev) => { ev.stopPropagation(); adva
 el.dialogue.addEventListener('click', (ev) => { if (ev.detail === 0) advance(); });
 
 el.btnStart.addEventListener('click', () => { sfx.unlock(); startWake(); });
+$('btn-exhibit').addEventListener('click', () => {
+  const exhibit = loadExhibit(storage);
+  if (exhibit) { setPhase('museum'); storyUI.museum(exhibit, true, true); }
+});
 el.btnAgain.addEventListener('click', () => { logChoice('again'); startWake(); });
 el.btnNo.addEventListener('click', () => { logChoice('no'); setPhase('title'); });
 
@@ -202,8 +254,10 @@ function updateHud() {
 // ---------- 루프 ----------
 function frame(tMs) {
   if (phase === 'dig') updateHud();
-  renderer.draw(state, layout, tMs, phase, tMs - foundAt);
+  const renderPhase = phase === 'museum' ? 'story' : phase === 'storyTalk' ? 'found' : phase;
+  renderer.draw(state, layout, tMs, renderPhase, tMs - foundAt);
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
 setPhase('title');
+refreshExhibit();

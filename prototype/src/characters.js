@@ -12,7 +12,16 @@ export function drawCharacter(c, who, x, y, size, t, mood='idle', speaking=false
   const clay=c.createLinearGradient(-40,-120,45,0);
   clay.addColorStop(0,who==='frog'?'#d0aa7c':'#c69265');
   clay.addColorStop(.55,who==='frog'?'#b98a59':'#a77149'); clay.addColorStop(1,'#805536');
-  if(who==='frog') {
+  if(who==='turtle') {
+    ellipse(c,-35,-15,19,10,clay,'#68472e');ellipse(c,35,-15,19,10,clay,'#68472e');
+    ellipse(c,0,-48,51,40,'#918058','#574e35');
+    for(const [px,py] of [[0,-54],[-24,-40],[24,-40],[0,-25]]){
+      const pts=Array.from({length:7},(_,i)=>[px+Math.cos(i*Math.PI/3)*17,py+Math.sin(i*Math.PI/3)*15]);path(c,pts,null,'#b8a777',2);
+    }
+    ellipse(c,0,-99,29,26,clay,'#68472e');
+    for(const px of [-12,12]){ellipse(c,px,-103,3,blink?1:4,'#302c22');path(c,[[px-5,-111],[px+4,-111]],null,'#76563a',2);}
+    path(c,[[-7,-87],[0,-85],[7,-87]],null,'#68472e',2);
+  } else if(who==='frog') {
     // 낮고 넓은 몸과 짧은 팔다리, 튀어나온 눈.
     ellipse(c,-43,-20,24,16,clay,'#68472e'); ellipse(c,43,-20,24,16,clay,'#68472e');
     ellipse(c,0,-44,46,45,clay,'#68472e'); ellipse(c,0,-37,28,28,'#c99d69');
