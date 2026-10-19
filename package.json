@@ -1,0 +1,6 @@
+{
+  "name": "silla-dig-prototype",
+  "private": true,
+  "type": "module",
+  "scripts": { "test": "node --test \"prototype/tests/*.test.js\"" }
+}
