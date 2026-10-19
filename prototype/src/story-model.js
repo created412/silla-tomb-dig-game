@@ -1,6 +1,7 @@
 import { ARTIFACTS, NICKNAMES } from './story-data.js';
+import {createLearning,learningReport,parseLearningReport} from './learning-model.js';
 export const EXHIBIT_KEY='silla-first-exhibit-v1';
-export function createStory(){return {index:0,found:false,observed:[],clues:[],attempts:0,unknown:false};}
+export function createStory(){return {index:0,found:false,observed:[],clues:[],attempts:0,unknown:false,learning:createLearning()};}
 export function discover(s){s.found=true;}
 export function observe(s,id){
   if(!s.found||!ARTIFACTS[s.index].observations.some(o=>o.id===id))return false;
@@ -23,15 +24,18 @@ export function classifyUnknown(s,choice){
   s.unknown=true;return true;
 }
 export function makeExhibit(s,nickname){
-  if(!s.unknown||s.clues.length!==3||!NICKNAMES.includes(nickname))return null;
-  return {version:1,nickname,items:ARTIFACTS.map(a=>a.id),realNameKnown:false,completedAt:new Date().toISOString()};
+  const learning=learningReport(s.learning);
+  if(!s.unknown||s.clues.length!==3||!NICKNAMES.includes(nickname)||!learning)return null;
+  return {version:2,nickname,items:ARTIFACTS.map(a=>a.id),realNameKnown:false,completedAt:new Date().toISOString(),learning};
 }
 export function parseExhibit(raw){
   try{
     const e=JSON.parse(raw);
-    if(e?.version!==1||!NICKNAMES.includes(e.nickname)||e.realNameKnown!==false||!Array.isArray(e.items)||
+    if(![1,2].includes(e?.version)||!NICKNAMES.includes(e.nickname)||e.realNameKnown!==false||!Array.isArray(e.items)||
       e.items.length!==3||!ARTIFACTS.every((a,i)=>e.items[i]===a.id)||typeof e.completedAt!=='string'||!Number.isFinite(Date.parse(e.completedAt)))return null;
-    return {version:1,nickname:e.nickname,items:[...e.items],realNameKnown:false,completedAt:e.completedAt};
+    const learning=e.version===2?parseLearningReport(e.learning):null;
+    if(e.version===2&&!learning)return null;
+    return {version:e.version,nickname:e.nickname,items:[...e.items],realNameKnown:false,completedAt:e.completedAt,...(learning?{learning}:{})};
   }catch{return null;}
 }
 export function saveExhibit(storage,e){try{storage.setItem(EXHIBIT_KEY,JSON.stringify(e));return true;}catch{return false;}}

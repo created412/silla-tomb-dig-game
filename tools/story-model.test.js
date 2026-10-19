@@ -2,9 +2,17 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { ARTIFACTS, NICKNAMES, STORY_TALKS } from '../prototype/src/story-data.js';
 import { createStory, discover, observe, chooseClue, nextArtifact, classifyUnknown, makeExhibit, parseExhibit, saveExhibit, loadExhibit } from '../prototype/src/story-model.js';
+import {SCENES,CASES} from '../prototype/src/learning-data.js';
+import {submitLink,submitCase} from '../prototype/src/learning-model.js';
 
 function solve(s) {const a=ARTIFACTS[s.index];discover(s);for(const o of a.observations)observe(s,o.id);assert.equal(chooseClue(s,a.answer),'solved');}
 function complete() {const s=createStory();for(let i=0;i<3;i++){solve(s);if(i<2)nextArtifact(s);}return s;}
+function learn(s){for(const c of SCENES)submitLink(s.learning,c.id,c.artifact,c.answer);for(const c of CASES)submitCase(s.learning,c.id,c.answer);return s;}
+
+test('유물 정답과 이름 모름만 골라서는 학습 연결을 건너뛰어 전시를 완성할 수 없다',()=>{
+ const s=complete();classifyUnknown(s,'unknown-name');
+ assert.equal(makeExhibit(s,NICKNAMES[0]),null);
+});
 
 test('발굴과 두 관찰을 거치기 전에는 단서를 얻거나 다음 구역으로 갈 수 없다',()=>{
  const s=createStory();assert.equal(chooseClue(s,0),'locked');assert.equal(nextArtifact(s),false);
@@ -28,21 +36,26 @@ test('금관 뒤 말다래, 유리잔으로 이어지고 마지막 뒤에 새 �
  assert.deepEqual(s.clues,['crown','saddle','glass']);assert.equal(nextArtifact(s),false);
 });
 test('모르는 이름을 구분해야 전시가 완성되며 별명은 실제 이름으로 저장하지 않는다',()=>{
- const s=complete();assert.equal(makeExhibit(s,NICKNAMES[0]),null);
+ const s=learn(complete());assert.equal(makeExhibit(s,NICKNAMES[0]),null);
  assert.equal(classifyUnknown(s,'known-name'),false);assert.equal(classifyUnknown(s,'unknown-name'),true);
  const e=makeExhibit(s,NICKNAMES[0]);assert.equal(e.nickname,NICKNAMES[0]);assert.equal(e.realNameKnown,false);
  assert.equal(makeExhibit(s,'임의의 왕 이름'),null);
 });
 test('전시 저장값이 손상되거나 일부 유물이 빠졌으면 안전하게 거부한다',()=>{
- const s=complete();classifyUnknown(s,'unknown-name');const e=makeExhibit(s,NICKNAMES[1]);
+ const s=learn(complete());classifyUnknown(s,'unknown-name');const e=makeExhibit(s,NICKNAMES[1]);
  assert.deepEqual(parseExhibit(JSON.stringify(e)),e);assert.equal(parseExhibit('{'),null);
  assert.equal(parseExhibit(JSON.stringify({...e,items:['crown']})),null);
  assert.equal(parseExhibit(JSON.stringify({...e,realNameKnown:true})),null);
 });
 test('저장 거부 환경에서도 예외 없이 플레이를 마칠 수 있다',()=>{
- const s=complete();classifyUnknown(s,'unknown-name');const e=makeExhibit(s,NICKNAMES[0]);
+ const s=learn(complete());classifyUnknown(s,'unknown-name');const e=makeExhibit(s,NICKNAMES[0]);
  const storage={getItem(){throw Error('blocked');},setItem(){throw Error('full');}};
  assert.equal(saveExhibit(storage,e),false);assert.equal(loadExhibit(storage),null);
+});
+test('예전 전시는 읽되 새 학습 활동을 완료한 것처럼 기록하지 않는다',()=>{
+ const old={version:1,nickname:NICKNAMES[0],items:['crown','saddle','glass'],realNameKnown:false,completedAt:'2026-10-19T12:00:00Z'};
+ assert.deepEqual(parseExhibit(JSON.stringify(old)),old);
+ assert.equal(parseExhibit(JSON.stringify({...old,version:2})),null);
 });
 test('이야기 데이터는 세 유물, 두 관찰과 두 선택지를 가지며 대사는 40자 이내다',()=>{
  assert.equal(ARTIFACTS.length,3);

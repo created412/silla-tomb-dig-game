@@ -1,9 +1,10 @@
 <!doctype html><meta charset="utf-8"><title>발굴 화면 검증</title>
 <style>body{margin:0;background:#162d27;color:white;font:16px sans-serif}header{height:52px;display:flex;align-items:center;gap:12px;padding:0 12px}button{font:inherit;padding:8px 12px}iframe{display:block;width:100%;height:calc(100vh - 52px);border:0}#status{white-space:pre-wrap}</style>
-<header><button id="run">DPR 2 전체 입력 검사</button><button id="finish" disabled>이야기 끝까지 검사</button><span id="status">준비 중</span></header>
+<header><button id="run">DPR 2 전체 입력 검사</button><button id="finish" disabled>이야기 끝까지 검사</button><button id="resume" disabled>생활 연결 검사 계속</button><span id="status">준비 중</span></header>
 <iframe id="game"></iframe>
 <script type="module">
 import { ARTIFACTS, NICKNAMES } from '../prototype/src/story-data.js';
+import {SCENES,CASES} from '../prototype/src/learning-data.js';
 import {layoutGrid} from '../prototype/src/grid.js';
 const frame=document.querySelector('iframe'),status=document.querySelector('#status'),results=[];
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
@@ -79,9 +80,36 @@ document.querySelector('#finish').onclick=async()=>{
   }
   assert(d.querySelector('#story').dataset.view==='board','Three clues on evidence board');
   click('[data-action="known-name"]');assert(d.querySelector('#story').dataset.view==='board','Known name claim cannot advance');
-  click('[data-action="unknown-name"]');click(`[data-nickname="${NICKNAMES[1]}"]`);click('[data-action="complete"]');
+  click('[data-action="unknown-name"]');
+  assert(d.querySelector('#story').dataset.view==='workshop','Unknown name leads to evidence workshop');
+  status.textContent='생활 연결 화면 확인 가능';report();
+  await new Promise(resolve=>{document.querySelector('#resume').disabled=false;document.querySelector('#resume').onclick=()=>{document.querySelector('#resume').disabled=true;resolve();};});
+  for(const scene of SCENES){
+    click(`[data-scene="${scene.id}"]`);
+    click(`[data-evidence="${scene.artifact}"]`);
+    assert(d.querySelector('[data-action="connect"]').disabled,'Evidence alone cannot complete a scene');
+    click(`[data-reason="${(scene.answer+1)%3}"]`);click('[data-action="connect"]');
+    assert(!!d.querySelector('[data-action="connect"]'),'Wrong reason leaves scene unfinished');
+    assert(d.activeElement.matches('.learning-feedback'),'Retry focus stays on corrective feedback');
+    click(`[data-reason="${scene.answer}"]`);click('[data-action="connect"]');
+    assert(!!d.querySelector('.memory-picture.revealed'),'Correct evidence reveals imagined scene');
+    click('[data-action="learning-next"]');
+  }
+  assert(d.querySelector('#story').dataset.view==='challenge','Three scenes unlock new case application');
+  for(const c of CASES){
+    click(`[data-case-answer="${(c.answer+1)%3}"]`);
+    assert(!!d.querySelector('[data-case-answer]'),'Incorrect transfer judgment can be revised');
+    assert(d.activeElement.matches('.learning-feedback'),'Case retry reveals explanatory feedback');
+    click(`[data-case-answer="${c.answer}"]`);click('[data-action="case-next"]');
+  }
+  assert(d.querySelector('#story').dataset.view==='naming','New cases completed before naming');
+  click(`[data-nickname="${NICKNAMES[1]}"]`);click('[data-action="complete"]');
   assert(phase()==='museum'&&d.querySelectorAll('.museum-shelf article').length===3,'Museum contains three artifacts');
   const saved=JSON.parse(w.localStorage.getItem('silla-first-exhibit-v1'));
+  assert(saved.version===2&&saved.learning.links.length===3&&saved.learning.cases.length===2,'Evidence and transfer records saved');
+  assert(saved.learning.cases.every((c,i)=>c.first===(CASES[i].answer+1)%3&&c.attempts===2),'First judgment survives correction');
+  click('[data-action="learning-report"]');assert(d.querySelector('#story').dataset.view==='report'&&d.querySelectorAll('.revised-answer').length===2,'Report shows corrected thinking');
+  click('[data-action="report-back"]');assert(phase()==='museum','Return from learning report');
   assert(saved.nickname===NICKNAMES[1]&&saved.realNameKnown===false,'Nickname saved without claiming real name');
   click('[data-action="home"]');assert(phase()==='title','Return to title');
   assert(!d.querySelector('#btn-exhibit').classList.contains('hidden'),'Saved exhibit button visible');

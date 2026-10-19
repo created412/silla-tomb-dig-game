@@ -1,12 +1,15 @@
 import { ARTIFACTS, NICKNAMES } from './story-data.js';
 import { observe, chooseClue, classifyUnknown, makeExhibit } from './story-model.js';
 import { drawArtifact } from './artwork.js';
+import {createLearningView} from './learning-view.js';
 
 export function createStoryUI(root,{onNext,onComplete,onRestart,onHome}) {
   let story=null,view='',selectedNote='',feedback='',nickname=NICKNAMES[0];
   const art=(id,extra='')=>`<div class="artifact-picture ${extra}"><canvas data-artifact="${id}" role="img" aria-label="${ARTIFACTS.find(a=>a.id===id).name} 도판"></canvas></div>`;
   const button=(label,action,extra='')=>`<button type="button" data-action="${action}" ${extra}>${label}</button>`;
   const heading=(tag,title)=>`<div class="story-heading"><p>${tag}</p><h2 id="story-title" tabindex="-1">${title}</h2></div>`;
+  let currentExhibit=null;
+  const learning=createLearningView({display(html,next,focus){view=next;display(html,focus);},heading,button,art,onDone:naming,onMuseum(){museum(...currentExhibit);}});
   function paint() {
     for(const canvas of root.querySelectorAll('canvas')) {
       const r=canvas.getBoundingClientRect();if(!r.width||!r.height)continue;
@@ -18,7 +21,8 @@ export function createStoryUI(root,{onNext,onComplete,onRestart,onHome}) {
   function display(html,focus='#story-title') {
     root.classList.remove('hidden');root.dataset.view=view;root.innerHTML=html;paint();
     if(focus==='#story-title')root.scrollTop=0;
-    root.querySelector(focus)?.focus({preventScroll:true});
+    const target=root.querySelector(focus);target?.focus({preventScroll:true});
+    if(focus!== '#story-title')target?.scrollIntoView({block:'nearest'});
   }
   function inspect(focus) {
     view='inspect';const a=ARTIFACTS[story.index],ready=story.observed.length===2;
@@ -68,16 +72,19 @@ export function createStoryUI(root,{onNext,onComplete,onRestart,onHome}) {
       ${button('우리의 첫 전시 열기','complete','class="story-primary"')}</div></div>`);
   }
   function museum(exhibit,saved,archive=false) {
+    currentExhibit=[exhibit,saved,archive];
     view='museum';
     display(`${heading('첫 번째 이야기 · 전시 완성',exhibit.nickname)}
       <p class="museum-intro">주인의 이름은 아직 모르지만, 세 흔적은 남았어.</p>
       <div class="museum-shelf">${ARTIFACTS.map(a=>`<article>${art(a.id)}<h3>${a.name}</h3><p>${a.caption}</p></article>`).join('')}</div>
-      <div class="museum-ending"><p>개구리: 다음에 만나도 기억할 수 있겠다!<br>거북: 우리가 찾은 근거를 이렇게 남겨 두면 돼.</p>
+      <div class="museum-ending"><p>${exhibit.learning?'내가 연결한 생활 장면 3개 · 다른 무덤에서 판단한 사례 2개':'개구리: 다음에 만나도 기억할 수 있겠다!'}</p>
+      ${button(exhibit.learning?'내가 설명한 것과 고친 생각 보기':'이전 전시의 활동 기록 보기','learning-report','class="story-link"')}
       <p class="save-status" role="status">${archive?'이 기기에 남겨 둔 전시야.':saved?'전시를 이 기기에 남겼어. 첫 화면에서 다시 볼 수 있어.':'이 기기에는 저장하지 못했어. 지금은 계속 볼 수 있어.'}</p>
       <div class="story-choices horizontal">${button('다시 발굴하기','restart','class="story-primary"')}${button('첫 화면으로','home')}</div></div>`);
   }
   root.addEventListener('click',e=>{
     const target=e.target.closest('button');if(!target||target.disabled)return;
+    if(['workshop','challenge','report'].includes(view)){learning.handle(target);return;}
     if(target.dataset.observe&&view==='inspect'){
       observe(story,target.dataset.observe);selectedNote=ARTIFACTS[story.index].observations.find(o=>o.id===target.dataset.observe).text;
       inspect(`[data-observe="${target.dataset.observe}"]`);return;
@@ -94,7 +101,8 @@ export function createStoryUI(root,{onNext,onComplete,onRestart,onHome}) {
       case 'inspect':inspect();break;
       case 'next':onNext();break;
       case 'known-name':feedback='뱀: 이름까지 맞혔다고 하려면, 이름의 근거도 있어야겠네.';board();break;
-      case 'unknown-name':if(classifyUnknown(story,'unknown-name'))naming();break;
+      case 'unknown-name':if(classifyUnknown(story,'unknown-name'))learning.start(story);break;
+      case 'learning-report':learning.report(currentExhibit[0]);break;
       case 'complete':{const exhibit=makeExhibit(story,nickname);if(exhibit)onComplete(exhibit);break;}
       case 'restart':onRestart();break;
       case 'home':onHome();break;
