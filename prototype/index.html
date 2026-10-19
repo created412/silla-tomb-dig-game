@@ -2,43 +2,60 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>토우 친구들과 무덤 주인 찾기 — 시제품</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="stage">
-    <canvas id="dig"></canvas>
+  <main id="stage" data-phase="title">
+    <canvas id="dig" aria-label="흙을 문지르고, 돌을 두드리고, 나무를 살살 쓸어 발굴하는 곳"></canvas>
+
+    <header id="game-heading" class="hidden">
+      <span class="game-name">토우 친구들과 무덤 주인 찾기</span>
+      <span class="site-name">첫 번째 발굴</span>
+    </header>
 
     <div id="hud" class="hidden">
-      <div id="hint">손가락으로 쓱쓱 문질러!</div>
-      <div id="bars">
-        <div class="bar"><span class="bar-label">흙</span><div class="bar-track"><div class="bar-fill soil" id="bar-soil"></div></div></div>
-        <div class="bar"><span class="bar-label">돌</span><div class="bar-track"><div class="bar-fill rock" id="bar-rock"></div></div></div>
-        <div class="bar"><span class="bar-label">나무</span><div class="bar-track"><div class="bar-fill wood" id="bar-wood"></div></div></div>
-      </div>
+      <div id="hint" aria-live="polite">손가락으로 쓱쓱 문질러!</div>
+      <aside id="layers" aria-label="발굴할 땅의 세 층">
+        <div class="layer soil" data-layer="soil"><i id="bar-soil"></i><span>흙</span></div>
+        <div class="layer rock" data-layer="rock"><i id="bar-rock"></i><span>돌</span></div>
+        <div class="layer wood" data-layer="wood"><i id="bar-wood"></i><span>나무</span></div>
+      </aside>
     </div>
 
-    <div id="dialogue" class="hidden">
-      <span id="speaker">🐸</span>
+    <button id="dialogue" class="hidden" type="button">
+      <span id="speaker">개구리</span>
       <span id="line"></span>
-      <span id="tap-hint">▶</span>
+      <span id="tap-hint">다음 <b>›</b></span>
+    </button>
+
+    <div id="discovery" class="hidden" aria-live="polite">
+      <h2>찾았다, 신라의 금관!</h2>
+      <p>나뭇가지 장식과 굽은 옥을 찾아봐.</p>
     </div>
 
     <div id="title" class="overlay">
-      <h1>토우 친구들과<br>무덤 주인 찾기</h1>
-      <p class="sub">시제품 · 무덤 1 · 흙·돌·나무 3층 뚫기</p>
-      <button id="btn-start" class="big">파러 가자!</button>
+      <div class="title-copy">
+        <p class="intro">땅속에 잠든 신라의 이야기</p>
+        <h1><span>토우 친구들과</span><br>무덤 주인 찾기</h1>
+        <p class="sub">쓱쓱, 톡톡, 살살.<br>우리 손으로 첫 유물을 찾아보자!</p>
+        <button id="btn-start" class="big">파러 가자! <span aria-hidden="true">↗</span></button>
+      </div>
+      <p class="title-note">천마총에서 착안한 가상 발굴 놀이</p>
     </div>
 
     <div id="again" class="overlay hidden">
-      <h1>또 파고 싶어?</h1>
-      <div class="row">
-        <button id="btn-again" class="big">응, 또!</button>
-        <button id="btn-no" class="big ghost">아니</button>
+      <div class="again-copy">
+        <p class="sub">우리 손으로 금관을 찾았어!</p>
+        <h1>또 파고 싶어?</h1>
+        <div class="row">
+          <button id="btn-again" class="big">응, 또!</button>
+          <button id="btn-no" class="big ghost">아니</button>
+        </div>
       </div>
     </div>
-  </div>
+  </main>
   <script type="module" src="src/main.js"></script>
 </body>
 </html>

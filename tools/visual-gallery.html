@@ -1,0 +1,45 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><title>발굴 연출 장면 검토</title>
+<style>body{margin:0;background:#173f3b;color:#fff3d5;font:16px sans-serif}header{height:52px;display:flex;gap:10px;align-items:center;padding:0 12px}button{font:inherit;padding:7px 14px}iframe{width:100%;height:calc(100vh - 52px);border:0;display:block}</style>
+<header><button data-scene="dig">부분 발굴</button><button data-scene="found">금관 발견</button><button data-scene="again">마무리</button><button id="benchmark">DPR 2 성능 측정</button><output id="result"></output></header>
+<iframe id="sample"></iframe>
+<script type="module">
+const frame=document.querySelector('iframe');let html=await(await fetch('../prototype/index.html')).text();
+// UI 배치는 실제 HTML/CSS를 사용하고, main 대신 검토용 모델만 연결한다.
+html=html.replace('<head>','<head><base href="../prototype/">').replace('<script type="module" src="src/main.js"><\/script>','');
+frame.srcdoc=html;await new Promise(r=>frame.onload=r);
+const d=frame.contentDocument,w=frame.contentWindow;
+const [{createRenderer},{createDig},{layoutGrid}]=await Promise.all([import('../prototype/src/renderer.js'),import('../prototype/src/dig-model.js'),import('../prototype/src/grid.js')]);
+const canvas=d.querySelector('canvas'),renderer=createRenderer(canvas),dp=2;
+let layout,scene='dig',state,shown='';
+function setup(){const r=canvas.getBoundingClientRect();canvas.width=r.width*dp;canvas.height=r.height*dp;
+ layout=layoutGrid({width:canvas.width,height:canvas.height-254*dp,cols:12,rows:7,padding:24*dp});layout.y0+=112*dp;
+ state=createDig({cols:12,rows:7,artifactCells:[39,40,41,42,43,44]});
+ for(let i=0;i<84;i++){const x=i%12,y=Math.floor(i/12),r=Math.hypot((x-5.5)*.8,y-3);
+   state.soil[i]=r<2.5?0:r<3.3?.4:1;
+   if(r<1.9)state.rock[i]=0;else if(r<2.5)state.rock[i]=i%2?.66:.32;
+   if(r<1.1)state.wood[i]=0;else if(r<1.8)state.wood[i]=.35;
+   if(state.artifactCells.has(i)&&state.rock[i]===0)state.glimmered.add(i);
+ }shown='';
+}
+setup();w.addEventListener('resize',setup);
+function dom(){if(shown===scene)return;shown=scene;d.querySelector('#stage').dataset.phase=scene;
+ d.querySelector('#title').classList.add('hidden');d.querySelector('#again').classList.toggle('hidden',scene!=='again');
+ d.querySelector('#hud').classList.toggle('hidden',scene!=='dig');d.querySelector('#game-heading').classList.toggle('hidden',scene==='again');
+ d.querySelector('#discovery').classList.toggle('hidden',scene!=='found');d.querySelector('#dialogue').classList.toggle('hidden',scene==='again');
+ d.querySelector('#dialogue').dataset.speaker='frog';d.querySelector('#speaker').textContent='개구리';d.querySelector('#line').textContent=scene==='found'?'찾았다! 금관이야!':'어? 뭔가 반짝여!';
+ d.querySelector('#hint').textContent='붓으로 살살…';d.querySelector('#layers').dataset.active='wood';}
+let samples=[],measuring=false,rafTimes=[],last=0;
+function tick(t){dom();const start=performance.now();renderer.draw(state,layout,t,scene,3000);const elapsed=performance.now()-start;
+ if(measuring){samples.push(elapsed);if(last)rafTimes.push(t-last);last=t;if(samples.length>=180){measuring=false;samples.sort((a,b)=>a-b);rafTimes.sort((a,b)=>a-b);
+  const report={css:[canvas.clientWidth,canvas.clientHeight],dpr:2,frames:samples.length,drawMeanMs:+(samples.reduce((a,b)=>a+b)/samples.length).toFixed(2),drawP95Ms:+samples[Math.floor(samples.length*.95)].toFixed(2),frameMedianMs:+rafTimes[Math.floor(rafTimes.length/2)].toFixed(2)};
+  document.querySelector('#result').textContent=JSON.stringify(report);document.body.dataset.benchmark=JSON.stringify(report);}}
+ requestAnimationFrame(tick);
+}requestAnimationFrame(tick);
+document.querySelectorAll('[data-scene]').forEach(b=>b.onclick=()=>scene=b.dataset.scene);
+document.querySelector('#benchmark').onclick=()=>{
+ scene='dig';dom();const samples=[];
+ for(let i=0;i<180;i++){const start=performance.now();state.soil[22]=.25+(i%20)*.02;renderer.draw(state,layout,performance.now(),'dig',0);samples.push(performance.now()-start);}
+ samples.sort((a,b)=>a-b);const report={css:[canvas.clientWidth,canvas.clientHeight],dpr:2,frames:180,kind:'CPU submission with one dirty soil cell per frame; not hardware FPS',drawMeanMs:+(samples.reduce((a,b)=>a+b)/samples.length).toFixed(2),drawP95Ms:+samples[171].toFixed(2)};
+ document.querySelector('#result').textContent=`평균 ${report.drawMeanMs}ms / p95 ${report.drawP95Ms}ms`;document.body.dataset.benchmark=JSON.stringify(report);
+};
+</script></html>
