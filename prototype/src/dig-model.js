@@ -80,3 +80,44 @@ export function tap(state, i, nowMs) {
   }
   return [];
 }
+
+export const BRUSH_RATE = 1 / 900;        // 나무 한 셀 = 900ms 살살 붓질
+export const GENTLE_MAX_SPEED = 0.6;      // px/ms, 이보다 빠르면 "살살!"
+export const TOO_HARD_COOLDOWN_MS = 1000;
+
+export function brush(state, i, dtMs, speedPxPerMs, nowMs) {
+  if (topLayer(state, i) !== 'wood') return [];
+  if (speedPxPerMs > GENTLE_MAX_SPEED) {
+    if (nowMs - state.lastTooHardAt >= TOO_HARD_COOLDOWN_MS) {
+      state.lastTooHardAt = nowMs;
+      return [{ type: 'tooHard', cell: i }];
+    }
+    return [];
+  }
+  state.wood[i] = Math.max(0, state.wood[i] - BRUSH_RATE * dtMs);
+  const events = [];
+  if (state.wood[i] === 0 && state.artifactCells.has(i) && !state.revealed.has(i)) {
+    state.revealed.add(i);
+    events.push({ type: 'artifactCell', cell: i });
+    if (state.revealed.size === state.artifactCells.size && !state.done) {
+      state.done = true;
+      events.push({ type: 'artifactRevealed' });
+    }
+  }
+  return events;
+}
+
+function clearedRatio(arr) {
+  let sum = 0;
+  for (const v of arr) sum += 1 - v;
+  return arr.length ? sum / arr.length : 0;
+}
+
+export function progress(state) {
+  return {
+    soil: clearedRatio(state.soil),
+    rock: clearedRatio(state.rock),
+    wood: clearedRatio(state.wood),
+    artifact: state.artifactCells.size ? state.revealed.size / state.artifactCells.size : 0,
+  };
+}
