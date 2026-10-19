@@ -1,4 +1,5 @@
 // 순수 발굴 모델. 시간·좌표는 모두 인자로 받는다 (브라우저 API 없음).
+import { neighbors4 } from './grid.js';
 
 export const RUB_RATE = 1 / 600; // 흙 한 셀 = 600ms 문지르기
 
@@ -35,15 +36,6 @@ export function rub(state, i, dtMs) {
 export const TAP_AMOUNT = 0.34;       // 돌 한 셀 = 3번 두드리기
 export const RAPID_TAPS = 4;
 export const RAPID_INTERVAL_MS = 250; // 이 간격 미만 4연타 = 와르르
-
-function neighbors4(cols, rows, i) {
-  const x = i % cols, y = (i - x) / cols, out = [];
-  if (x > 0) out.push(i - 1);
-  if (x < cols - 1) out.push(i + 1);
-  if (y > 0) out.push(i - cols);
-  if (y < rows - 1) out.push(i + cols);
-  return out;
-}
 
 function isRapid(times) {
   if (times.length < RAPID_TAPS) return false;
