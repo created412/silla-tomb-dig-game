@@ -2,6 +2,9 @@
 import { neighbors4 } from './grid.js';
 
 export const RUB_RATE = 1 / 600; // 흙 한 셀 = 600ms 문지르기
+export const SNAP_THRESHOLD = 0.08; // 이 아래 찌꺼기는 보이지 않으므로 0으로 맞춤
+
+function snap(v) { return v < SNAP_THRESHOLD ? 0 : v; }
 
 export function createDig({ cols, rows, artifactCells = [] }) {
   const n = cols * rows;
@@ -29,7 +32,7 @@ export function topLayer(state, i) {
 
 export function rub(state, i, dtMs) {
   if (topLayer(state, i) !== 'soil') return [];
-  state.soil[i] = Math.max(0, state.soil[i] - RUB_RATE * dtMs);
+  state.soil[i] = snap(Math.max(0, state.soil[i] - RUB_RATE * dtMs));
   return [];
 }
 
@@ -51,6 +54,11 @@ export function tap(state, i, nowMs) {
   if (layer === 'soil' || layer === 'floor') return [];
 
   const log = state.tapLog.get(i) ?? [];
+  // 나무 위 탭은 돌에서 시작한 연타가 이어질 때만 기록한다 (그냥 나무를 두드리면 아무 일 없음)
+  if (layer === 'wood') {
+    const last = log[log.length - 1];
+    if (last === undefined || nowMs - last >= RAPID_INTERVAL_MS) { state.tapLog.set(i, []); return []; }
+  }
   log.push(nowMs);
   if (log.length > RAPID_TAPS) log.shift();
   state.tapLog.set(i, log);
@@ -64,13 +72,16 @@ export function tap(state, i, nowMs) {
     return [{ type: 'collapse', cell: i }];
   }
 
-  if (layer !== 'rock') return [];
-  state.rock[i] = Math.max(0, state.rock[i] - TAP_AMOUNT);
-  if (state.rock[i] === 0 && state.artifactCells.has(i) && !state.glimmered.has(i)) {
-    state.glimmered.add(i);
-    return [{ type: 'glimmer', cell: i }];
+  state.rock[i] = snap(Math.max(0, state.rock[i] - TAP_AMOUNT));
+  const events = [{ type: 'chip', cell: i }];
+  if (state.rock[i] === 0) {
+    events.push({ type: 'rockBroken', cell: i });
+    if (state.artifactCells.has(i) && !state.glimmered.has(i)) {
+      state.glimmered.add(i);
+      events.push({ type: 'glimmer', cell: i });
+    }
   }
-  return [];
+  return events;
 }
 
 export const BRUSH_RATE = 1 / 900;        // 나무 한 셀 = 900ms 살살 붓질
@@ -86,7 +97,7 @@ export function brush(state, i, dtMs, speedPxPerMs, nowMs) {
     }
     return [];
   }
-  state.wood[i] = Math.max(0, state.wood[i] - BRUSH_RATE * dtMs);
+  state.wood[i] = snap(Math.max(0, state.wood[i] - BRUSH_RATE * dtMs));
   const events = [];
   if (state.wood[i] === 0 && state.artifactCells.has(i) && !state.revealed.has(i)) {
     state.revealed.add(i);

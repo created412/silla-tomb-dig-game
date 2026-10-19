@@ -73,8 +73,34 @@ test('tap: 유물 셀의 돌이 0이 되면 glimmer 한 번', () => {
   const s = bare(1, 1, [0]);
   tap(s, 0, 0); tap(s, 0, 1000);
   const ev = tap(s, 0, 2000);
-  assert.deepEqual(ev, [{ type: 'glimmer', cell: 0 }]);
+  assert.deepEqual(ev, [{ type: 'chip', cell: 0 }, { type: 'rockBroken', cell: 0 }, { type: 'glimmer', cell: 0 }]);
   assert.deepEqual(tap(s, 0, 3000), []);
+});
+
+test('tap: 돌을 두드릴 때마다 chip, 깨지면 rockBroken (I2)', () => {
+  const s = bare(1, 1);
+  assert.deepEqual(tap(s, 0, 0), [{ type: 'chip', cell: 0 }]);
+  assert.deepEqual(tap(s, 0, 1000), [{ type: 'chip', cell: 0 }]);
+  assert.deepEqual(tap(s, 0, 2000), [{ type: 'chip', cell: 0 }, { type: 'rockBroken', cell: 0 }]);
+});
+
+test('tap: 돌을 천천히 다 깬 뒤 나무를 빠르게 두드려도 와르르 아님 (I3)', () => {
+  const s = bare(1, 1);
+  tap(s, 0, 0); tap(s, 0, 1000); tap(s, 0, 2000);  // 돌 0
+  assert.equal(s.rock[0], 0);
+  let ev = [];
+  for (const t of [5000, 5100, 5200, 5300]) ev = tap(s, 0, t);
+  assert.ok(!ev.some(e => e.type === 'collapse'));
+  assert.equal(s.rock[0], 0);
+});
+
+test('tap: 와르르는 이웃의 드러난 유물(floor)을 덮지 않음 (Focus 5)', () => {
+  const s = bare(3, 1, [1]);
+  s.rock[1] = 0; s.wood[1] = 0; s.revealed.add(1);   // 가운데 유물 드러남
+  let ev = [];
+  for (const t of [0, 100, 200, 300]) ev = tap(s, 0, t);
+  assert.deepEqual(ev, [{ type: 'collapse', cell: 0 }]);
+  assert.equal(s.rock[1], 0); assert.equal(s.wood[1], 0);
 });
 
 import { brush, progress, BRUSH_RATE, GENTLE_MAX_SPEED, TOO_HARD_COOLDOWN_MS } from '../src/dig-model.js';
@@ -117,4 +143,20 @@ test('progress: 비율 계산', () => {
   s.soil[0] = 0;
   const p = progress(s);
   assert.equal(p.soil, 0.5); assert.equal(p.rock, 0); assert.equal(p.artifact, 0);
+});
+
+
+import { SNAP_THRESHOLD } from '../src/dig-model.js';
+
+test('rub: 임계값 아래 흙 찌꺼기는 0으로 맞춤 (C2)', () => {
+  const s = createDig({ cols: 1, rows: 1, artifactCells: [] });
+  rub(s, 0, 560);                       // 0.067 남음 → 스냅
+  assert.equal(s.soil[0], 0);
+  assert.equal(SNAP_THRESHOLD, 0.08);
+});
+
+test('brush: 임계값 아래 나무 찌꺼기는 0으로 맞춤 (C2)', () => {
+  const s = woodOnly(1, 1);
+  brush(s, 0, 840, 0.1, 0);             // 0.067 남음 → 스냅
+  assert.equal(s.wood[0], 0);
 });

@@ -1,18 +1,30 @@
-// 포인터 이벤트 → rub / tap / brush. 첫(primary) 포인터만 추적한다.
+// 포인터 이벤트 → rub / tap / brush.
+// 격자 안에서 처음 눌린 포인터 하나만 추적한다 (엄지가 화면 가장자리에 닿아 있어도 동작).
+// 거리·속도는 CSS px 기준이라 DPR이 달라도 손맛이 같다.
 import { cellAt } from './grid.js';
 import { rub, tap, brush, topLayer } from './dig-model.js';
 
-const DRAG_THRESHOLD_PX = 6;
-const TAP_MAX_MS = 300;
+export const DRAG_THRESHOLD_PX = 10;  // CSS px. 이 안에서 흔들린 것은 탭
+export const TAP_MAX_MS = 300;
+export const MAX_DT_MS = 50;          // 멈춰 있던 시간은 이만큼만 진척에 반영
+export const ROCK_DRAG_PX = 40;       // 돌 위를 이만큼 문지르면 "두드려야 해" 안내
 
-export function attachInput(canvas, { getLayout, getState, onEvents, onRub = () => {}, now = () => performance.now() }) {
-  let tracking = null; // { downX, downY, downT, prevX, prevY, prevT, moved }
+export function attachInput(canvas, {
+  getLayout, getState, onEvents,
+  onRub = () => {}, onBrush = () => {}, onTouchCell = () => {}, onRockDrag = () => {},
+  now = () => performance.now(),
+}) {
+  let tracking = null; // { id, downX, downY, downT, prevX, prevY, prevT, moved, rockDragPx }
 
-  function toCanvas(e) {
+  function cssPoint(e) {
     const rect = canvas.getBoundingClientRect();
-    const sx = canvas.width / rect.width;
-    const sy = canvas.height / rect.height;
-    return { x: (e.clientX - rect.left) * sx, y: (e.clientY - rect.top) * sy };
+    return { x: e.clientX - rect.left, y: e.clientY - rect.top, rect };
+  }
+
+  function cellOf(p) {
+    const sx = canvas.width / p.rect.width;
+    const sy = canvas.height / p.rect.height;
+    return cellAt(getLayout(), p.x * sx, p.y * sy);
   }
 
   function emit(events) {
@@ -20,51 +32,63 @@ export function attachInput(canvas, { getLayout, getState, onEvents, onRub = () 
   }
 
   function onDown(e) {
-    if (!e.isPrimary) return;
-    const { x, y } = toCanvas(e);
+    if (tracking) return;                  // 이미 다른 손가락을 추적 중
+    const p = cssPoint(e);
+    const i = cellOf(p);
+    if (i < 0) return;                     // 격자 밖(가장자리를 쥔 엄지 등)은 무시
     const t = now();
-    tracking = { downX: x, downY: y, downT: t, prevX: x, prevY: y, prevT: t, moved: false };
+    tracking = { id: e.pointerId, downX: p.x, downY: p.y, downT: t, prevX: p.x, prevY: p.y, prevT: t, moved: false, rockDragPx: 0 };
     try { canvas.setPointerCapture(e.pointerId); } catch { /* 일부 브라우저 */ }
+    onTouchCell(i);
   }
 
   function onMove(e) {
-    if (!e.isPrimary || !tracking) return;
-    const { x, y } = toCanvas(e);
+    if (!tracking || e.pointerId !== tracking.id) return;
+    const p = cssPoint(e);
     const t = now();
-    const dx = x - tracking.prevX, dy = y - tracking.prevY;
-    const dist = Math.hypot(dx, dy);
-    if (Math.hypot(x - tracking.downX, y - tracking.downY) > DRAG_THRESHOLD_PX) tracking.moved = true;
-    const dt = Math.max(1, t - tracking.prevT);
-    const speed = dist / dt;
-    tracking.prevX = x; tracking.prevY = y; tracking.prevT = t;
+    const dist = Math.hypot(p.x - tracking.prevX, p.y - tracking.prevY);
+    if (Math.hypot(p.x - tracking.downX, p.y - tracking.downY) > DRAG_THRESHOLD_PX) tracking.moved = true;
+    const rawDt = Math.max(1, t - tracking.prevT);
+    const dt = Math.min(rawDt, MAX_DT_MS);
+    const speed = dist / rawDt;            // CSS px/ms
+    tracking.prevX = p.x; tracking.prevY = p.y; tracking.prevT = t;
 
     const state = getState();
-    const i = cellAt(getLayout(), x, y);
+    const i = cellOf(p);
     if (i < 0 || !state || state.done) return;
+    onTouchCell(i);
     const layer = topLayer(state, i);
     if (layer === 'soil') {
       const before = state.soil[i];
       emit(rub(state, i, dt));
       if (state.soil[i] < before) onRub(i);
+    } else if (layer === 'wood') {
+      const before = state.wood[i];
+      emit(brush(state, i, dt, speed, t));
+      if (state.wood[i] < before) onBrush(i);
+    } else if (layer === 'rock') {
+      // 드래그는 무효. 한참 문지르면 "두드려야 해" 안내
+      tracking.rockDragPx += dist;
+      if (tracking.rockDragPx >= ROCK_DRAG_PX) { tracking.rockDragPx = 0; onRockDrag(i); }
     }
-    else if (layer === 'wood') emit(brush(state, i, dt, speed, t));
-    // rock: 드래그는 무효, 두드려야 한다
   }
 
   function onUp(e) {
-    if (!e.isPrimary || !tracking) return;
-    const { x, y } = toCanvas(e);
+    if (!tracking || e.pointerId !== tracking.id) return;
+    const p = cssPoint(e);
     const t = now();
     const quick = t - tracking.downT < TAP_MAX_MS;
     const state = getState();
     if (!tracking.moved && quick && state && !state.done) {
-      const i = cellAt(getLayout(), x, y);
+      const i = cellOf(p);
       if (i >= 0) emit(tap(state, i, t));
     }
     tracking = null;
   }
 
-  function onCancel() { tracking = null; }
+  function onCancel(e) {
+    if (tracking && e.pointerId === tracking.id) tracking = null;
+  }
 
   canvas.style.touchAction = 'none';
   canvas.addEventListener('pointerdown', onDown);

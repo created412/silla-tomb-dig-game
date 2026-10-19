@@ -39,6 +39,16 @@ export function createSfx() {
       tone({ type: 'sine', from: 90, to: 60, ms: 30, gain: 0.06 });
     },
     tap() { tone({ type: 'square', from: 200, ms: 40, gain: 0.12 }); },
+    crack() {
+      tone({ type: 'square', from: 320, to: 120, ms: 90, gain: 0.16 });
+      tone({ type: 'sine', from: 70, ms: 120, gain: 0.1, at: 0.02 });
+    },
+    brush() {
+      const now = performance.now();
+      if (now - lastRub < 120) return;
+      lastRub = now;
+      tone({ type: 'sine', from: 140, to: 110, ms: 40, gain: 0.04 });
+    },
     collapse() { tone({ type: 'sawtooth', from: 220, to: 60, ms: 300, gain: 0.18 }); },
     glimmer() {
       tone({ type: 'sine', from: 880, ms: 90, gain: 0.12 });

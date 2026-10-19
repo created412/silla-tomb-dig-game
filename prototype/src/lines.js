@@ -15,4 +15,5 @@ export const LINES = {
   tooHard: [{ who: 'frog', text: '살살! 살살!' }],
   collapse: [{ who: 'snake', text: '와르르… 천천히 톡톡 해.' }],
   glimmer: [{ who: 'frog', text: '어? 뭔가 반짝여!' }],
+  rockDrag: [{ who: 'snake', text: '돌은 문질러도 소용없어. 톡톡 두드려.' }],
 };

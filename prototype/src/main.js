@@ -1,5 +1,6 @@
 // 상태 기계: title → wake → dig → found → again
-import { createDig, progress } from './dig-model.js';
+import { createDig, progress, topLayer } from './dig-model.js';
+import { hintForLayer } from './hud.js';
 import { layoutGrid } from './grid.js';
 import { LINES } from './lines.js';
 import { createDialogue } from './dialogue.js';
@@ -13,6 +14,7 @@ const ARTIFACT_CELLS = [39, 40, 41, 42, 43, 44]; // 4행(0부터 3) 3~8열, 가�
 const REACTION_MS = 2000;
 const FOUND_PAUSE_MS = 300;
 const LOG_KEY = 'silla-proto-log';
+const ADVANCE_GUARD_MS = 150; // 두 손가락 탭으로 대사 두 줄이 넘어가지 않게
 
 const $ = id => document.getElementById(id);
 const canvas = $('dig');
@@ -34,6 +36,8 @@ let layout = null;
 let reactionTimer = null;
 let digStartedAt = 0;
 let foundAt = 0;
+let lastTouchedCell = -1;
+let lastAdvanceAt = -Infinity;
 
 // ---------- 레이아웃 ----------
 function resize() {
@@ -95,6 +99,7 @@ function startWake() {
 
 function startDig() {
   digStartedAt = performance.now();
+  lastTouchedCell = -1;
   setPhase('dig');
   showLine(null);
 }
@@ -126,6 +131,8 @@ function onEvents(events) {
       case 'tooHard': playReaction('tooHard'); break;
       case 'collapse': renderer.shake(300, now); sfx.collapse(); playReaction('collapse'); break;
       case 'glimmer': sfx.glimmer(); playReaction('glimmer'); break;
+      case 'chip': sfx.tap(); renderer.addDust(e.cell, layout, now); break;
+      case 'rockBroken': sfx.crack(); renderer.addDust(e.cell, layout, now); break;
       case 'artifactCell': sfx.tap(); break;
       case 'artifactRevealed': onArtifactRevealed(now); break;
     }
@@ -137,10 +144,16 @@ attachInput(canvas, {
   getState: () => (phase === 'dig' ? state : null),
   onEvents,
   onRub: (cell) => { renderer.addDust(cell, layout, performance.now()); sfx.rub(); },
+  onBrush: () => sfx.brush(),
+  onTouchCell: (cell) => { lastTouchedCell = cell; },
+  onRockDrag: () => playReaction('rockDrag'),
 });
 
 // 화면(또는 대사 상자) 탭으로 만담 넘기기. dig 단계에서는 아무 일도 하지 않는다.
 function advance() {
+  const t = performance.now();
+  if (t - lastAdvanceAt < ADVANCE_GUARD_MS) return;
+  lastAdvanceAt = t;
   if (phase === 'wake') {
     if (dialogue.next()) showLine(dialogue.current(), true);
     else startDig();
@@ -162,9 +175,9 @@ function updateHud() {
   el.barSoil.style.width = `${Math.round(p.soil * 100)}%`;
   el.barRock.style.width = `${Math.round(p.rock * 100)}%`;
   el.barWood.style.width = `${Math.round(p.wood * 100)}%`;
-  if (p.soil < 0.999) el.hint.textContent = '손가락으로 쓱쓱 문질러!';
-  else if (p.rock < 0.999) el.hint.textContent = '돌은 톡톡 두드려!';
-  else el.hint.textContent = '붓으로 살살…';
+  // 안내는 마지막으로 만진 셀의 맨 위 층 기준 (전체 진행률 기준이면 돌을 보면서도 "문질러"라고 함)
+  const layer = lastTouchedCell >= 0 ? topLayer(state, lastTouchedCell) : 'soil';
+  el.hint.textContent = hintForLayer(layer);
 }
 
 // ---------- 루프 ----------
