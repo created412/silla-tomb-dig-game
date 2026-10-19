@@ -5,7 +5,7 @@ import { rub, tap, brush, topLayer } from './dig-model.js';
 const DRAG_THRESHOLD_PX = 6;
 const TAP_MAX_MS = 300;
 
-export function attachInput(canvas, { getLayout, getState, onEvents, now = () => performance.now() }) {
+export function attachInput(canvas, { getLayout, getState, onEvents, onRub = () => {}, now = () => performance.now() }) {
   let tracking = null; // { downX, downY, downT, prevX, prevY, prevT, moved }
 
   function toCanvas(e) {
@@ -42,7 +42,11 @@ export function attachInput(canvas, { getLayout, getState, onEvents, now = () =>
     const i = cellAt(getLayout(), x, y);
     if (i < 0 || !state || state.done) return;
     const layer = topLayer(state, i);
-    if (layer === 'soil') emit(rub(state, i, dt));
+    if (layer === 'soil') {
+      const before = state.soil[i];
+      emit(rub(state, i, dt));
+      if (state.soil[i] < before) onRub(i);
+    }
     else if (layer === 'wood') emit(brush(state, i, dt, speed, t));
     // rock: 드래그는 무효, 두드려야 한다
   }

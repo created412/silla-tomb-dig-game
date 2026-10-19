@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>토우 친구들과 무덤 주인 찾기 — 시제품</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="stage">
+    <canvas id="dig"></canvas>
+
+    <div id="hud" class="hidden">
+      <div id="hint">손가락으로 쓱쓱 문질러!</div>
+      <div id="bars">
+        <div class="bar"><span class="bar-label">흙</span><div class="bar-track"><div class="bar-fill soil" id="bar-soil"></div></div></div>
+        <div class="bar"><span class="bar-label">돌</span><div class="bar-track"><div class="bar-fill rock" id="bar-rock"></div></div></div>
+        <div class="bar"><span class="bar-label">나무</span><div class="bar-track"><div class="bar-fill wood" id="bar-wood"></div></div></div>
+      </div>
+    </div>
+
+    <div id="dialogue" class="hidden">
+      <span id="speaker">🐸</span>
+      <span id="line"></span>
+      <span id="tap-hint">▶</span>
+    </div>
+
+    <div id="title" class="overlay">
+      <h1>토우 친구들과<br>무덤 주인 찾기</h1>
+      <p class="sub">시제품 · 무덤 1 · 흙·돌·나무 3층 뚫기</p>
+      <button id="btn-start" class="big">파러 가자!</button>
+    </div>
+
+    <div id="again" class="overlay hidden">
+      <h1>또 파고 싶어?</h1>
+      <div class="row">
+        <button id="btn-again" class="big">응, 또!</button>
+        <button id="btn-no" class="big ghost">아니</button>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
