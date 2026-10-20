@@ -2,6 +2,10 @@
 
 작성일 2026-10-19 · 작성자 Claude Code (이전 담당) · 받는 이 Codex
 
+2026-10-20 힉스필드 후속: 사용자 요청으로 AI 배경·토우 아틀라스 두 장을 기존 정적 게임에 적용했다.
+실사용 0.50크레딧(69.86 → 69.36). [방향·비용·화면](../visual-review/higgsfield-direction.md),
+생성 근거는 `prototype/assets/higgsfield/provenance.json`. 유물 도판과 보호 대상 파일은 그대로다.
+
 2026-10-20 후속 현황: 현재 기본 흐름은 두 무덤 모험, 토우 획득·능력 탐험, 유물 이야기, 전시·꾸미기이다. 저장은 ‘저장하기’ 버튼으로만 하며, ‘새로 시작하기’는 저장 전까지 이전 기록을 보존한다. 최신 UI와 검증은 [UI 재구성 기록](../visual-review/expedition-ui.md), 실행·현재 범위는 [prototype/README](../../prototype/README.md)를 함께 읽는다. 아래의 보호 대상 파일·저작권·연령 제약은 계속 유지한다.
 
 ## 0. 한 줄 요약

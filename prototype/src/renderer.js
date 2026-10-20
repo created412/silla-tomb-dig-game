@@ -2,6 +2,7 @@ import { cellRect } from './grid.js';
 import { createTerrain } from './terrain.js';
 import { drawArtifact, drawLandscape, ellipse, path, star } from './artwork.js';
 import { drawCharacter } from './characters.js';
+import { drawWorld, worldImage } from './clay-art.js';
 
 export function createRenderer(canvas) {
   const ctx=canvas.getContext('2d');
@@ -11,8 +12,8 @@ export function createRenderer(canvas) {
   let artifactId='crown',companion=false,bird=false,hintCells=[],hintUntil=0;
   const dpr=()=>canvas.width/canvas.getBoundingClientRect().width;
   function landscapeScene() {
-    const key=`${canvas.width}:${canvas.height}`;
-    if(key!==landscapeKey){landscapeKey=key;landscape=document.createElement('canvas');landscape.width=canvas.width;landscape.height=canvas.height;drawLandscape(landscape.getContext('2d'),canvas.width,canvas.height);}
+    const key=`${canvas.width}:${canvas.height}:${worldImage.naturalWidth}`;
+    if(key!==landscapeKey){landscapeKey=key;landscape=document.createElement('canvas');landscape.width=canvas.width;landscape.height=canvas.height;const lc=landscape.getContext('2d');if(!drawWorld(lc,canvas.width,canvas.height))drawLandscape(lc,canvas.width,canvas.height);lc.fillStyle='rgba(12,40,30,.48)';lc.fillRect(0,0,canvas.width,canvas.height);}
     ctx.drawImage(landscape,0,0);
   }
   function friends(t,phase,foundProgress=0) {

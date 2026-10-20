@@ -59,3 +59,9 @@ npm run test:companions
 원안: [초등용 게임 계획서](../docs/plans/01-초등용-게임계획서.md). 변경 이유·검증·고증: [놀이 중심 재구성](../docs/visual-review/adventure.md), [토우 능력과 유물 이야기](../docs/visual-review/companions.md). 아이가 재미있어하는지는 실제 어린이의 플레이 관찰로 확인해야 합니다.
 
 현재 UI는 `expedition-design.css`에서 탐험 지도·수집책 스타일을 적용합니다. 첫 화면과 지도에 사용하는 `assets/expedition-island.svg`, `assets/tomb-map-*.svg`는 직접 그린 벡터 그림입니다. 화면과 새 시작 검증은 [UI 재구성 기록](../docs/visual-review/expedition-ui.md)에 정리합니다.
+# 힉스필드 디자인 적용 (2026-10-20)
+
+배경과 토우 네 마리를 담은 그림 두 장을 생성해 첫 화면·지도·능력 탐험·발굴에 재사용한다.
+총 사용 0.50크레딧. 플레이 중에는 AI 요청이나 추가 크레딧 사용이 없다.
+유물은 기존 직접 그린 교육용 도판이며, 생성 배경과 토우는 창작 이미지이다.
+디자인 기록: [화면 및 비용](../docs/visual-review/higgsfield-direction.md).

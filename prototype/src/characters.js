@@ -1,7 +1,9 @@
 // 특정 출토품의 재현이 아닌, 토우에서 착안한 창작 점토 친구들.
 import { ellipse, path, star } from './artwork.js';
+import { drawClayCharacter } from './clay-art.js';
 
 export function drawCharacter(c, who, x, y, size, t, mood='idle', speaking=false, reduced=false) {
+  if(drawClayCharacter(c,who,x,y,size,t,mood,speaking,reduced))return;
   const excited=mood==='glimmer'||mood==='artifactRevealed';
   const startled=mood==='tooHard'||mood==='collapse';
   const bounce=reduced?0:Math.sin(t/(speaking?90:650))*(speaking?3:1.2);
