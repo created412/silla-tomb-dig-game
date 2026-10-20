@@ -59,5 +59,22 @@ export function createSfx() {
       tone({ type: 'triangle', from: 659, ms: 150, gain: 0.18, at: 0.15 });
       tone({ type: 'triangle', from: 784, ms: 350, gain: 0.2, at: 0.3 });
     },
+    // 유물에 금 가는 "쩍"
+    crackHit() {
+      tone({ type: 'square', from: 160, to: 60, ms: 120, gain: 0.2 });
+      tone({ type: 'sine', from: 50, ms: 160, gain: 0.14, at: 0.01 });
+    },
+    // 유물이 깨짐
+    shatter() {
+      for (let k = 0; k < 3; k++) tone({ type: 'square', from: 320 - k * 60, to: 90, ms: 90, gain: 0.18, at: k * 0.06 });
+      tone({ type: 'sawtooth', from: 180, to: 40, ms: 400, gain: 0.16, at: 0.15 });
+    },
+    worm() {
+      tone({ type: 'sine', from: 600, to: 900, ms: 90, gain: 0.12 });
+      tone({ type: 'sine', from: 900, to: 600, ms: 90, gain: 0.12, at: 0.09 });
+    },
+    star() { tone({ type: 'triangle', from: 880, ms: 60, gain: 0.2 }); tone({ type: 'triangle', from: 1320, ms: 120, gain: 0.14, at: 0.05 }); },
+    sunset() { tone({ type: 'sine', from: 330, to: 165, ms: 600, gain: 0.12 }); },
+    power() { tone({ type: 'triangle', from: 440, to: 660, ms: 120, gain: 0.16 }); },
   };
 }

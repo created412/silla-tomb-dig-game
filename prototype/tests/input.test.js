@@ -19,12 +19,13 @@ function harness({ dpr = 2 } = {}) {
   let t = 0;
   const events = [];
   const touched = [];
+  const taps = [];
   attachInput(canvas, {
     getLayout: () => layout, getState: () => state,
-    onEvents: ev => events.push(...ev), onTouchCell: c => touched.push(c), now: () => t,
+    onEvents: ev => events.push(...ev), onTouchCell: c => touched.push(c), onTap: (c, at) => taps.push([c, at]), now: () => t,
   });
   const fire = (type, x, y, extra = {}) => listeners[type]({ isPrimary: true, pointerId: 1, clientX: x, clientY: y, ...extra });
-  return { state, events, touched, fire, setT: v => { t = v; } };
+  return { state, events, touched, taps, fire, setT: v => { t = v; } };
 }
 
 test('I1: 탭이 8 CSS px 흔들려도 탭으로 인정 (DPR 2)', () => {
@@ -79,4 +80,16 @@ test('C1: 누르거나 움직인 셀을 onTouchCell로 알림', () => {
   h.fire('pointerdown', 50, 50); h.setT(30);
   h.fire('pointermove', 150, 50);
   assert.deepEqual(h.touched, [0, 1]);
+});
+
+test('T1: 탭이면 층과 무관하게 onTap(cell, nowMs)을 부르고, 드래그면 부르지 않음', () => {
+  const h = harness();
+  h.state.soil[0] = 0; h.state.rock[0] = 0;   // 셀 0 나무 노출 (모델은 나무 탭을 무시)
+  h.fire('pointerdown', 50, 50); h.setT(80);
+  h.fire('pointerup', 52, 50);
+  assert.deepEqual(h.taps, [[0, 80]]);
+  h.fire('pointerdown', 150, 50); h.setT(120);
+  h.fire('pointermove', 190, 50); h.setT(160);
+  h.fire('pointerup', 190, 50);
+  assert.deepEqual(h.taps, [[0, 80]], '드래그는 탭이 아님');
 });

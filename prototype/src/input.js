@@ -12,6 +12,7 @@ export const ROCK_DRAG_PX = 40;       // 돌 위를 이만큼 문지르면 "두�
 export function attachInput(canvas, {
   getLayout, getState, onEvents,
   onRub = () => {}, onBrush = () => {}, onTouchCell = () => {}, onRockDrag = () => {},
+  onTap = () => {},                      // 탭으로 판정된 셀 (층과 무관). 모델이 무시하는 나무 탭을 바깥에서 알 수 있다
   now = () => performance.now(),
 }) {
   let tracking = null; // { id, downX, downY, downT, prevX, prevY, prevT, moved, rockDragPx }
@@ -81,7 +82,7 @@ export function attachInput(canvas, {
     const state = getState();
     if (!tracking.moved && quick && state && !state.done) {
       const i = cellOf(p);
-      if (i >= 0) emit(tap(state, i, t));
+      if (i >= 0) { onTap(i, t); emit(tap(state, i, t)); }
     }
     tracking = null;
   }
