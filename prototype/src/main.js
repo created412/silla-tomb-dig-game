@@ -6,12 +6,13 @@ import {createDialogue} from './dialogue.js';
 import {createRenderer} from './renderer.js';
 import {createSfx} from './sfx.js';
 import {attachInput} from './input.js';
-import {currentItem,markFound,loadAdventure,saveAdventure,importLegacy,useAid,captureDig,restoreDig} from './adventure-model.js';
+import {freshAdventure,currentItem,markFound,loadAdventure,saveAdventure,importLegacy,useAid,captureDig,restoreDig} from './adventure-model.js';
 import {loadExhibit} from './story-model.js';
 import {createAdventureUI} from './adventure-ui.js';
 import {itemById} from './adventure-data.js';
 import {nextRoute} from './companion-model.js';
 import {createCompanionUI} from './companion-ui.js';
+import {drawHomeArt} from './home-art.js';
 
 const $=id=>document.getElementById(id),canvas=$('dig');
 const renderer=createRenderer(canvas),sfx=createSfx();
@@ -29,7 +30,8 @@ function openRoute(id,resume){routeContinue=resume;setPhase('story');ui.hide();i
 function replay(id){const i=itemById(id);if(!i||i.kind!=='dig'||!adventure.clues.includes(id))return;practiceItem=i;ui.hide();state=createDig({cols:12,rows:7,artifactCells:i.cells});renderer.setArtifact(id);renderer.setCompanion(adventure.friends.includes('turtle'));renderer.setBird(adventure.friends.includes('bird'));lastTouchedCell=-1;$('game-heading').querySelector('.site-name').textContent='다시 파기 · '+i.name;$('discovery').querySelector('h2').textContent='또 찾았다, '+i.name+'!';$('discovery').querySelector('p').textContent='우리 박물관의 기억을 다시 만났어!';setPhase('dig');updateHud();}
 function changed(){const dirty=JSON.stringify(adventure)!==savedSnapshot;$('save-status').textContent=dirty?'저장 안 된 진행이 있어':'저장한 기록이야';$('save-controls').dataset.dirty=String(dirty);refreshTitle();}
 function save(){if(helpBusy)return;checkpoint();if(saveAdventure(storage,adventure)){savedSnapshot=JSON.stringify(adventure);$('save-controls').dataset.dirty='false';$('save-status').textContent='여기까지 저장했어!';}else $('save-status').textContent='저장하지 못했어. 다시 눌러 줘.';}
-function refreshTitle(){$('btn-exhibit').classList.toggle('hidden',!adventure.clues.length);$('btn-start').textContent=adventure.found.length||adventure.dig?'탐험 이어가기 ↗':'파러 가자! ↗';}
+function refreshTitle(){$('btn-exhibit').classList.toggle('hidden',!adventure.clues.length);$('btn-start').textContent=adventure.found.length||adventure.dig||adventure.friends.length>1?'탐험 이어가기':'탐험 시작하기';}
+function startNew(){clearTimeout(foundTimer);clearTimeout(reactionTimer);trail.hide();ui.reset();Object.assign(adventure,freshAdventure());state=null;practiceItem=null;routeContinue=false;lastTouchedCell=-1;foundAt=0;helpBusy=false;renderer.reset();renderer.setBird(false);changed();sfx.unlock();setPhase('story');ui.intro();}
 function resize(){const dp=Math.min(devicePixelRatio||1,2),r=canvas.getBoundingClientRect();canvas.width=Math.round(r.width*dp);canvas.height=Math.round(r.height*dp);layout=layoutGrid({width:canvas.width,height:canvas.height-254*dp,cols:12,rows:7,padding:24*dp});layout.y0+=112*dp;}
 window.addEventListener('resize',resize);resize();
 function showLine(line){renderer.speak(line?.who||null);$('dialogue').classList.toggle('hidden',!line);if(!line)return;$('dialogue').dataset.speaker=line.who;$('dialogue').disabled=true;$('speaker').textContent={frog:'두꺼비',snake:'뱀',turtle:'거북',bird:'새'}[line.who];$('line').textContent=line.text;$('tap-hint').classList.add('hidden');}
@@ -49,6 +51,7 @@ $('aid-turtle').addEventListener('click',()=>help('turtle'));$('aid-bird').addEv
 function checkpoint(){if(phase==='dig'&&state&&!practiceItem){captureDig(adventure,state);changed();}}
 canvas.addEventListener('pointerup',checkpoint);canvas.addEventListener('pointercancel',checkpoint);
 $('btn-save').addEventListener('click',save);
+$('btn-new').addEventListener('click',startNew);
 $('btn-start').addEventListener('click',()=>{sfx.unlock();setPhase('story');ui.map();});$('btn-exhibit').addEventListener('click',()=>{sfx.unlock();setPhase('story');ui.museum();});
 function updateHud(){
  $('btn-save').disabled=helpBusy;
@@ -59,4 +62,4 @@ function updateHud(){
   b.textContent=used?`${who==='turtle'?'거북이':'새가'} 도와줬어 ✓`:who==='turtle'?'거북! 돌 좀 도와줘':'새야! 어디에 있을까?';
  }
 }
-function frame(t){if(phase==='dig')updateHud();else $('btn-save').disabled=false;renderer.draw(state,layout,t,phase,t-foundAt);ui.tick(t);trail.tick(t);requestAnimationFrame(frame);}requestAnimationFrame(frame);setPhase('title');changed();
+function frame(t){if(phase==='dig')updateHud();else $('btn-save').disabled=false;renderer.draw(state,layout,t,phase,t-foundAt);if(phase==='title')drawHomeArt($('title'),t);ui.tick(t);trail.tick(t);requestAnimationFrame(frame);}requestAnimationFrame(frame);setPhase('title');changed();

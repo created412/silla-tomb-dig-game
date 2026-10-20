@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="adventure.css">
   <link rel="stylesheet" href="companion.css">
+  <link rel="stylesheet" href="expedition-design.css">
 </head>
 <body>
   <main id="stage" data-phase="title">
@@ -39,14 +40,27 @@
     </div>
 
     <div id="title" class="overlay">
+      <header class="home-header"><span class="home-brand"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M7 28 4 12l10 7 6-13 6 13 10-7-3 16Z" fill="currentColor"/><path d="M8 33h24" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>토우 탐험대</span><span class="home-location">천마총에서 황남대총까지</span></header>
+      <div class="home-main">
       <div class="title-copy">
-        <p class="intro">땅속에 잠든 신라의 이야기</p>
-        <h1><span>토우 친구들과</span><br>무덤 주인 찾기</h1>
-        <p class="sub">잠든 토우를 깨우면 새로운 능력이 생겨!<br>폴짝 뛰고, 훨훨 날아 신라의 기억을 찾아보자.</p>
-        <button id="btn-start" class="big">파러 가자! <span aria-hidden="true">↗</span></button>
-        <button id="btn-exhibit" class="hidden" type="button">내가 만든 전시 보기</button>
+        <p class="intro"><span class="intro-spark">✦</span> 흙 속에 잠든 친구가 기다려!</p>
+        <h1>토우 친구들과<br>신라 탐험!</h1>
+        <p class="sub">쓱쓱 발굴하고, 잠든 토우를 깨워 봐.<br>친구가 늘면 새로운 길이 열릴 거야.</p>
+        <div class="home-actions"><button id="btn-start" class="big">탐험 이어가기</button><button id="btn-new" class="big" type="button">탐험 새로 시작하기</button></div>
+        <p id="new-game-note">새 모험을 저장하면 이전 기록이 바뀌어.</p>
+        <button id="btn-exhibit" class="hidden" type="button"><span>내가 만든 전시 보기</span><b aria-hidden="true">↗</b></button>
       </div>
-      <p class="title-note">천마총·황남대총에서 착안한 가상 탐험 · 혼자 놀기</p>
+      <figure class="home-world" aria-label="봉분 앞에서 금관을 찾은 토우 친구들">
+        <img class="world-scene" src="assets/expedition-island.svg" alt="" draggable="false">
+        <canvas class="home-crown" data-home-art="crown" aria-hidden="true"></canvas>
+        <canvas class="home-frog" data-home-friend="frog" aria-hidden="true"></canvas>
+        <canvas class="home-snake" data-home-friend="snake" aria-hidden="true"></canvas>
+        <canvas class="home-bird" data-home-friend="bird" aria-hidden="true"></canvas>
+        <span class="world-bubble bubble-frog">나랑 폴짝!</span><span class="world-bubble bubble-bird">여기, 반짝!</span>
+        <figcaption><span>첫 번째 목적지</span><strong>천마총의 반짝이는 기억</strong></figcaption>
+      </figure>
+      </div>
+      <footer class="home-bottom"><span>토우를 만나고, 신라의 이야기를 모으는 모험</span><span>직접 그린 유물과 함께하는 가상 발굴 놀이</span></footer>
     </div>
 
     <section id="story" class="hidden" aria-label="주인의 이야기" aria-labelledby="adv-title"></section>
@@ -63,7 +77,7 @@
     </div>
   </main>
   <footer id="save-controls" aria-label="진행 저장">
-    <span id="save-status" role="status">저장하기를 눌러 진행을 남겨 줘.</span>
+    <span class="save-label" aria-hidden="true">나의 탐험 기록</span><span id="save-status" role="status">저장하기를 눌러 진행을 남겨 줘.</span>
     <button id="btn-save" type="button">저장하기</button>
   </footer>
   <script type="module" src="src/main.js"></script>
