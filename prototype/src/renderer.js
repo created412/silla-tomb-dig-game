@@ -8,7 +8,7 @@ export function createRenderer(canvas) {
   const fx={dust:[],shakeUntil:0,flashUntil:0,flashStart:0,mood:'idle',moodUntil:0,speaker:null};
   const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
   let cache=null,cacheKey='',landscape=null,landscapeKey='';
-  let artifactId='crown',companion=false;
+  let artifactId='crown',companion=false,bird=false,hintCells=[],hintUntil=0;
   const dpr=()=>canvas.width/canvas.getBoundingClientRect().width;
   function landscapeScene() {
     const key=`${canvas.width}:${canvas.height}`;
@@ -29,6 +29,7 @@ export function createRenderer(canvas) {
       drawCharacter(ctx,'turtle',w*.17,fy,size*.72,t+90,mood,fx.speaker==='turtle',reduced.matches);
     } else drawCharacter(ctx,'frog',left,fy,size,t,mood,fx.speaker==='frog',reduced.matches);
     drawCharacter(ctx,'snake',right,fy,size,t+180,mood,fx.speaker==='snake',reduced.matches);
+    if(bird&&phase!=='title')drawCharacter(ctx,'bird',w*.79,fy,size*.65,t,mood,fx.speaker==='bird',reduced.matches);
   }
   function particles(t) {
     fx.dust=fx.dust.filter(p=>t-p.born<p.life);if(reduced.matches)return;
@@ -66,6 +67,7 @@ export function createRenderer(canvas) {
       path(ctx,[[cx-r.w*.31,cy+3*dp],[cx-r.w*.08,cy],[cx+r.w*.08,cy+4*dp],[cx+r.w*.29,cy-2*dp]],null,'#ffe19a',2*dp);
     }
     cache.draw(ctx,'rock',state);cache.draw(ctx,'soil',state);
+    if(t<hintUntil)for(const i of hintCells){const r=cellRect(layout,i);star(ctx,r.x+r.w/2,r.y+r.h/2,r.w*.25,'#fff1a1');}
     for(const [x,y,sx,sy]of[[x0,y0,1,1],[x0+w,y0,-1,1],[x0,y0+h,1,-1],[x0+w,y0+h,-1,-1]])path(ctx,[[x+sx*15*dp,y],[x,y],[x,y+sy*15*dp]],null,'#d7b878',3*dp);
   }
   function reveal(t,elapsed,phase) {
@@ -96,7 +98,7 @@ export function createRenderer(canvas) {
       if(t<fx.flashUntil&&!reduced.matches){const a=1-(t-fx.flashStart)/(fx.flashUntil-fx.flashStart);ctx.fillStyle=`rgba(255,226,149,${a*.48})`;ctx.fillRect(0,0,w,h);}
     },
     addDust:emit,
-    setArtifact(id){artifactId=id;},setCompanion(joined){companion=joined;},
+    setArtifact(id){artifactId=id;hintUntil=0;},setCompanion(joined){companion=joined;},setBird(joined){bird=joined;},hint(cells,until){hintCells=cells;hintUntil=until;},
     react(mood,t){fx.mood=mood;fx.moodUntil=t+(mood==='artifactRevealed'?3200:1900);},
     speak(who){fx.speaker=who;},shake(ms,t){fx.shakeUntil=t+ms;},flash(ms,t){fx.flashStart=t;fx.flashUntil=t+ms;},
     reset(){fx.dust=[];fx.mood='idle';fx.moodUntil=0;fx.speaker=null;fx.shakeUntil=0;fx.flashUntil=0;artifactId='crown';companion=false;},

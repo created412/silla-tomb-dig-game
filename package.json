@@ -2,5 +2,5 @@
   "name": "silla-dig-prototype",
   "private": true,
   "type": "module",
-  "scripts": { "test": "node --test \"prototype/tests/*.test.js\"", "test:story": "node --test tools/story-model.test.js tools/learning-model.test.js" }
+  "scripts": { "test": "node --test \"prototype/tests/*.test.js\"", "test:story": "node --test tools/story-model.test.js tools/learning-model.test.js", "test:adventure":"node --test tools/adventure-model.test.js" }
 }

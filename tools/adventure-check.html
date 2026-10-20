@@ -1,0 +1,41 @@
+<!doctype html><meta charset="utf-8"><title>두 무덤 모험 검증</title>
+<style>body{margin:0;background:#163e36;color:white;font:14px sans-serif}header{height:50px;display:flex;gap:12px;align-items:center;padding:0 12px}button{padding:8px;font:inherit}iframe{width:100%;height:calc(100vh - 50px);border:0;display:block}</style>
+<header><button id="run" disabled>두 무덤 전체 검사</button><button id="continue" disabled>계속 검사</button><span id="status">준비 중</span></header><iframe id="game"></iframe>
+<script type="module">
+import {ITEMS,CHAPTERS} from '../prototype/src/adventure-data.js';
+import {ADVENTURE_KEY} from '../prototype/src/adventure-model.js';
+import {layoutGrid} from '../prototype/src/grid.js';
+const results=[],frame=document.querySelector('iframe'),status=document.querySelector('#status'),wait=ms=>new Promise(r=>setTimeout(r,ms)),data=new Map();
+// Authored test fixture uses isolated memory storage. No real player saves are touched.
+window.testStorage={getItem:k=>data.get(k)??null,setItem:(k,v)=>data.set(k,v),removeItem:k=>data.delete(k)};
+let w,d,canvas;
+const report=()=>document.body.dataset.results=JSON.stringify(results);
+const assert=(pass,message)=>{results.push({pass:!!pass,message});report();status.textContent=message;if(!pass)throw Error(message);};
+let html=await(await fetch('../prototype/index.html')).text();html=html.replace('<head>','<head><base href="../prototype/"><script>Object.defineProperty(window,"devicePixelRatio",{value:2});Object.defineProperty(window,"localStorage",{value:parent.testStorage});<\/script>');
+async function load(){frame.srcdoc=html;await new Promise(r=>frame.addEventListener('load',r,{once:true}));w=frame.contentWindow;d=frame.contentDocument;canvas=d.querySelector('#dig');w.addEventListener('error',e=>assert(false,e.message));w.addEventListener('unhandledrejection',e=>assert(false,String(e.reason)));await wait(200);}
+const saved=()=>JSON.parse(data.get(ADVENTURE_KEY));
+const view=()=>d.querySelector('#story').dataset.view;
+const phase=()=>d.querySelector('#stage').dataset.phase;
+const click=q=>{const b=d.querySelector(q);if(!b||b.disabled)throw Error('Unavailable control: '+q);b.click();};
+const event=(type,x,y)=>canvas.dispatchEvent(new w.PointerEvent(type,{bubbles:true,pointerId:1,pointerType:'touch',isPrimary:true,clientX:x,clientY:y,buttons:type==='pointerup'?0:1}));
+function point(i){const dp=canvas.width/canvas.clientWidth,l=layoutGrid({width:canvas.width,height:canvas.height-254*dp,cols:12,rows:7,padding:24*dp});l.y0+=112*dp;return {x:(l.x0+(i%12+.5)*l.cell)/dp,y:(l.y0+(Math.floor(i/12)+.5)*l.cell)/dp};}
+async function stroke(i,ms){const p=point(i);event('pointerdown',p.x-6,p.y);for(let k=0;k<ms/35;k++){await wait(35);event('pointermove',p.x+(k%2?6:-6),p.y);}event('pointerup',p.x,p.y);await wait(40);}
+async function tap(i){const p=point(i);event('pointerdown',p.x,p.y);event('pointerup',p.x,p.y);await wait(285);}
+async function pause(label){status.textContent=label;await new Promise(r=>{const b=document.querySelector('#continue');b.disabled=false;b.onclick=()=>{b.disabled=true;r();};});}
+async function dig(item,full){assert(phase()==='dig',item.id+': excavation starts');if(item.id==='ewer'){click('#aid-bird');assert(saved().aids.includes('1:bird'),'Bird helper used and saved');}
+ for(let n=0;n<item.cells.length;n++){const cell=item.cells[n];if(full){await stroke(cell,750);if(n===1){click('#aid-turtle');await wait(1050);assert(saved().aids.includes(`${item.id==='crown'?0:1}:turtle`),'Turtle clears exposed rock');}else{await tap(cell);await tap(cell);await tap(cell);}}await stroke(cell,1050);status.textContent=item.name+' '+(n+1)+'/6';if(item.id==='crown'&&n===1){assert(saved().dig.wood[cell]===0,'Mid-dig checkpoint saved');await load();click('#btn-start');click('[data-map="0"]');click('[data-action="dig"]');assert(d.querySelector('#aid-turtle').disabled,'Used helper stays used after resume');}}
+ assert(phase()==='found',item.id+': real input reveals artifact');await wait(2800);assert(view()==='card',item.id+': short picture choice');}
+function solve(item){assert(d.querySelectorAll('[data-answer]').length===2,'Exactly two picture choices');click(`[data-answer="${1-item.answer}"]`);assert(view()==='comic'&&!!d.querySelector('.comic-stage'),'Wrong answer plays visual comedy');click('[data-action="retry"]');click(`[data-answer="${1-item.answer}"]`);click('[data-action="retry"]');assert(!!d.querySelector('.friend-hint'),'Second miss gives picture hint');click(`[data-answer="${item.answer}"]`);assert(view()==='award','Memory sticker earned');click('[data-action="next"]');}
+function portrait(chapter){assert(view()==='portrait','Owner sticker workshop');click('[data-silly="0"]');assert(!!d.querySelector('.silly-flight')&&saved().owners[chapter].length===0,'Silly object animates without claiming historical evidence');for(const id of CHAPTERS[chapter].items)click(`[data-sticker="${id}"]`);click('[data-name="1"]');click('[data-action="finish-owner"]');assert(view()==='museum','Owner nickname opens museum');if(chapter===1)assert(!d.querySelector('[data-action="ending"]'),'Final greeting waits for second exhibit');}
+function exhibit(chapter){click('[data-action="tab-place"]');for(let n=0;n<3;n++){const id=CHAPTERS[chapter].items[n];click(`[data-pick="${id}"]`);click(`[data-slot="${chapter*3+n}"]`);click('[data-action="label"]');}assert(d.querySelector('.star-counter').textContent===`★ ${(chapter+1)*9}`,'Placement + label earns 3 stars each');click('[data-action="tab-decor"]');click(`[data-decor="wall"][data-level="2"]`);assert(d.querySelector('.museum-room').style.getPropertyValue('--wall')==='#2d365e','Decoration changes actual room color');}
+await load();status.textContent='준비 완료 · 실제 입력으로 약 1분';document.querySelector('#run').disabled=false;
+document.querySelector('#run').onclick=async()=>{document.querySelector('#run').disabled=true;try{
+ assert(phase()==='title'&&canvas.width===canvas.clientWidth*2,'Clean title at DPR 2');click('#btn-start');assert(d.querySelector('[data-map="1"]').disabled,'Second tomb locked before first exhibit');click('[data-map="0"]');click('[data-action="dig"]');
+ for(let n=0;n<3;n++){await dig(ITEMS[n],n===0);solve(ITEMS[n]);}
+ await pause('1장 주인 꾸미기 · 화면 검토');portrait(0);exhibit(0);await pause('1장 박물관 완성 · 화면 검토');
+ click('[data-action="travel"]');assert(saved().chapter===1&&saved().friends.includes('bird'),'Second chapter + bird unlocked');click('[data-action="dig"]');
+ for(let n=3;n<5;n++){await dig(ITEMS[n],n===3);solve(ITEMS[n]);}assert(view()==='survey','Two mounds are surveyed above ground, not excavated');click('[data-spot="0"]');click('[data-spot="1"]');click('[data-action="survey-card"]');solve(ITEMS[5]);portrait(1);exhibit(1);click('[data-decor="light"][data-level="2"]');assert(saved().decor.light===2,'Second chapter unlocks final light');click('[data-action="ending"]');assert(view()==='ending'&&d.querySelectorAll('.ending-collections canvas').length===6,'Both stories reach final scene');
+ await load();click('#btn-exhibit');assert(view()==='museum'&&d.querySelectorAll('.plinth [data-art]').length===6&&d.querySelector('.star-counter').textContent==='★ 18','Reload preserves six exhibits and stars');assert(d.querySelector('.museum-room').style.getPropertyValue('--light')==='#c9e4ff','Reload preserves decor');
+ const before=data.get(ADVENTURE_KEY);click('[data-action="map"]');click('[data-replay="crown"]');assert(phase()==='dig','Completed story allows digging again');for(const cell of ITEMS[0].cells){await stroke(cell,750);await tap(cell);await tap(cell);await tap(cell);await stroke(cell,1050);}await wait(2800);assert(view()==='replay','Replay reaches new discovery');assert(data.get(ADVENTURE_KEY)===before,'Replay preserves museum, stars and adventure');click('[data-action="museum"]');status.textContent=`완료: ${results.length}개 통과`;document.body.dataset.done='true';report();
+ }catch(e){status.textContent='실패: '+e.message;results.push({pass:false,message:e.message});report();console.error(e);}};
+</script>

@@ -1,263 +1,51 @@
-// 발굴 → 관찰 → 추리 → 세 단서 → 전시. 발굴 입력 모델은 그대로 사용한다.
-import { createDig, progress, topLayer } from './dig-model.js';
-import { hintForLayer } from './hud.js';
-import { layoutGrid } from './grid.js';
-import { LINES } from './lines.js';
-import { createDialogue } from './dialogue.js';
-import { createRenderer } from './renderer.js';
-import { createSfx } from './sfx.js';
-import { attachInput } from './input.js';
-import { ARTIFACTS, STORY_TALKS } from './story-data.js';
-import { createStory, discover, nextArtifact, saveExhibit, loadExhibit } from './story-model.js';
-import { createStoryUI } from './story-ui.js';
+import {createDig,progress,topLayer,tap} from './dig-model.js';
+import {hintForLayer} from './hud.js';
+import {layoutGrid} from './grid.js';
+import {LINES} from './lines.js';
+import {createDialogue} from './dialogue.js';
+import {createRenderer} from './renderer.js';
+import {createSfx} from './sfx.js';
+import {attachInput} from './input.js';
+import {currentItem,markFound,loadAdventure,saveAdventure,importLegacy,useAid,captureDig,restoreDig} from './adventure-model.js';
+import {loadExhibit} from './story-model.js';
+import {createAdventureUI} from './adventure-ui.js';
+import {itemById} from './adventure-data.js';
 
-const COLS = 12, ROWS = 7, PADDING = 24;
-const TOP_PAD = 112, BOTTOM_PAD = 142; // HUD·토우·말풍선 자리 (CSS px)
-const REACTION_MS = 2000;
-const FOUND_PAUSE_MS = 2600;
-const LOG_KEY = 'silla-proto-log';
-const ADVANCE_GUARD_MS = 150; // 두 손가락 탭으로 대사 두 줄이 넘어가지 않게
-
-const $ = id => document.getElementById(id);
-const canvas = $('dig');
-const el = {
-  hud: $('hud'), hint: $('hint'),
-  barSoil: $('bar-soil'), barRock: $('bar-rock'), barWood: $('bar-wood'),
-  dialogue: $('dialogue'), speaker: $('speaker'), line: $('line'), tapHint: $('tap-hint'),
-  title: $('title'), again: $('again'),
-  btnStart: $('btn-start'), btnAgain: $('btn-again'), btnNo: $('btn-no'),
-  stage: $('stage'), heading: $('game-heading'), discovery: $('discovery'), layers: $('layers'),
-};
-
-const renderer = createRenderer(canvas);
-const sfx = createSfx();
-const dialogue = createDialogue({ ...LINES, ...STORY_TALKS });
-let story = createStory(), talkThen = null, totalDigMs = 0, completedRun = false;
-let storage = null;
-try { storage = window.localStorage; } catch { /* 저장 차단 환경에서도 진행 */ }
-const storyUI = createStoryUI($('story'), {
-  onNext() {
-    if (story.index === 2) { storyUI.board(story); return; }
-    runStoryTalk(story.index === 0 ? 'toSaddle' : 'toGlass', () => {
-      if (!nextArtifact(story)) return;
-      prepareDig(); startDig();
-    });
-  },
-  onComplete(exhibit) {
-    const saved = saveExhibit(storage, exhibit);
-    completedRun = true; setPhase('museum'); storyUI.museum(exhibit, saved); refreshExhibit();
-  },
-  onRestart() { finishChoice('again'); startWake(); },
-  onHome() { finishChoice('no'); setPhase('title'); },
-});
-function refreshExhibit() { $('btn-exhibit').classList.toggle('hidden', !loadExhibit(storage)); }
-function finishChoice(choice) { if (completedRun) { logChoice(choice); completedRun = false; } }
-function prepareDig() {
-  const artifact = ARTIFACTS[story.index];
-  state = createDig({ cols: COLS, rows: ROWS, artifactCells: artifact.cells });
-  if (story.index > 0) {
-    state.soil.fill(0); state.rock.fill(0);
-    artifact.cells.forEach(cell => state.glimmered.add(cell));
-  }
-  renderer.setArtifact(artifact.id);
-  el.heading.querySelector('.site-name').textContent = artifact.location;
-  el.discovery.querySelector('h2').textContent = artifact.foundTitle;
-  el.discovery.querySelector('p').textContent = artifact.foundHint;
+const $=id=>document.getElementById(id),canvas=$('dig');
+const renderer=createRenderer(canvas),sfx=createSfx();
+const dialogue=createDialogue({...LINES,turtleJoin:[{who:'turtle',text:'나도 도울게! 돌이 보이면 나를 불러 줘.'}],turtleHelp:[{who:'turtle',text:'내 등껍질만큼 단단하네. 톡, 톡, 톡!'}],birdHelp:[{who:'bird',text:'저기 반짝이는 자리! 살살 찾아보자.'}]});
+let storage=null;try{storage=window.localStorage;}catch{/* 저장이 막혀도 놀이 가능 */}
+const adventure=loadAdventure(storage)||importLegacy(loadExhibit(storage));
+let phase='title',state=null,layout=null,lastTouchedCell=-1,foundAt=0,reactionTimer,foundTimer,helpBusy=false,practiceItem=null;
+const ui=createAdventureUI($('story'),adventure,{onDig:beginItem,onReplay:replay,onSave:persist,onHome(){setPhase('title');ui.hide();},onSound(result){result==='solved'?sfx.glimmer():sfx.tap();}});
+function replay(id){const i=itemById(id);if(!i||i.kind!=='dig'||!adventure.clues.includes(id))return;practiceItem=i;ui.hide();state=createDig({cols:12,rows:7,artifactCells:i.cells});renderer.setArtifact(id);renderer.setCompanion(adventure.friends.includes('turtle'));renderer.setBird(adventure.friends.includes('bird'));lastTouchedCell=-1;$('game-heading').querySelector('.site-name').textContent='다시 파기 · '+i.name;$('discovery').querySelector('h2').textContent='또 찾았다, '+i.name+'!';$('discovery').querySelector('p').textContent='우리 박물관의 기억을 다시 만났어!';setPhase('dig');updateHud();}
+function persist(){const saved=saveAdventure(storage,adventure);$('save-status').textContent=saved?'자동 저장 중':'이 기기에서는 저장할 수 없어. 창을 닫으면 이어 하기가 어려워.';refreshTitle();}
+function refreshTitle(){$('btn-exhibit').classList.toggle('hidden',!adventure.clues.length);$('btn-start').textContent=adventure.found.length||adventure.dig?'탐험 이어가기 ↗':'파러 가자! ↗';}
+function resize(){const dp=Math.min(devicePixelRatio||1,2),r=canvas.getBoundingClientRect();canvas.width=Math.round(r.width*dp);canvas.height=Math.round(r.height*dp);layout=layoutGrid({width:canvas.width,height:canvas.height-254*dp,cols:12,rows:7,padding:24*dp});layout.y0+=112*dp;}
+window.addEventListener('resize',resize);resize();
+function showLine(line){renderer.speak(line?.who||null);$('dialogue').classList.toggle('hidden',!line);if(!line)return;$('dialogue').dataset.speaker=line.who;$('dialogue').disabled=true;$('speaker').textContent={frog:'개구리',snake:'뱀',turtle:'거북',bird:'새'}[line.who];$('line').textContent=line.text;$('tap-hint').classList.add('hidden');}
+function reaction(id){if(!dialogue.playIfIdle(id))return;showLine(dialogue.current());clearTimeout(reactionTimer);reactionTimer=setTimeout(()=>{while(dialogue.next()){}showLine(null);},2300);}
+function setPhase(next){phase=next;$('stage').dataset.phase=next;$('title').classList.toggle('hidden',next!=='title');$('hud').classList.toggle('hidden',next!=='dig');$('game-heading').classList.toggle('hidden',!['dig','found'].includes(next));$('discovery').classList.toggle('hidden',next!=='found');if(next!=='dig'){clearTimeout(reactionTimer);while(dialogue.next()){}showLine(null);}}
+function beginItem(){practiceItem=null;ui.hide();const i=currentItem(adventure);setPhase('story');if(!i){adventure.completed.includes(adventure.chapter)?ui.museum():ui.portrait();return;}if(adventure.clues.includes(i.id)){ui.award();return;}if(adventure.found.includes(i.id)){ui.card();return;}if(i.kind==='survey'){ui.survey();return;}
+ state=createDig({cols:12,rows:7,artifactCells:i.cells});if(adventure.index>0){state.soil.fill(0);state.rock.fill(0);i.cells.forEach(c=>state.glimmered.add(c));}restoreDig(adventure,state);
+ renderer.setArtifact(i.id);renderer.setCompanion(adventure.friends.includes('turtle'));renderer.setBird(adventure.friends.includes('bird'));
+ $('game-heading').querySelector('.site-name').textContent=`${adventure.chapter+1}장 · ${i.name}`;$('discovery').querySelector('h2').textContent=`찾았다, ${i.name}!`;$('discovery').querySelector('p').textContent='토우 친구의 기억이 조금 돌아왔어!';
+ lastTouchedCell=adventure.index?i.cells[0]:-1;setPhase('dig');updateHud();
 }
-function inspectArtifact() { setPhase('story'); showLine(null); storyUI.inspect(story); }
-function runStoryTalk(id, then) {
-  talkThen = then; playTalk(id); setPhase('storyTalk'); showLine(dialogue.current(), true);
+function revealed(now){if(!practiceItem){markFound(adventure);persist();}foundAt=now;setPhase('found');renderer.react('artifactRevealed',now);renderer.flash(650,now);sfx.found();clearTimeout(foundTimer);foundTimer=setTimeout(()=>{setPhase('story');practiceItem?ui.replayAward(practiceItem.id):ui.card();},2600);}
+function onEvents(events){const now=performance.now();for(const e of events){switch(e.type){case'tooHard':renderer.react('tooHard',now);reaction('tooHard');break;case'collapse':renderer.react('collapse',now);renderer.addDust(e.cell,layout,now,'collapse');renderer.shake(450,now);sfx.collapse();reaction('collapse');break;case'glimmer':renderer.react('glimmer',now);sfx.glimmer();reaction('glimmer');break;case'chip':sfx.tap();renderer.addDust(e.cell,layout,now,'rock');break;case'rockBroken':sfx.crack();renderer.addDust(e.cell,layout,now,'rock');if(!adventure.friends.includes('turtle')){adventure.friends.push('turtle');renderer.setCompanion(true);persist();reaction('turtleJoin');}break;case'artifactCell':sfx.tap();break;case'artifactRevealed':revealed(now);break;}}}
+attachInput(canvas,{getLayout:()=>layout,getState:()=>phase==='dig'&&!helpBusy?state:null,onEvents,onRub:cell=>{renderer.addDust(cell,layout,performance.now());sfx.rub();},onBrush:cell=>{renderer.addDust(cell,layout,performance.now(),'wood');sfx.brush();},onTouchCell:cell=>{lastTouchedCell=cell;},onRockDrag:()=>reaction('rockDrag')});
+async function help(who){if(phase!=='dig'||helpBusy)return;let cell=-1;if(who==='turtle'){cell=lastTouchedCell>=0&&topLayer(state,lastTouchedCell)==='rock'?lastTouchedCell:state.rock.findIndex((r,n)=>r>0&&state.soil[n]===0);if(cell<0)return;}if(!useAid(adventure,who))return;persist();if(who==='bird'){renderer.hint(currentItem(adventure).cells,performance.now()+5000);reaction('birdHelp');return;}helpBusy=true;reaction('turtleHelp');for(let n=0;n<3;n++){await new Promise(r=>setTimeout(r,300));onEvents(tap(state,cell,performance.now()));}helpBusy=false;checkpoint();}
+$('aid-turtle').addEventListener('click',()=>help('turtle'));$('aid-bird').addEventListener('click',()=>help('bird'));
+function checkpoint(){if(phase==='dig'&&state&&!practiceItem){captureDig(adventure,state);persist();}}
+canvas.addEventListener('pointerup',checkpoint);canvas.addEventListener('pointercancel',checkpoint);window.addEventListener('pagehide',checkpoint);
+$('btn-start').addEventListener('click',()=>{sfx.unlock();setPhase('story');ui.map();});$('btn-exhibit').addEventListener('click',()=>{sfx.unlock();setPhase('story');ui.museum();});
+function updateHud(){
+ const p=progress(state);for(const layer of ['soil','rock','wood'])$('bar-'+layer).style.transform=`scaleY(${1-p[layer]})`;
+ const layer=lastTouchedCell>=0?topLayer(state,lastTouchedCell):'soil';$('hint').textContent=hintForLayer(layer);$('layers').dataset.active=layer;
+ for(const who of ['turtle','bird']){const b=$('aid-'+who);b.classList.toggle('hidden',!!practiceItem||!adventure.friends.includes(who));const used=adventure.aids.includes(`${adventure.chapter}:${who}`);
+  b.disabled=used||helpBusy||(who==='turtle'&&!state.rock.some((r,n)=>r>0&&state.soil[n]===0));
+  b.textContent=used?`${who==='turtle'?'거북이':'새가'} 도와줬어 ✓`:who==='turtle'?'거북! 돌 좀 도와줘':'새야! 어디에 있을까?';
+ }
 }
-
-let phase = 'title';
-let state = null;
-let layout = null;
-let reactionTimer = null;
-let digStartedAt = 0;
-let foundAt = 0;
-let lastTouchedCell = -1;
-let lastAdvanceAt = -Infinity;
-let foundTimer = null;
-let revealReady = false;
-
-// ---------- 레이아웃 ----------
-function resize() {
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  const rect = canvas.getBoundingClientRect();
-  canvas.width = Math.round(rect.width * dpr);
-  canvas.height = Math.round(rect.height * dpr);
-  layout = layoutGrid({
-    width: canvas.width,
-    height: canvas.height - (TOP_PAD + BOTTOM_PAD) * dpr,
-    cols: COLS, rows: ROWS, padding: PADDING * dpr,
-  });
-  layout.y0 += TOP_PAD * dpr;
-}
-window.addEventListener('resize', resize);
-resize();
-
-// ---------- 대사 표시 ----------
-function showLine(line, tappable) {
-  renderer.speak(line?.who || null);
-  if (!line) { el.dialogue.classList.add('hidden'); return; }
-  el.dialogue.classList.remove('hidden');
-  el.dialogue.dataset.speaker = line.who;
-  el.dialogue.disabled = !tappable;
-  el.speaker.textContent = { frog: '개구리', snake: '뱀', turtle: '거북' }[line.who];
-  el.line.textContent = line.text;
-  el.tapHint.classList.toggle('hidden', !tappable);
-}
-
-function playReaction(id) {
-  if (!dialogue.playIfIdle(id)) return;
-  showLine(dialogue.current(), false);
-  clearTimeout(reactionTimer);
-  reactionTimer = setTimeout(() => {
-    dialogue.next();
-    showLine(dialogue.current(), false);
-  }, REACTION_MS);
-}
-
-// ---------- 단계 전환 ----------
-function setPhase(next) {
-  phase = next;
-  el.stage.dataset.phase = phase;
-  if (phase === 'museum') el.heading.querySelector('.site-name').textContent = '우리의 첫 전시';
-  el.title.classList.toggle('hidden', phase !== 'title');
-  el.again.classList.toggle('hidden', phase !== 'again');
-  el.hud.classList.toggle('hidden', phase !== 'dig');
-  el.heading.classList.toggle('hidden', phase === 'title' || phase === 'again');
-  el.discovery.classList.toggle('hidden', phase !== 'found');
-  if (phase !== 'story' && phase !== 'museum') storyUI.hide();
-  if (['title', 'again', 'story', 'museum'].includes(phase)) showLine(null);
-}
-
-function playTalk(id) {
-  // 만담은 반응 대사 타이머가 끼어들어 줄을 건너뛰지 않도록 타이머를 먼저 지운다
-  clearTimeout(reactionTimer);
-  reactionTimer = null;
-  dialogue.play(id);
-}
-
-function startWake() {
-  clearTimeout(foundTimer);
-  revealReady = false;
-  renderer.reset();
-  story = createStory(); totalDigMs = 0; completedRun = false; talkThen = null;
-  prepareDig();
-  playTalk('wake');
-  setPhase('wake');
-  showLine(dialogue.current(), true);
-}
-
-function startDig() {
-  digStartedAt = performance.now();
-  lastTouchedCell = story.index > 0 ? ARTIFACTS[story.index].cells[0] : -1;
-  setPhase('dig');
-  showLine(null);
-}
-
-function onArtifactRevealed(now) {
-  foundAt = now;
-  totalDigMs += now - digStartedAt;
-  discover(story);
-  clearTimeout(reactionTimer);
-  showLine(null);
-  revealReady = false;
-  setPhase('found');
-  renderer.react('artifactRevealed', now);
-  renderer.flash(650, now);
-  sfx.found();
-  foundTimer = setTimeout(() => {
-    playTalk(['found', 'saddleFound', 'glassFound'][story.index]);
-    revealReady = true;
-    showLine(dialogue.current(), true);
-  }, FOUND_PAUSE_MS);
-}
-
-function logChoice(choice) {
-  try {
-    const arr = JSON.parse(localStorage.getItem(LOG_KEY) || '[]');
-    arr.push({ choice, digMs: Math.round(totalDigMs), at: new Date().toISOString() });
-    localStorage.setItem(LOG_KEY, JSON.stringify(arr));
-  } catch { /* 저장 불가 환경 */ }
-}
-
-// ---------- 이벤트 처리 ----------
-function onEvents(events) {
-  const now = performance.now();
-  for (const e of events) {
-    switch (e.type) {
-      case 'tooHard': renderer.react('tooHard', now); playReaction('tooHard'); break;
-      case 'collapse': renderer.react('collapse', now); renderer.addDust(e.cell, layout, now, 'collapse'); renderer.shake(450, now); sfx.collapse(); playReaction('collapse'); break;
-      case 'glimmer': renderer.react('glimmer', now); sfx.glimmer(); playReaction('glimmer'); break;
-      case 'chip': sfx.tap(); renderer.addDust(e.cell, layout, now, 'rock'); break;
-      case 'rockBroken': sfx.crack(); renderer.addDust(e.cell, layout, now, 'rock'); break;
-      case 'artifactCell': sfx.tap(); break;
-      case 'artifactRevealed': onArtifactRevealed(now); break;
-    }
-  }
-}
-
-attachInput(canvas, {
-  getLayout: () => layout,
-  getState: () => (phase === 'dig' ? state : null),
-  onEvents,
-  onRub: (cell) => { renderer.addDust(cell, layout, performance.now()); sfx.rub(); },
-  onBrush: (cell) => { renderer.addDust(cell, layout, performance.now(), 'wood'); sfx.brush(); },
-  onTouchCell: (cell) => { lastTouchedCell = cell; },
-  onRockDrag: () => playReaction('rockDrag'),
-});
-
-// 화면(또는 대사 상자) 탭으로 만담 넘기기. dig 단계에서는 아무 일도 하지 않는다.
-function advance() {
-  const t = performance.now();
-  if (t - lastAdvanceAt < ADVANCE_GUARD_MS) return;
-  lastAdvanceAt = t;
-  if (phase === 'wake') {
-    if (dialogue.next()) showLine(dialogue.current(), true);
-    else startDig();
-  } else if (phase === 'found' && revealReady) {
-    if (dialogue.next()) showLine(dialogue.current(), true);
-    else if (story.index === 0) {
-      renderer.setCompanion(true); runStoryTalk('join', inspectArtifact);
-    } else inspectArtifact();
-  } else if (phase === 'storyTalk') {
-    if (dialogue.next()) showLine(dialogue.current(), true);
-    else { const then = talkThen; talkThen = null; then?.(); }
-  }
-}
-canvas.addEventListener('pointerdown', advance);
-el.dialogue.addEventListener('pointerdown', (ev) => { ev.stopPropagation(); advance(); });
-el.dialogue.addEventListener('click', (ev) => { if (ev.detail === 0) advance(); });
-
-el.btnStart.addEventListener('click', () => { sfx.unlock(); startWake(); });
-$('btn-exhibit').addEventListener('click', () => {
-  const exhibit = loadExhibit(storage);
-  if (exhibit) { setPhase('museum'); storyUI.museum(exhibit, true, true); }
-});
-el.btnAgain.addEventListener('click', () => { logChoice('again'); startWake(); });
-el.btnNo.addEventListener('click', () => { logChoice('no'); setPhase('title'); });
-
-// ---------- HUD ----------
-function updateHud() {
-  const p = progress(state);
-  el.barSoil.style.transform = `scaleY(${1 - p.soil})`;
-  el.barRock.style.transform = `scaleY(${1 - p.rock})`;
-  el.barWood.style.transform = `scaleY(${1 - p.wood})`;
-  // 안내는 마지막으로 만진 셀의 맨 위 층 기준 (전체 진행률 기준이면 돌을 보면서도 "문질러"라고 함)
-  const layer = lastTouchedCell >= 0 ? topLayer(state, lastTouchedCell) : 'soil';
-  el.hint.textContent = hintForLayer(layer);
-  el.layers.dataset.active = layer;
-}
-
-// ---------- 루프 ----------
-function frame(tMs) {
-  if (phase === 'dig') updateHud();
-  const renderPhase = phase === 'museum' ? 'story' : phase === 'storyTalk' ? 'found' : phase;
-  renderer.draw(state, layout, tMs, renderPhase, tMs - foundAt);
-  requestAnimationFrame(frame);
-}
-requestAnimationFrame(frame);
-setPhase('title');
-refreshExhibit();
+function frame(t){if(phase==='dig')updateHud();renderer.draw(state,layout,t,phase,t-foundAt);ui.tick(t);requestAnimationFrame(frame);}requestAnimationFrame(frame);setPhase('title');refreshTitle();

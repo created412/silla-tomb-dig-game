@@ -12,7 +12,15 @@ export function drawCharacter(c, who, x, y, size, t, mood='idle', speaking=false
   const clay=c.createLinearGradient(-40,-120,45,0);
   clay.addColorStop(0,who==='frog'?'#d0aa7c':'#c69265');
   clay.addColorStop(.55,who==='frog'?'#b98a59':'#a77149'); clay.addColorStop(1,'#805536');
-  if(who==='turtle') {
+  if(who==='bird') {
+    ellipse(c,0,-60,38,48,clay,'#68472e');ellipse(c,10,-105,29,26,clay,'#68472e');
+    const flap=reduced?0:Math.sin(t/110)*18;
+    path(c,[[-25,-75],[-64,-72-flap],[-40,-43],[-15,-44]],'#b58658','#68472e',3);
+    path(c,[[24,-73],[62,-76-flap],[42,-41],[22,-45]],'#b58658','#68472e',3);
+    path(c,[[32,-109],[54,-100],[32,-94]],'#dbb369','#68472e',2);
+    ellipse(c,18,-111,4,blink?1:5,'#302c22');
+    for(const px of [-14,14])path(c,[[px,-20],[px,-5],[px-8,-3],[px+7,-3]],null,'#68472e',4);
+  } else if(who==='turtle') {
     ellipse(c,-35,-15,19,10,clay,'#68472e');ellipse(c,35,-15,19,10,clay,'#68472e');
     ellipse(c,0,-48,51,40,'#918058','#574e35');
     for(const [px,py] of [[0,-54],[-24,-40],[24,-40],[0,-25]]){

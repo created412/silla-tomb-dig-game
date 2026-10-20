@@ -130,6 +130,20 @@ export function drawArtifact(c, id, x, y, w, h) {
     ellipse(c,250,109,2,2,'#715038');
     for(const [px,py] of [[61,98],[295,96],[67,202],[290,203]])for(let k=0;k<4;k++){
       const a=k*Math.PI/2;ellipse(c,px+Math.cos(a)*5,py+Math.sin(a)*5,3,3,'#d9c391');}
+  } else if(id==='ewer') {
+    const g=c.createLinearGradient(100,0,240,0);g.addColorStop(0,'#245d70');g.addColorStop(.4,'#4e9b9b');g.addColorStop(1,'#163d5b');
+    c.beginPath();c.moveTo(163,90);c.lineTo(157,49);c.lineTo(123,32);c.lineTo(168,24);c.lineTo(198,47);c.lineTo(194,94);c.bezierCurveTo(263,140,271,243,214,267);c.quadraticCurveTo(178,283,135,261);c.bezierCurveTo(85,226,104,143,163,90);c.fillStyle=g;c.fill();c.strokeStyle='#90b9a5';c.lineWidth=3;c.stroke();
+    c.beginPath();c.moveTo(191,48);c.bezierCurveTo(280,42,287,155,227,165);c.strokeStyle='#427e83';c.lineWidth=13;c.stroke();
+    for(const [px,py]of[[238,62],[261,109],[246,147]])for(let k=0;k<4;k++)path(c,[[px-10,py+k*3],[px+10,py+7+k*3]],null,'#e7ca62',2);
+    path(c,[[145,123],[128,172],[133,226]],null,'#8dcec0',6);ellipse(c,174,42,20,7,'#173f53','#8aaf9c');
+  } else if(id==='belt') {
+    const g=c.createLinearGradient(30,0,330,0);g.addColorStop(0,'#aa7724');g.addColorStop(.5,'#ffe499');g.addColorStop(1,'#b6812a');
+    for(let k=0;k<12;k++){const px=35+k*25;path(c,[[px,64],[px+22,64],[px+22,96],[px,96]],g,'#8b6329',2);ellipse(c,px+11,80,6,9,null,'#8c6d35');}
+    for(let k=0;k<8;k++){const px=63+k*34,len=70+(k%3)*24;path(c,[[px,96],[px,96+len]],null,'#d6b052',3);for(let j=0;j<len;j+=17)ellipse(c,px,103+j,5,7,g,'#987235');if(k===2){ellipse(c,px,118+len,9,18,g,'#987235');path(c,[[px,134+len],[px-9,147+len],[px+9,147+len]],g,'#987235');}else if(k===5){c.beginPath();c.arc(px,115+len,12,0,Math.PI*1.5);c.strokeStyle='#9bbc8b';c.lineWidth=8;c.stroke();}else path(c,[[px-7,108+len],[px+7,108+len],[px+5,134+len],[px-5,134+len]],g,'#987235',2);}
+  } else if(id==='mounds') {
+    ellipse(c,180,240,158,20,'#b4ba83');
+    for(const [px,py]of[[130,176],[224,143]]){c.beginPath();c.ellipse(px,py,85,84,0,Math.PI,Math.PI*2);c.lineTo(px+85,py+41);c.quadraticCurveTo(px,py+70,px-85,py+41);c.closePath();c.fillStyle=px===130?'#83a36a':'#5d8b64';c.fill();c.strokeStyle='#416d4e';c.lineWidth=3;c.stroke();}
+    path(c,[[61,247],[295,247]],null,'#d1b67e',5);
   } else if(id==='glass') {
     const blue=c.createLinearGradient(92,0,265,0);blue.addColorStop(0,'#163a64');blue.addColorStop(.3,'#326f91');blue.addColorStop(.6,'#24567d');blue.addColorStop(1,'#102e58');
     c.beginPath();c.moveTo(93,47);c.bezierCurveTo(103,140,112,235,141,264);
