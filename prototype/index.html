@@ -6,6 +6,7 @@
   <title>토우 친구들과 무덤 주인 찾기 — 시제품</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="adventure.css">
+  <link rel="stylesheet" href="companion.css">
 </head>
 <body>
   <main id="stage" data-phase="title">
@@ -41,7 +42,7 @@
       <div class="title-copy">
         <p class="intro">땅속에 잠든 신라의 이야기</p>
         <h1><span>토우 친구들과</span><br>무덤 주인 찾기</h1>
-        <p class="sub">쓱쓱 파고, 착착 붙이고, 내 박물관까지!<br>토우 친구들과 두 무덤의 기억을 찾아보자.</p>
+        <p class="sub">잠든 토우를 깨우면 새로운 능력이 생겨!<br>폴짝 뛰고, 훨훨 날아 신라의 기억을 찾아보자.</p>
         <button id="btn-start" class="big">파러 가자! <span aria-hidden="true">↗</span></button>
         <button id="btn-exhibit" class="hidden" type="button">내가 만든 전시 보기</button>
       </div>
@@ -49,6 +50,7 @@
     </div>
 
     <section id="story" class="hidden" aria-label="주인의 이야기" aria-labelledby="adv-title"></section>
+    <section id="expedition" class="adventure hidden" aria-label="토우 능력 탐험"></section>
     <span id="save-status" role="status"></span>
     <div id="again" class="overlay hidden">
       <div class="again-copy">

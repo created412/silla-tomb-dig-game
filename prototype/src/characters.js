@@ -47,6 +47,8 @@ export function drawCharacter(c, who, x, y, size, t, mood='idle', speaking=false
     if(startled) ellipse(c,0,-75,6,9,'#4b3427');
     else { c.beginPath(); c.moveTo(-17,-81); c.quadraticCurveTo(0,excited?-62:-75,17,-81); c.strokeStyle='#67442e'; c.stroke(); }
     ellipse(c,-38,-84,7,4,'#c7845d'); ellipse(c,38,-84,7,4,'#c7845d');
+    // 두꺼비 친구: 낮고 넓은 몸에 점토 돌기를 더한다.
+    for(const [px,py] of [[-44,-75],[44,-75],[-35,-53],[35,-53],[-43,-31],[43,-31]])ellipse(c,px,py,3,2.5,'#8b623d','#bd9466',1);
     if(mood==='collapse') {
       const drop=reduced?0:Math.max(0,1-(t%900)/350)*35;
       path(c,[[-7,-137-drop],[7,-143-drop],[20,-135-drop],[15,-123-drop],[-3,-124-drop]],'#8a9384','#515f54',2);
