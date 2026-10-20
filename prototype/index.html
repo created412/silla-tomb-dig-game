@@ -51,7 +51,6 @@
 
     <section id="story" class="hidden" aria-label="주인의 이야기" aria-labelledby="adv-title"></section>
     <section id="expedition" class="adventure hidden" aria-label="토우 능력 탐험"></section>
-    <span id="save-status" role="status"></span>
     <div id="again" class="overlay hidden">
       <div class="again-copy">
         <p class="sub">우리 손으로 금관을 찾았어!</p>
@@ -63,6 +62,10 @@
       </div>
     </div>
   </main>
+  <footer id="save-controls" aria-label="진행 저장">
+    <span id="save-status" role="status">저장하기를 눌러 진행을 남겨 줘.</span>
+    <button id="btn-save" type="button">저장하기</button>
+  </footer>
   <script type="module" src="src/main.js"></script>
 </body>
 </html>

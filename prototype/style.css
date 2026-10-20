@@ -7,7 +7,15 @@
 html, body { margin: 0; height: 100%; overscroll-behavior: none; }
 body { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 button { font: inherit; touch-action: manipulation; }
-#stage { position: relative; width: 100%; height: 100vh; height: 100dvh; min-height: 420px; overflow: hidden; }
+#stage { position: relative; width: 100%; height: calc(100vh - 76px); height: calc(100dvh - 76px); min-height: 344px; overflow: hidden; }
+#save-controls { position: fixed; bottom: 0; left: 0; right: 0; height: 76px; padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; background: #183e35; border-top: 1px solid #819779; z-index: 10; }
+#save-controls #save-status { position: static; font-size: 20px; line-height: 1.4; color: #e5e6c9; pointer-events: auto; }
+#btn-save { flex-shrink: 0; min-height: 48px; padding: 10px 24px; border: 2px solid #ffe09a; border-radius: 14px; background: #f1c864; color: #3c3925; font: inherit; font-size: 20px; font-weight: 700; cursor: pointer; }
+#btn-save:hover { background: #ffe095; }
+#btn-save:focus-visible { outline: 3px solid white; outline-offset: 3px; }
+#btn-save:disabled { opacity: .5; cursor: wait; }
+#save-controls[data-dirty="true"] #save-status { color: #ffe09a; }
+@media(max-width:600px) { #save-controls { padding: 8px 12px; gap: 10px; } #save-controls #save-status { font-size: 18px; } #btn-save { padding: 10px 16px; } }
 #dig { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
 .hidden { display: none !important; }
 #game-heading { position: absolute; top: 22px; left: 32px; right: 32px; display: flex; justify-content: space-between; align-items: center; pointer-events: none; }
