@@ -37,6 +37,7 @@ export function attachInput(canvas, {
     const p = cssPoint(e);
     const i = cellOf(p);
     if (i < 0) return;                     // 격자 밖(가장자리를 쥔 엄지 등)은 무시
+    if (!getState()) return;               // 잠금·다른 모드 중에 시작한 제스처는 끝까지 무시
     const t = now();
     tracking = { id: e.pointerId, downX: p.x, downY: p.y, downT: t, prevX: p.x, prevY: p.y, prevT: t, moved: false, rockDragPx: 0 };
     try { canvas.setPointerCapture(e.pointerId); } catch { /* 일부 브라우저 */ }
@@ -82,7 +83,11 @@ export function attachInput(canvas, {
     const state = getState();
     if (!tracking.moved && quick && state && !state.done) {
       const i = cellOf(p);
-      if (i >= 0) { onTap(i, t); emit(tap(state, i, t)); }
+      if (i >= 0) {
+        const events = tap(state, i, t);
+        if (!events.length) onTap(i, t);   // 모델이 무시한 탭(나무 등)만 바깥에 알린다
+        emit(events);
+      }
     }
     tracking = null;
   }

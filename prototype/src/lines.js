@@ -49,5 +49,4 @@ export const LINES = {
   powerMissFrog: [{ who: 'frog', text: '흙이 있는 곳을 눌러 줘!' }],
   powerMissTurtle: [{ who: 'snake', text: '흙을 걷어서 돌이 보이는 곳에.' }],
   powerMissSnake: [{ who: 'snake', text: '나무가 보이는 틈이어야 들어가지.' }],
-  locked: [{ who: 'snake', text: '두꺼비 도망갔다. 잠깐만…' }],
 };

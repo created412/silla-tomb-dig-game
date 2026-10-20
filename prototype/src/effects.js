@@ -1,6 +1,7 @@
 // 도전 오버레이: 하늘·해·어둠·금·지렁이·탐색 별·결과 별. 렌더러 위에 덧그린다.
 import { cellRect } from './grid.js';
 import { star } from './artwork.js';
+import { WORM_FLEE_MS } from './challenge.js';
 
 function seeded(seed) { return () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed / 4294967296; }; }
 function mix(a, b, t) { return a + (b - a) * t; }
@@ -84,7 +85,7 @@ export function createEffects(canvas) {
       if (tMs >= untilMs || cell < 0) return;
       const d = dp(), r = cellRect(layout, cell);
       const life = Math.min(1, (untilMs - tMs) / 300); // 사라질 때 살짝 작아짐
-      const cx = r.x + r.w / 2, base = r.y + r.h * 0.55 - r.h * 0.3 * Math.min(1, (2000 - (untilMs - tMs)) / 200);
+      const cx = r.x + r.w / 2, base = r.y + r.h * 0.55 - r.h * 0.3 * Math.min(1, (WORM_FLEE_MS - (untilMs - tMs)) / 200);
       const wig = Math.sin(tMs / 80) * r.w * 0.08;
       ctx.save(); ctx.globalAlpha = life; ctx.lineCap = 'round';
       ctx.beginPath();
@@ -105,21 +106,6 @@ export function createEffects(canvas) {
       ctx.save(); ctx.globalAlpha = pulse;
       for (const i of cells) { const r = cellRect(layout, i); star(ctx, r.x + r.w / 2, r.y + r.h / 2, r.w * 0.28, '#fff1a1'); }
       ctx.restore();
-    },
-
-    // 결과 화면 별 3개 틀. sinceMs: 결과가 뜬 뒤 흐른 시간. n개가 0.5초 간격으로 켜진다.
-    drawStars(n, tMs, sinceMs, cyCss) {
-      const d = dp(), w = canvas.width, size = 34 * d, gap = 46 * d, cy = cyCss * d;
-      for (let k = 0; k < 3; k++) {
-        const x = w / 2 + (k - 1) * gap;
-        const onAt = 400 + k * 500, lit = k < n && sinceMs >= onAt;
-        let s = size;
-        if (lit) { const age = Math.min(1, (sinceMs - onAt) / 250); s = size * (1.6 - 0.6 * age); }
-        ctx.save(); ctx.globalAlpha = lit ? 1 : 0.35;
-        star(ctx, x, cy, s, lit ? '#ffd84a' : '#6f7a6a');
-        if (lit) { ctx.globalAlpha = 0.5; star(ctx, x, cy, s * 0.5, '#fff7c0'); }
-        ctx.restore();
-      }
     },
   };
 }

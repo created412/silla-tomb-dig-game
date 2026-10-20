@@ -93,3 +93,33 @@ test('T1: 탭이면 층과 무관하게 onTap(cell, nowMs)을 부르고, 드래�
   h.fire('pointerup', 190, 50);
   assert.deepEqual(h.taps, [[0, 80]], '드래그는 탭이 아님');
 });
+
+test('T2: 모델이 처리한 탭(돌 두드리기·연타 와르르)은 onTap으로 다시 알리지 않는다', () => {
+  const h = harness();
+  h.state.soil[0] = 0;                        // 셀 0 돌 노출
+  for (const t of [0, 200, 400, 600]) {       // 250ms 안 4연타: 3번은 chip, 4번째는 나무 위 연타 → collapse
+    h.setT(t); h.fire('pointerdown', 50, 50); h.setT(t + 60); h.fire('pointerup', 50, 50);
+  }
+  assert.ok(h.events.some(e => e.type === 'collapse'), '4번째 탭은 와르르');
+  assert.deepEqual(h.taps, [], '모델이 처리한 탭은 onTap을 내지 않음');
+});
+
+test('T3: pointerdown 시점에 getState가 null이면 그 제스처는 끝까지 무시한다 (잠금 중 누른 손가락)', () => {
+  const listeners = {};
+  const canvas = {
+    width: 2000, height: 1000, style: {},
+    getBoundingClientRect: () => ({ left: 0, top: 0, width: 1000, height: 500 }),
+    addEventListener: (t, fn) => { listeners[t] = fn; }, removeEventListener: () => {}, setPointerCapture: () => {},
+  };
+  const layout = layoutGrid({ width: 2000, height: 1000, cols: 10, rows: 5, padding: 0 });
+  const state = createDig({ cols: 10, rows: 5, artifactCells: [] });
+  state.soil[0] = 0; state.rock[0] = 0;       // 셀 0 나무 노출
+  let locked = true, t = 0; const taps = [];
+  attachInput(canvas, { getLayout: () => layout, getState: () => (locked ? null : state), onEvents: () => {}, onTap: c => taps.push(c), now: () => t });
+  const fire = (type, x, y) => listeners[type]({ pointerId: 1, isPrimary: true, clientX: x, clientY: y });
+  fire('pointerdown', 50, 50); locked = false; t = 80;   // 누른 뒤 잠금이 풀려도
+  fire('pointerup', 50, 50);
+  assert.deepEqual(taps, [], '잠금 중 시작한 제스처는 탭이 아님');
+  t = 200; fire('pointerdown', 50, 50); t = 280; fire('pointerup', 50, 50);
+  assert.deepEqual(taps, [0], '잠금 해제 뒤 새 제스처는 정상');
+});

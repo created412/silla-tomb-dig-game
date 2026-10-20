@@ -16,7 +16,7 @@ import {
 import { loadStars, saveStar, isUnlocked } from './stars-store.js';
 import { ARTIFACT_STORIES } from './artifact-stories.js';
 
-const TOP_PAD = 72, BOTTOM_PAD = 150, RIGHT_PAD = 110, SKY_BAND = 56; // CSS px
+const TOP_PAD = 72, BOTTOM_PAD = 176, RIGHT_PAD = 126, SKY_BAND = 56; // CSS px. 아래 176 = 대사 상자(~60) + 토우(~100)
 const REACTION_MS = 2000, ADVANCE_GUARD_MS = 150, REVEAL_MS = 2400;
 
 const $ = id => document.getElementById(id);
@@ -98,6 +98,15 @@ function scheduleReaction() {
   }, REACTION_MS);
 }
 
+// 꼭 보여야 하는 반응: 보이던 반응을 끊고 바로 띄운다 (지렁이, 해 경고)
+function forceReaction(id) {
+  if (talkId) return;
+  clearTimeout(reactionTimer);
+  dialogue.play(id);
+  showLine(dialogue.current(), false);
+  scheduleReaction();
+}
+
 // 만담: 탭으로 넘기고, 끝나면 onEnd
 let talkEnd = null;
 function playTalk(id, onEnd) {
@@ -121,6 +130,14 @@ canvas.addEventListener('pointerdown', () => { if (talkId) advance(); });
 el.dialogue.addEventListener('pointerdown', ev => { ev.stopPropagation(); advance(); });
 
 // ---------- 단계 ----------
+// 화면을 넘길 때 이전 화면의 타이머·대사 큐가 따라오지 않게 전부 비운다
+function clearTransient() {
+  for (const t of resultTimers) clearTimeout(t); resultTimers = [];
+  clearTimeout(reactionTimer); reactionTimer = null;
+  talkId = null; talkEnd = null;
+  dialogue.play('__none__');
+  showLine(null);
+}
 function setPhase(next) {
   phase = next;
   el.stage.dataset.phase = phase;
@@ -129,7 +146,7 @@ function setPhase(next) {
   el.hud.classList.toggle('hidden', !(phase === 'dig' || phase === 'wake'));
   el.powers.classList.toggle('hidden', phase !== 'dig');
   el.result.classList.toggle('hidden', phase !== 'result');
-  if (phase === 'title' || phase === 'card') { showLine(null); talkId = null; }
+  if (phase === 'title' || phase === 'card') clearTransient();
 }
 
 function starText(n) { return '★'.repeat(n) + '☆'.repeat(3 - n); }
@@ -177,7 +194,7 @@ function buildPowers() {
 }
 
 function startLevel() {
-  for (const t of resultTimers) clearTimeout(t); resultTimers = [];
+  clearTransient();
   ch = createChallenge(level, Math.random);
   renderer.reset();
   renderer.setArtifact(level.id);
@@ -237,7 +254,10 @@ canvas.addEventListener('pointerdown', e => {
   if (phase !== 'dig' || !selectedPower || !ch || isLocked(ch, now())) return;
   const rect = canvas.getBoundingClientRect();
   const cell = cellAt(layout, (e.clientX - rect.left) * canvas.width / rect.width, (e.clientY - rect.top) * canvas.height / rect.height);
-  if (cell >= 0) applyPower(selectedPower, cell);
+  if (cell < 0) return;
+  // 이 제스처는 능력 사용으로 끝난다. 뒤에 등록된 발굴 입력(input.js)이 같은 손가락을 탭으로 해석하면 안 된다.
+  e.stopImmediatePropagation();
+  applyPower(selectedPower, cell);
 });
 
 // ---------- 발굴 입력 ----------
@@ -267,7 +287,7 @@ function handle(events) {
       case 'broken': onBroken(t); break;
       case 'worm': onWorm(e.cell, t); break;
       case 'found': onFound(t); break;
-      case 'sunsetWarn': sfx.sunset(); playReaction('sunsetWarn'); break;
+      case 'sunsetWarn': sfx.sunset(); forceReaction('sunsetWarn'); break;
       case 'sunset': onSunset(t); break;
     }
   }
@@ -289,7 +309,7 @@ function onWorm(cell, t) {
   setSelectedPower(null); // updateHud도 함께 호출됨 → "도망갔다" 안내가 바로 뜬다
   renderer.react('tooHard', t);
   renderer.speak('frog');
-  clearTimeout(reactionTimer); dialogue.play('worm'); showLine(dialogue.current(), false); scheduleReaction();
+  forceReaction('worm');
 }
 
 function onFound(t) {
@@ -317,7 +337,7 @@ function onBroken(t) {
 function onSunset(t) {
   setSelectedPower(null);
   sfx.sunset();
-  renderer.react('collapse', t);
+  renderer.react('tooHard', t);
   setPhase('sunset');
   clearTimeout(reactionTimer); showLine(null);
   resultTimers.push(setTimeout(() => playTalk('sunset', () => showResult('sunset')), 600));
