@@ -4,6 +4,8 @@ const atlas = new Image();
 atlas.src = new URL('../assets/higgsfield/companions-atlas.png', import.meta.url).href;
 export const worldImage = new Image();
 worldImage.src = new URL('../assets/higgsfield/silla-world.png', import.meta.url).href;
+export const secondWorldImage=new Image();
+secondWorldImage.src=new URL('../assets/higgsfield/twin-mounds.png',import.meta.url).href;
 
 const silhouettes = {
  frog: {box:[46,105,405,357],path:'M62 412 Q44 389 54 351 L57 302 Q63 273 80 244 L93 211 Q103 181 135 167 L159 149 Q173 125 203 117 L231 122 Q256 107 278 115 L299 114 Q333 103 352 112 Q389 102 405 129 L415 159 L420 183 Q444 199 446 225 L433 259 Q443 283 436 315 L416 370 Q421 393 407 417 Q390 439 373 434 L358 430 Q342 443 326 431 L302 422 L235 430 Q232 448 218 455 L201 450 Q186 465 174 450 Q160 459 147 449 L136 432 Q120 445 103 429 Q86 434 80 418 Z'},
@@ -35,9 +37,10 @@ export function drawClayCharacter(c,who,x,y,size,t,mood,speaking,reduced) {
  c.restore();return true;
 }
 
-export function drawWorld(c,w,h) {
- if(!worldImage.complete||!worldImage.naturalWidth)return false;
- const scale=Math.max(w/worldImage.naturalWidth,h/worldImage.naturalHeight);
- const dw=worldImage.naturalWidth*scale,dh=worldImage.naturalHeight*scale;
- c.drawImage(worldImage,(w-dw)/2,(h-dh)/2,dw,dh);return true;
+export function drawWorld(c,w,h,second=false) {
+ const scene=second?secondWorldImage:worldImage;
+ if(!scene.complete||!scene.naturalWidth)return false;
+ const scale=Math.max(w/scene.naturalWidth,h/scene.naturalHeight);
+ const dw=scene.naturalWidth*scale,dh=scene.naturalHeight*scale;
+ c.drawImage(scene,(w-dw)/2,(h-dh)/2,dw,dh);return true;
 }

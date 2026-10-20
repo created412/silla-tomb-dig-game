@@ -2,6 +2,13 @@
 
 작성일 2026-10-19 · 작성자 Claude Code (이전 담당) · 받는 이 Codex
 
+**현재 최신판 (2026-10-20 후속 재구성)**: 사용자가 전시 중심 진행을 거부하여,
+`quest-main.js` / `quest-model.js` / `quest.css`로 토우 획득→능력 발굴→다음 구역 구조를 만들었다.
+`index.html`은 이 새 판을 실행한다. 전시는 선택이며 별도 능력 미니게임은 주 진행에서 제거했다.
+수동 저장 유지, 새 저장 키는 `silla-towoo-quest-v2`, 기존 기록은 읽기 마이그레이션만 한다.
+[최신 설계](../visual-review/quest-restructure.md), [실행 안내](../../prototype/README.md)를 기준으로 이어간다.
+아래 전시 게이트·기존 main.js 관련 내용은 이전 판 기록이다. 보호 대상 파일 제약은 계속 유지한다.
+
 2026-10-20 힉스필드 후속: 사용자 요청으로 AI 배경·토우 아틀라스 두 장을 기존 정적 게임에 적용했다.
 실사용 0.50크레딧(69.86 → 69.36). [방향·비용·화면](../visual-review/higgsfield-direction.md),
 생성 근거는 `prototype/assets/higgsfield/provenance.json`. 유물 도판과 보호 대상 파일은 그대로다.

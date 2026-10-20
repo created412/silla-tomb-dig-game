@@ -1,5 +1,6 @@
 // 재질은 리사이즈할 때, 마스크는 모델 잔량이 바뀔 때만 갱신한다.
 import { ellipse, path } from './artwork.js';
+import {paintMaterial,materialsImage} from './generated-art.js';
 function seeded(seed) {return ()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};}
 function surface(w,h){const c=document.createElement('canvas');c.width=w;c.height=h;return c;}
 
@@ -57,7 +58,8 @@ export function createTerrain(layout,dpr) {
         const kx=rand()*w;for(let k=1;k<4;k++)ellipse(c,kx,yy+plank*.5,k*5*dpr,k*1.7*dpr,null,'#68442c');
       }
     }
-    layers[name]={texture,canvas:surface(w,h),previous:null};
+    paintMaterial(c,name,w,h);
+    layers[name]={texture,canvas:surface(w,h),previous:null,generated:materialsImage.complete&&!!materialsImage.naturalWidth};
   }
   function hole(c,points,cx,cy,scale) {
     c.beginPath();
@@ -76,7 +78,7 @@ export function createTerrain(layout,dpr) {
     } else {points.forEach(([x,y],k)=>k?c.lineTo(x,y):c.moveTo(x,y));c.closePath();}
   }
   function update(name,values) {
-    const layer=layers[name];if(layer.previous&&values.every((v,i)=>v===layer.previous[i]))return;
+    const layer=layers[name];if(!layer.generated&&paintMaterial(layer.texture.getContext('2d'),name,w,h)){layer.generated=true;layer.previous=null;}if(layer.previous&&values.every((v,i)=>v===layer.previous[i]))return;
     layer.previous=Float64Array.from(values);const c=layer.canvas.getContext('2d');c.clearRect(0,0,w,h);c.drawImage(layer.texture,0,0);
     for(let i=0;i<values.length;i++) {
       const v=values[i],cx=(i%cols+.5)*cell,cy=(Math.floor(i/cols)+.5)*cell;if(v>=1)continue;

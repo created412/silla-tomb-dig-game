@@ -1,0 +1,257 @@
+{
+  "done": "true",
+  "results": [
+    {
+      "message": "Loading does not autosave",
+      "pass": true
+    },
+    {
+      "message": "Acquiring the toad does not autosave",
+      "pass": true
+    },
+    {
+      "message": "First earned companion is the toad only",
+      "pass": true
+    },
+    {
+      "message": "crown: next excavation starts directly",
+      "pass": true
+    },
+    {
+      "message": "crown: unearned turtle is locked",
+      "pass": true
+    },
+    {
+      "message": "crown: required companions cannot be bypassed with the brush",
+      "pass": true
+    },
+    {
+      "message": "crown: companion actions do not autosave",
+      "pass": true
+    },
+    {
+      "message": "crown: ability use is saved",
+      "pass": true
+    },
+    {
+      "message": "crown: toad clears actual excavation soil",
+      "pass": true
+    },
+    {
+      "message": "Failed save leaves previous record intact",
+      "pass": true
+    },
+    {
+      "message": "Saved excavation resumes at the same layer",
+      "pass": true
+    },
+    {
+      "message": "crown: discovery does not autosave",
+      "pass": true
+    },
+    {
+      "message": "crown: discovery advances story",
+      "pass": true
+    },
+    {
+      "message": "crown: no exhibition gate",
+      "pass": true
+    },
+    {
+      "message": "crown: new bird companion is awarded",
+      "pass": true
+    },
+    {
+      "message": "saddle: next excavation starts directly",
+      "pass": true
+    },
+    {
+      "message": "saddle: unearned turtle is locked",
+      "pass": true
+    },
+    {
+      "message": "saddle: required companions cannot be bypassed with the brush",
+      "pass": true
+    },
+    {
+      "message": "saddle: companion actions do not autosave",
+      "pass": true
+    },
+    {
+      "message": "saddle: ability use is saved",
+      "pass": true
+    },
+    {
+      "message": "saddle: toad clears actual excavation soil",
+      "pass": true
+    },
+    {
+      "message": "saddle: discovery does not autosave",
+      "pass": true
+    },
+    {
+      "message": "saddle: discovery advances story",
+      "pass": true
+    },
+    {
+      "message": "saddle: no exhibition gate",
+      "pass": true
+    },
+    {
+      "message": "saddle: new turtle companion is awarded",
+      "pass": true
+    },
+    {
+      "message": "glass: next excavation starts directly",
+      "pass": true
+    },
+    {
+      "message": "glass: required companions cannot be bypassed with the brush",
+      "pass": true
+    },
+    {
+      "message": "glass: companion actions do not autosave",
+      "pass": true
+    },
+    {
+      "message": "glass: ability use is saved",
+      "pass": true
+    },
+    {
+      "message": "glass: toad clears actual excavation soil",
+      "pass": true
+    },
+    {
+      "message": "glass: turtle removes actual stones",
+      "pass": true
+    },
+    {
+      "message": "glass: discovery does not autosave",
+      "pass": true
+    },
+    {
+      "message": "glass: discovery advances story",
+      "pass": true
+    },
+    {
+      "message": "glass: no exhibition gate",
+      "pass": true
+    },
+    {
+      "message": "glass: new snake companion is awarded",
+      "pass": true
+    },
+    {
+      "message": "ewer: next excavation starts directly",
+      "pass": true
+    },
+    {
+      "message": "ewer: required companions cannot be bypassed with the brush",
+      "pass": true
+    },
+    {
+      "message": "ewer: companion actions do not autosave",
+      "pass": true
+    },
+    {
+      "message": "ewer: ability use is saved",
+      "pass": true
+    },
+    {
+      "message": "ewer: toad clears actual excavation soil",
+      "pass": true
+    },
+    {
+      "message": "ewer: turtle removes actual stones",
+      "pass": true
+    },
+    {
+      "message": "ewer: snake opens the wood but preserves final brushing",
+      "pass": true
+    },
+    {
+      "message": "ewer: discovery does not autosave",
+      "pass": true
+    },
+    {
+      "message": "ewer: discovery advances story",
+      "pass": true
+    },
+    {
+      "message": "ewer: no exhibition gate",
+      "pass": true
+    },
+    {
+      "message": "belt: next excavation starts directly",
+      "pass": true
+    },
+    {
+      "message": "belt: required companions cannot be bypassed with the brush",
+      "pass": true
+    },
+    {
+      "message": "belt: companion actions do not autosave",
+      "pass": true
+    },
+    {
+      "message": "belt: ability use is saved",
+      "pass": true
+    },
+    {
+      "message": "belt: toad clears actual excavation soil",
+      "pass": true
+    },
+    {
+      "message": "belt: turtle removes actual stones",
+      "pass": true
+    },
+    {
+      "message": "belt: snake opens the wood but preserves final brushing",
+      "pass": true
+    },
+    {
+      "message": "belt: discovery does not autosave",
+      "pass": true
+    },
+    {
+      "message": "belt: discovery advances story",
+      "pass": true
+    },
+    {
+      "message": "belt: no exhibition gate",
+      "pass": true
+    },
+    {
+      "message": "Final survey requires flying near the mound",
+      "pass": true
+    },
+    {
+      "message": "Two surveys complete the memory map",
+      "pass": true
+    },
+    {
+      "message": "All six discoveries and four companions persist",
+      "pass": true
+    },
+    {
+      "message": "Completed expedition resumes with optional replay",
+      "pass": true
+    },
+    {
+      "message": "New adventure does not overwrite completed save",
+      "pass": true
+    },
+    {
+      "message": "Unsaved restart leaves saved adventure available",
+      "pass": true
+    },
+    {
+      "message": "Optional exhibition does not autosave",
+      "pass": true
+    },
+    {
+      "message": "Exhibition remains optional and saves manually",
+      "pass": true
+    }
+  ]
+}

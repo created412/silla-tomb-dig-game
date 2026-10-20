@@ -2,18 +2,19 @@ import { cellRect } from './grid.js';
 import { createTerrain } from './terrain.js';
 import { drawArtifact, drawLandscape, ellipse, path, star } from './artwork.js';
 import { drawCharacter } from './characters.js';
-import { drawWorld, worldImage } from './clay-art.js';
+import { drawWorld, worldImage,secondWorldImage } from './clay-art.js';
+import {drawGeneratedArtifact} from './generated-art.js';
 
 export function createRenderer(canvas) {
   const ctx=canvas.getContext('2d');
   const fx={dust:[],shakeUntil:0,flashUntil:0,flashStart:0,mood:'idle',moodUntil:0,speaker:null};
   const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
   let cache=null,cacheKey='',landscape=null,landscapeKey='';
-  let artifactId='crown',companion=false,bird=false,hintCells=[],hintUntil=0;
+  let artifactId='crown',companion=false,bird=false,hintCells=[],hintUntil=0,secondScene=false,crew=null;
   const dpr=()=>canvas.width/canvas.getBoundingClientRect().width;
   function landscapeScene() {
-    const key=`${canvas.width}:${canvas.height}:${worldImage.naturalWidth}`;
-    if(key!==landscapeKey){landscapeKey=key;landscape=document.createElement('canvas');landscape.width=canvas.width;landscape.height=canvas.height;const lc=landscape.getContext('2d');if(!drawWorld(lc,canvas.width,canvas.height))drawLandscape(lc,canvas.width,canvas.height);lc.fillStyle='rgba(12,40,30,.48)';lc.fillRect(0,0,canvas.width,canvas.height);}
+    const key=`${canvas.width}:${canvas.height}:${worldImage.naturalWidth}:${secondWorldImage.naturalWidth}:${secondScene}`;
+    if(key!==landscapeKey){landscapeKey=key;landscape=document.createElement('canvas');landscape.width=canvas.width;landscape.height=canvas.height;const lc=landscape.getContext('2d');if(!drawWorld(lc,canvas.width,canvas.height,secondScene))drawLandscape(lc,canvas.width,canvas.height);lc.fillStyle='rgba(12,40,30,.48)';lc.fillRect(0,0,canvas.width,canvas.height);}
     ctx.drawImage(landscape,0,0);
   }
   function friends(t,phase,foundProgress=0) {
@@ -25,6 +26,7 @@ export function createRenderer(canvas) {
       if(!reduced.matches){left-=Math.pow(1-foundProgress,2)*w*.25;right+=Math.pow(1-foundProgress,2)*w*.25;}
     }
     const mood=t<fx.moodUntil?fx.mood:(phase==='found'||phase==='again'?'artifactRevealed':'idle');
+    if(crew){crew.forEach((who,i)=>drawCharacter(ctx,who,w*(.09+i*.82/Math.max(1,crew.length-1)),fy,size*.7,t+i*90,mood,fx.speaker===who,reduced.matches));return;}
     if(companion&&phase!=='title') {
       drawCharacter(ctx,'frog',w*.07,fy,size*.72,t,mood,fx.speaker==='frog',reduced.matches);
       drawCharacter(ctx,'turtle',w*.17,fy,size*.72,t+90,mood,fx.speaker==='turtle',reduced.matches);
@@ -52,14 +54,15 @@ export function createRenderer(canvas) {
     ctx.fillStyle='#49382a';ctx.fillRect(x0,y0,w,h);
     // 매장된 금띠를 먼저 보여 주고, 완전히 발견하면 전체 도판을 비율대로 보여 준다.
     const first=Math.min(...state.artifactCells),r=cellRect(layout,first),gw=cell*state.artifactCells.size;
-    if(artifactId==='crown') {
+    const generatedCrown=artifactId==='crown'&&drawGeneratedArtifact(ctx,artifactId,r.x,r.y-cell,gw,cell*3);
+    if(artifactId==='crown'&&!generatedCrown) {
     const gold=ctx.createLinearGradient(r.x,r.y,r.x+gw,r.y+cell);gold.addColorStop(0,'#ad7c25');gold.addColorStop(.4,'#ffe795');gold.addColorStop(.7,'#c59432');gold.addColorStop(1,'#f3d277');
     ctx.fillStyle=gold;ctx.beginPath();ctx.roundRect(r.x+cell*.07,r.y+cell*.18,gw-cell*.14,cell*.65,cell*.12);ctx.fill();
     for(let k=0;k<24;k++){ellipse(ctx,r.x+gw*(k+.5)/24,r.y+cell*.32,dp,dp,'#7d5b28');if(k%2===0)ellipse(ctx,r.x+gw*(k+.5)/24,r.y+cell*.55,cell*.06,cell*.08,'#ffe49b','#a7792c');}
-    } else {
+    } else if(!generatedCrown) {
       const cells=[...state.artifactCells],xs=cells.map(i=>i%cols),ys=cells.map(i=>Math.floor(i/cols));
       const ax=x0+Math.min(...xs)*cell,ay=y0+Math.min(...ys)*cell;
-      drawArtifact(ctx,artifactId,ax,ay,(Math.max(...xs)-Math.min(...xs)+1)*cell,(Math.max(...ys)-Math.min(...ys)+1)*cell);
+      if(!drawGeneratedArtifact(ctx,artifactId,ax,ay,(Math.max(...xs)-Math.min(...xs)+1)*cell,(Math.max(...ys)-Math.min(...ys)+1)*cell))drawArtifact(ctx,artifactId,ax,ay,(Math.max(...xs)-Math.min(...xs)+1)*cell,(Math.max(...ys)-Math.min(...ys)+1)*cell);
     }
     cache.draw(ctx,'wood',state);
     for(const i of state.glimmered)if(state.wood[i]>0){
@@ -91,7 +94,7 @@ export function createRenderer(canvas) {
     draw(state,layout,t,phase='dig',elapsed=0){
       const w=canvas.width,h=canvas.height,dp=dpr();ctx.clearRect(0,0,w,h);
       if(phase==='title'){landscapeScene();friends(t,'title');return;}
-      ctx.fillStyle='#173f3b';ctx.fillRect(0,0,w,h);if(phase==='again'){reveal(t,3000,'again');return;}
+      landscapeScene();if(phase==='again'){reveal(t,3000,'again');return;}
       if(phase==='story'){friends(t,phase);return;}
       ctx.save();if(t<fx.shakeUntil&&!reduced.matches)ctx.translate(Math.sin(t*.11)*5*dp,Math.cos(t*.09)*3*dp);
       if(state)excavation(state,layout,t);particles(t);ctx.restore();
@@ -99,7 +102,7 @@ export function createRenderer(canvas) {
       if(t<fx.flashUntil&&!reduced.matches){const a=1-(t-fx.flashStart)/(fx.flashUntil-fx.flashStart);ctx.fillStyle=`rgba(255,226,149,${a*.48})`;ctx.fillRect(0,0,w,h);}
     },
     addDust:emit,
-    setArtifact(id){artifactId=id;hintUntil=0;},setCompanion(joined){companion=joined;},setBird(joined){bird=joined;},hint(cells,until){hintCells=cells;hintUntil=until;},
+    setArtifact(id){artifactId=id;hintUntil=0;},setScene(second){secondScene=second;},setCrew(list){crew=[...list];},setCompanion(joined){companion=joined;},setBird(joined){bird=joined;},hint(cells,until){hintCells=cells;hintUntil=until;},
     react(mood,t){fx.mood=mood;fx.moodUntil=t+(mood==='artifactRevealed'?3200:1900);},
     speak(who){fx.speaker=who;},shake(ms,t){fx.shakeUntil=t+ms;},flash(ms,t){fx.flashStart=t;fx.flashUntil=t+ms;},
     reset(){fx.dust=[];fx.mood='idle';fx.moodUntil=0;fx.speaker=null;fx.shakeUntil=0;fx.flashUntil=0;artifactId='crown';companion=false;},
