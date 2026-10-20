@@ -47,6 +47,13 @@ let foundAt = 0, resultKind = null, resultTimers = [];
 let lastFrameT = 0, lastTouchedCell = -1, lastAdvanceAt = -Infinity;
 let talkId = null, reactionTimer = null, wakeShown = false;
 const now = () => performance.now();
+// 받침에 따라 조사 고르기: josa('금관','을','를') → '을', josa('말다래','을','를') → '를'
+function josa(word, withBatchim, without) {
+  const code = word.charCodeAt(word.length - 1);
+  const hangul = code >= 0xac00 && code <= 0xd7a3;
+  return hangul && (code - 0xac00) % 28 !== 0 ? withBatchim : without;
+}
+const fillName = text => text.replace('{name}이', ARTIFACTS[level.id].name + josa(ARTIFACTS[level.id].name, '이', '')).replace('{name}', ARTIFACTS[level.id].name);
 
 // ---------- 레이아웃 ----------
 function resize() {
@@ -69,7 +76,7 @@ function showLine(line, tappable) {
   if (!line) { el.dialogue.classList.add('hidden'); return; }
   el.dialogue.classList.remove('hidden');
   el.speaker.textContent = line.who === 'frog' ? '🐸' : '🐍';
-  el.line.textContent = line.text.replace('{name}', ARTIFACTS[level.id].name);
+  el.line.textContent = fillName(line.text);
   el.tapHint.classList.toggle('hidden', !tappable);
   renderer.speak(line.who);
 }
@@ -148,7 +155,8 @@ function sunText(ms) {
 function openCard(i) {
   levelIndex = i; level = LEVELS[i];
   el.cardKicker.textContent = `무덤 ${i + 1} · ${level.tomb}`;
-  el.cardTitle.textContent = `${ARTIFACTS[level.id].name}을 찾아라`;
+  const name = ARTIFACTS[level.id].name;
+  el.cardTitle.textContent = `${name}${josa(name, '을', '를')} 찾아라`;
   el.cardInfo.textContent = `🌞 해가 떠 있는 시간: ${sunText(level.sunMs)} · 🪱 지렁이 ${level.worms}마리 · 지금까지 ${starText(starsObj[level.id] ?? 0)}`;
   el.cardFriends.innerHTML = Object.entries(FRIENDS).map(([who, f]) =>
     `<span class="${level.friends.includes(who) ? '' : 'locked'}">${f.emoji} ${f.name} · ${level.friends.includes(who) ? f.power : '아직 안 와'}</span>`).join('');
@@ -330,7 +338,7 @@ function showResult(kind) {
     for (let k = 0; k < n; k++) resultTimers.push(setTimeout(() => { el.resultStars[k].classList.add('on'); sfx.star(); }, 400 + k * 500));
     resultTimers.push(setTimeout(() => playReaction(`star${n}`), 400 + n * 500 + 200));
   } else if (kind === 'broken') {
-    el.resultTitle.textContent = `${name}이 깨졌어…`;
+    el.resultTitle.textContent = `${name}${josa(name, '이', '가')} 깨졌어…`;
     el.resultSub.textContent = '유물 위에서는 두드리지 말고, 세게 문지르지 마. 다시 파면 돼!';
   } else {
     el.resultTitle.textContent = '해가 졌어…';
