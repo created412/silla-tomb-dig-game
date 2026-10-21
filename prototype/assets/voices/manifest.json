@@ -1,0 +1,323 @@
+{
+  "provider": "ElevenLabs via Higgsfield",
+  "model": "text2speech_v2",
+  "variant": "elevenlabs",
+  "clips": {
+    "line-wake-0": {
+      "file": "line-wake-0.mp3",
+      "who": "frog"
+    },
+    "line-wake-1": {
+      "file": "line-wake-1.mp3",
+      "who": "snake"
+    },
+    "line-wake-2": {
+      "file": "line-wake-2.mp3",
+      "who": "frog"
+    },
+    "line-wake-3": {
+      "file": "line-wake-3.mp3",
+      "who": "snake"
+    },
+    "line-wake-4": {
+      "file": "line-wake-4.mp3",
+      "who": "frog"
+    },
+    "line-wake-5": {
+      "file": "line-wake-5.mp3",
+      "who": "snake"
+    },
+    "found-crown": {
+      "file": "found-crown.mp3",
+      "who": "frog"
+    },
+    "found-saddle": {
+      "file": "found-saddle.mp3",
+      "who": "frog"
+    },
+    "found-glass": {
+      "file": "found-glass.mp3",
+      "who": "frog"
+    },
+    "found-ewer": {
+      "file": "found-ewer.mp3",
+      "who": "frog"
+    },
+    "found-belt": {
+      "file": "found-belt.mp3",
+      "who": "frog"
+    },
+    "line-found-1": {
+      "file": "line-found-1.mp3",
+      "who": "snake"
+    },
+    "line-found-2": {
+      "file": "line-found-2.mp3",
+      "who": "frog"
+    },
+    "line-found-3": {
+      "file": "line-found-3.mp3",
+      "who": "snake"
+    },
+    "line-tooHard-0": {
+      "file": "line-tooHard-0.mp3",
+      "who": "frog"
+    },
+    "line-collapse-0": {
+      "file": "line-collapse-0.mp3",
+      "who": "snake"
+    },
+    "line-glimmer-0": {
+      "file": "line-glimmer-0.mp3",
+      "who": "frog"
+    },
+    "line-rockDrag-0": {
+      "file": "line-rockDrag-0.mp3",
+      "who": "snake"
+    },
+    "line-warn-0": {
+      "file": "line-warn-0.mp3",
+      "who": "frog"
+    },
+    "line-crack1-0": {
+      "file": "line-crack1-0.mp3",
+      "who": "frog"
+    },
+    "line-crack2-0": {
+      "file": "line-crack2-0.mp3",
+      "who": "snake"
+    },
+    "line-broken-0": {
+      "file": "line-broken-0.mp3",
+      "who": "frog"
+    },
+    "line-broken-1": {
+      "file": "line-broken-1.mp3",
+      "who": "snake"
+    },
+    "line-worm-0": {
+      "file": "line-worm-0.mp3",
+      "who": "frog"
+    },
+    "line-worm-1": {
+      "file": "line-worm-1.mp3",
+      "who": "snake"
+    },
+    "line-star3-0": {
+      "file": "line-star3-0.mp3",
+      "who": "snake"
+    },
+    "line-star3-1": {
+      "file": "line-star3-1.mp3",
+      "who": "frog"
+    },
+    "line-star2-0": {
+      "file": "line-star2-0.mp3",
+      "who": "frog"
+    },
+    "line-star2-1": {
+      "file": "line-star2-1.mp3",
+      "who": "snake"
+    },
+    "line-star1-0": {
+      "file": "line-star1-0.mp3",
+      "who": "snake"
+    },
+    "line-star1-1": {
+      "file": "line-star1-1.mp3",
+      "who": "frog"
+    },
+    "line-powerUsed-0": {
+      "file": "line-powerUsed-0.mp3",
+      "who": "snake"
+    },
+    "line-powerMissFrog-0": {
+      "file": "line-powerMissFrog-0.mp3",
+      "who": "frog"
+    },
+    "line-powerMissTurtle-0": {
+      "file": "line-powerMissTurtle-0.mp3",
+      "who": "snake"
+    },
+    "line-powerMissSnake-0": {
+      "file": "line-powerMissSnake-0.mp3",
+      "who": "snake"
+    },
+    "comic-crown-0": {
+      "file": "comic-crown-0.mp3",
+      "who": "frog"
+    },
+    "comic-crown-1": {
+      "file": "comic-crown-1.mp3",
+      "who": "snake"
+    },
+    "comic-crown-2": {
+      "file": "comic-crown-2.mp3",
+      "who": "bird"
+    },
+    "question-crown": {
+      "file": "question-crown.mp3",
+      "who": "bird"
+    },
+    "answer-crown-0": {
+      "file": "answer-crown-0.mp3",
+      "who": "snake"
+    },
+    "answer-crown-1": {
+      "file": "answer-crown-1.mp3",
+      "who": "frog"
+    },
+    "answer-crown-2": {
+      "file": "answer-crown-2.mp3",
+      "who": "bird"
+    },
+    "comic-saddle-0": {
+      "file": "comic-saddle-0.mp3",
+      "who": "frog"
+    },
+    "comic-saddle-1": {
+      "file": "comic-saddle-1.mp3",
+      "who": "snake"
+    },
+    "comic-saddle-2": {
+      "file": "comic-saddle-2.mp3",
+      "who": "bird"
+    },
+    "question-saddle": {
+      "file": "question-saddle.mp3",
+      "who": "bird"
+    },
+    "answer-saddle-0": {
+      "file": "answer-saddle-0.mp3",
+      "who": "snake"
+    },
+    "answer-saddle-1": {
+      "file": "answer-saddle-1.mp3",
+      "who": "frog"
+    },
+    "answer-saddle-2": {
+      "file": "answer-saddle-2.mp3",
+      "who": "bird"
+    },
+    "comic-glass-0": {
+      "file": "comic-glass-0.mp3",
+      "who": "snake"
+    },
+    "comic-glass-1": {
+      "file": "comic-glass-1.mp3",
+      "who": "bird"
+    },
+    "comic-glass-2": {
+      "file": "comic-glass-2.mp3",
+      "who": "frog"
+    },
+    "question-glass": {
+      "file": "question-glass.mp3",
+      "who": "bird"
+    },
+    "answer-glass-0": {
+      "file": "answer-glass-0.mp3",
+      "who": "snake"
+    },
+    "answer-glass-1": {
+      "file": "answer-glass-1.mp3",
+      "who": "frog"
+    },
+    "answer-glass-2": {
+      "file": "answer-glass-2.mp3",
+      "who": "bird"
+    },
+    "comic-ewer-0": {
+      "file": "comic-ewer-0.mp3",
+      "who": "bird"
+    },
+    "comic-ewer-1": {
+      "file": "comic-ewer-1.mp3",
+      "who": "frog"
+    },
+    "comic-ewer-2": {
+      "file": "comic-ewer-2.mp3",
+      "who": "snake"
+    },
+    "question-ewer": {
+      "file": "question-ewer.mp3",
+      "who": "bird"
+    },
+    "answer-ewer-0": {
+      "file": "answer-ewer-0.mp3",
+      "who": "snake"
+    },
+    "answer-ewer-1": {
+      "file": "answer-ewer-1.mp3",
+      "who": "frog"
+    },
+    "answer-ewer-2": {
+      "file": "answer-ewer-2.mp3",
+      "who": "bird"
+    },
+    "comic-belt-0": {
+      "file": "comic-belt-0.mp3",
+      "who": "frog"
+    },
+    "comic-belt-1": {
+      "file": "comic-belt-1.mp3",
+      "who": "snake"
+    },
+    "comic-belt-2": {
+      "file": "comic-belt-2.mp3",
+      "who": "bird"
+    },
+    "question-belt": {
+      "file": "question-belt.mp3",
+      "who": "bird"
+    },
+    "answer-belt-0": {
+      "file": "answer-belt-0.mp3",
+      "who": "snake"
+    },
+    "answer-belt-1": {
+      "file": "answer-belt-1.mp3",
+      "who": "frog"
+    },
+    "answer-belt-2": {
+      "file": "answer-belt-2.mp3",
+      "who": "bird"
+    },
+    "join-frog": {
+      "file": "join-frog.mp3",
+      "who": "frog"
+    },
+    "join-bird": {
+      "file": "join-bird.mp3",
+      "who": "bird"
+    },
+    "join-turtle": {
+      "file": "join-turtle.mp3",
+      "who": "turtle"
+    },
+    "join-snake": {
+      "file": "join-snake.mp3",
+      "who": "snake"
+    },
+    "story-crown": {
+      "file": "story-crown.mp3",
+      "who": "snake"
+    },
+    "story-saddle": {
+      "file": "story-saddle.mp3",
+      "who": "snake"
+    },
+    "story-glass": {
+      "file": "story-glass.mp3",
+      "who": "snake"
+    },
+    "story-ewer": {
+      "file": "story-ewer.mp3",
+      "who": "snake"
+    },
+    "story-belt": {
+      "file": "story-belt.mp3",
+      "who": "snake"
+    }
+  }
+}

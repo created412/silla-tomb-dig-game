@@ -18,16 +18,17 @@ import { loadStars, saveStar, isUnlocked } from './stars-store.js';
 import { ARTIFACT_STORIES } from './artifact-stories.js';
 import { COMICS } from './comics.js';
 import { paintDom, comicSheet } from './art-dom.js';
+import { createVoicePlayer } from './voice-player.js';
 
 const TOP_PAD = 72, BOTTOM_PAD = 176, RIGHT_PAD = 126, SKY_BAND = 56; // CSS px. 아래 176 = 대사 상자(~60) + 토우(~100)
-const REACTION_MS = 2000, ADVANCE_GUARD_MS = 150, REVEAL_MS = 2400, PANEL_MIN_MS = 1500;
+const ADVANCE_GUARD_MS = 150, REVEAL_MS = 2400, PANEL_MIN_MS = 1500;
 const SKY_TIME = 0.15; // 하늘은 아침 해 고정 (시간 제한 없음)
 
 const $ = id => document.getElementById(id);
 const canvas = $('dig');
 const el = {
   stage: $('stage'), hud: $('hud'), levelName: $('level-name'), hint: $('hint'), cracks: [...document.querySelectorAll('#cracks .crack')],
-  powers: $('powers'), dialogue: $('dialogue'), speaker: $('speaker'), line: $('line'), tapHint: $('tap-hint'),
+  powers: $('powers'), dialogue: $('dialogue'), speaker: $('speaker'), line: $('line'),
   title: $('title'), levels: $('levels'), shelf: $('shelf'), btnDex: $('btn-dex'),
   card: $('card'), cardKicker: $('card-kicker'), cardTitle: $('card-title'), cardInfo: $('card-info'), cardFriends: $('card-friends'),
   btnStart: $('btn-start'), btnBack: $('btn-back'),
@@ -43,6 +44,13 @@ const renderer = createRenderer(canvas);
 const effects = createEffects(canvas);
 const sfx = createSfx();
 const dialogue = createDialogue(LINES);
+const voice = createVoicePlayer(({ muted, status }) => {
+  document.querySelectorAll('[data-voice-mute]').forEach(b => { b.textContent = muted ? '소리 꺼짐' : '소리 켜짐'; b.setAttribute('aria-pressed', String(muted)); });
+  document.querySelectorAll('[data-voice-status]').forEach(e => { e.textContent = muted ? '' : status === 'playing' ? '듣는 중…' : status === 'paused' ? '다시 듣기를 눌러 줘' : status === 'unavailable' ? '목소리를 불러오지 못했어' : ''; });
+  document.querySelectorAll('[data-voice-replay]').forEach(b => { b.disabled = muted; });
+});
+document.querySelectorAll('[data-voice-replay]').forEach(b => b.addEventListener('click', () => voice.replay()));
+document.querySelectorAll('[data-voice-mute]').forEach(b => b.addEventListener('click', () => voice.toggleMute()));
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
 let storage = null; try { storage = localStorage; } catch { /* 저장 불가 */ }
 
@@ -53,11 +61,11 @@ let selectedPower = null;
 let wormCell = -1, wormUntil = -Infinity;
 let foundAt = 0, resultKind = null, resultTimers = [];
 let lastTouchedCell = -1, lastAdvanceAt = -Infinity;
-let talkId = null, reactionTimer = null, wakeShown = false;
+let talkId = null, wakeShown = false, lineIndex = 0, reactionId = null;
+let glimmerShown = false;
 let panelsShown = 0, comicOpen = false, comicTimer = null, comicOnClose = null; // 4컷
 let joinQueue = [], joinOnDone = null;                                           // 합류 장면
 const now = () => performance.now();
-const emojiOf = who => FRIENDS[who]?.emoji ?? '🐸';
 // 받침에 따라 조사 고르기: josa('금관','을','를') → '을', josa('말다래','을','를') → '를'
 function josa(word, withBatchim, without) {
   const code = word.charCodeAt(word.length - 1);
@@ -65,7 +73,7 @@ function josa(word, withBatchim, without) {
   return hangul && (code - 0xac00) % 28 !== 0 ? withBatchim : without;
 }
 const fillName = text => text.replace('{name}이', ARTIFACTS[level.id].name + josa(ARTIFACTS[level.id].name, '이', '')).replace('{name}', ARTIFACTS[level.id].name);
-const inputBlocked = () => comicOpen || !el.join.classList.contains('hidden') || !el.dex.classList.contains('hidden');
+const inputBlocked = () => comicOpen || !el.dialogue.classList.contains('hidden') || !el.join.classList.contains('hidden') || !el.dex.classList.contains('hidden');
 
 // ---------- 레이아웃 ----------
 function resize() {
@@ -84,68 +92,78 @@ window.addEventListener('resize', resize);
 resize();
 
 // ---------- 대사 ----------
-function showLine(line, tappable) {
+function showLine(line) {
+  voice.stop();
   if (!line) { el.dialogue.classList.add('hidden'); return; }
+  const id = talkId || reactionId;
   el.dialogue.classList.remove('hidden');
-  el.speaker.textContent = emojiOf(line.who);
+  el.speaker.textContent = FRIENDS[line.who]?.name || '토우 친구';
   el.line.textContent = fillName(line.text);
-  el.tapHint.classList.toggle('hidden', !tappable);
+  $('dialogue-actor').dataset.actor = line.who;
+  $('dialogue-page').textContent = `${lineIndex + 1} / ${LINES[id]?.length || 1}`;
+  $('dialogue-scene').dataset.scene = id === 'wake' ? (lineIndex < 3 ? '0' : '1') : id === 'found' || id?.startsWith('star') ? '3' : id === 'glimmer' ? '1' : '2';
+  $('dialogue-title').textContent = id === 'wake' ? '아주 오래 잠들었던 작은 친구들' : id === 'found' ? '찾았다! 되살아나는 기억' : id?.startsWith('star') ? '함께해서 해냈어!' : '토우 친구의 한마디';
+  $('dialogue-next').textContent = lineIndex + 1 < (LINES[id]?.length || 1) ? '다음 이야기 →' : (phase === 'wake' || phase === 'dig') ? '발굴하러 가자 →' : '계속하기 →';
+  $('dialogue-next').focus({ preventScroll: true });
   renderer.speak(line.who);
+  voice.say(id === 'found' && lineIndex === 0 ? `found-${level.id}` : `line-${id}-${lineIndex}`);
 }
 
-// 반응 대사: 입력을 막지 않고 2초마다 한 줄씩 넘어가다 사라진다
+// 모든 대사는 직접 넘긴다. 짧은 반응도 읽는 동안 발굴 입력을 막는다.
 function playReaction(id) {
-  if (talkId) return;                 // 만담 중엔 끼어들지 않음
+  if (talkId || comicOpen || !el.join.classList.contains('hidden') || el.story.open) return;
+  if (id === 'glimmer' && glimmerShown) return;
   if (!dialogue.playIfIdle(id)) return;
-  showLine(dialogue.current(), false);
-  scheduleReaction();
-}
-function scheduleReaction() {
-  clearTimeout(reactionTimer);
-  reactionTimer = setTimeout(() => {
-    if (talkId) return;
-    const line = dialogue.next();
-    showLine(line, false);
-    if (line) scheduleReaction();
-  }, REACTION_MS);
+  if (id === 'glimmer') glimmerShown = true;
+  reactionId = id; lineIndex = 0;
+  showLine(dialogue.current());
 }
 
 // 꼭 보여야 하는 반응: 보이던 반응을 끊고 바로 띄운다 (지렁이, 금)
 function forceReaction(id) {
   if (talkId) return;
-  clearTimeout(reactionTimer);
+  reactionId = id; lineIndex = 0;
   dialogue.play(id);
-  showLine(dialogue.current(), false);
-  scheduleReaction();
+  showLine(dialogue.current());
 }
 
 // 만담: 탭으로 넘기고, 끝나면 onEnd
 let talkEnd = null;
 function playTalk(id, onEnd) {
-  clearTimeout(reactionTimer); reactionTimer = null;
+  reactionId = null; lineIndex = 0;
   talkId = id; talkEnd = onEnd;
   dialogue.play(id);
-  showLine(dialogue.current(), true);
+  showLine(dialogue.current());
 }
 function advance() {
   const t = now();
   if (t - lastAdvanceAt < ADVANCE_GUARD_MS) return;
   lastAdvanceAt = t;
-  if (!talkId) return;
+  if (el.dialogue.classList.contains('hidden')) return;
   const line = dialogue.next();
-  if (line) { showLine(line, true); return; }
-  const end = talkEnd; talkId = null; talkEnd = null;
+  lineIndex++;
+  if (line) { showLine(line); return; }
+  const end = talkEnd; talkId = null; talkEnd = null; reactionId = null;
   showLine(null);
   end?.();
 }
-canvas.addEventListener('pointerdown', () => { if (talkId && !inputBlocked()) advance(); });
-el.dialogue.addEventListener('pointerdown', ev => { ev.stopPropagation(); advance(); });
+$('dialogue-next').addEventListener('click', advance);
+// 키보드 탭도 현재 이야기 안에 머문다.
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Tab') return;
+  const overlay = [el.dialogue, el.comic, el.join].find(x => !x.classList.contains('hidden'));
+  if (!overlay) return;
+  const buttons = [...overlay.querySelectorAll('button:not(:disabled)')].filter(b => b.offsetParent !== null);
+  const first = buttons[0], last = buttons.at(-1);
+  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last?.focus(); }
+  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first?.focus(); }
+});
 
 // ---------- 단계 ----------
 // 화면을 넘길 때 이전 화면의 타이머·대사 큐·만화·합류가 따라오지 않게 전부 비운다
 function clearTransient() {
   for (const t of resultTimers) clearTimeout(t); resultTimers = [];
-  clearTimeout(reactionTimer); reactionTimer = null;
+  reactionId = null;
   clearTimeout(comicTimer); comicTimer = null;
   talkId = null; talkEnd = null; comicOnClose = null; joinQueue = []; joinOnDone = null;
   comicOpen = false; el.comic.classList.add('hidden'); el.join.classList.add('hidden');
@@ -214,6 +232,7 @@ function buildPowers() {
 function startLevel() {
   clearTransient();
   ch = createChallenge(level, Math.random);
+  glimmerShown = false;
   renderer.reset();
   renderer.setArtifact(level.id);
   renderer.setScene(level.scene === 2);
@@ -234,6 +253,7 @@ function startLevel() {
 // ---------- 4컷 기억 조각 ----------
 // n: 0~2 이야기 컷, 3 질문 컷. 닫히면 onClose.
 function showPanel(n, onClose) {
+  voice.stop();
   const comic = COMICS[level.id]; if (!comic) { onClose?.(); return; }
   comicOpen = true; comicOnClose = onClose; panelsShown = Math.max(panelsShown, n + 1);
   setSelectedPower(null);
@@ -245,24 +265,31 @@ function showPanel(n, onClose) {
   sfx.glimmer();
   if (n < 3) {
     const p = comic.panels[n];
-    el.comicWho.textContent = emojiOf(p.who); el.comicText.textContent = p.text;
+    el.comicWho.textContent = FRIENDS[p.who].name; el.comicText.textContent = p.text;
+    $('comic-actor').dataset.actor = p.who;
+    voice.say(`comic-${level.id}-${n}`);
     el.comicNext.disabled = true;
     clearTimeout(comicTimer);
-    comicTimer = setTimeout(() => { el.comicNext.disabled = false; }, PANEL_MIN_MS);
+    comicTimer = setTimeout(() => { el.comicNext.disabled = false; el.comicNext.focus({ preventScroll: true }); }, PANEL_MIN_MS);
   } else {
-    el.comicWho.textContent = '❓'; el.comicText.textContent = comic.question;
+    el.comicWho.textContent = '같이 생각해 볼까?'; el.comicText.textContent = comic.question;
+    $('comic-actor').dataset.actor = 'bird';
+    voice.say(`question-${level.id}`);
     comic.choices.forEach((c, k) => {
       const b = document.createElement('button'); b.textContent = c.text; b.dataset.k = k;
       b.addEventListener('click', () => answerChoice(k));
       el.comicChoices.appendChild(b);
     });
+    el.comicChoices.querySelector('button')?.focus({ preventScroll: true });
   }
 }
 function answerChoice(k) {
   const comic = COMICS[level.id], c = comic.choices[k];
   const b = el.comicChoices.querySelector(`button[data-k="${k}"]`);
   if (!b || b.disabled) return;
-  el.comicWho.textContent = emojiOf(c.gag.who); el.comicText.textContent = c.gag.text;
+  el.comicWho.textContent = FRIENDS[c.gag.who].name; el.comicText.textContent = c.gag.text;
+  $('comic-actor').dataset.actor = c.gag.who;
+  voice.say(`answer-${level.id}-${k}`);
   if (c.right) {
     sfx.found();
     b.dataset.right = '1';
@@ -275,15 +302,16 @@ function answerChoice(k) {
   }
 }
 function closePanel() {
+  voice.stop();
   el.comic.classList.add('hidden'); comicOpen = false;
-  el.comicNext.textContent = '다음 ▶';
+  el.comicNext.textContent = '계속 발굴하기 →';
   const f = comicOnClose; comicOnClose = null; f?.();
 }
 el.comicNext.addEventListener('click', () => { if (!el.comicNext.disabled) closePanel(); });
 
 // 발굴 중 컷 열기 조건: 1컷 = 유물 칸 하나가 나무까지 드러남, 2컷 = 유물 3칸 이상 완전히 드러남
 function checkComicCues() {
-  if (!ch || comicOpen || phase !== 'dig' || talkId) return;
+  if (!ch || inputBlocked() || phase !== 'dig') return;
   if (panelsShown === 0) {
     for (const i of ch.dig.artifactCells) if (ch.dig.soil[i] === 0 && ch.dig.rock[i] === 0) { showPanel(0); return; }
   } else if (panelsShown === 1 && ch.dig.revealed.size >= 3) {
@@ -300,10 +328,13 @@ function showJoin(who, onDone) {
   el.joinIntro.textContent = f.intro.join(' ');
   el.joinWhen.textContent = `무덤 ${f.joinsAt + 1}부터 오른쪽 버튼에서 나를 눌러 봐.`;
   el.join.classList.remove('hidden');
+  voice.say(`join-${who}`);
+  el.joinOk.focus({ preventScroll: true });
   sfx.found();
   joinOnDone = onDone;
 }
 el.joinOk.addEventListener('click', () => {
+  voice.stop();
   el.join.classList.add('hidden');
   const next = joinQueue.shift();
   if (next) showJoin(next, joinOnDone); else { const f = joinOnDone; joinOnDone = null; f?.(); }
@@ -439,7 +470,7 @@ function onFound(t) {
   renderer.react('artifactRevealed', t);
   sfx.found();
   setPhase('found');
-  clearTimeout(reactionTimer); showLine(null);
+  dialogue.play('__none__'); reactionId = null; showLine(null);
   const prevStars = starsObj[level.id] ?? 0;
   resultTimers.push(setTimeout(() => {
     showPanel(2, () => playTalk('found', () => showPanel(3, () => {
@@ -456,7 +487,7 @@ function onBroken(t) {
   sfx.shatter();
   for (const cell of ch.dig.artifactCells) { renderer.addDust(cell, layout, t, 'gold'); renderer.addDust(cell, layout, t, 'rock'); }
   setPhase('broken');
-  clearTimeout(reactionTimer); showLine(null);
+  dialogue.play('__none__'); reactionId = null; showLine(null);
   resultTimers.push(setTimeout(() => playTalk('broken', () => showResult('broken')), 800));
 }
 
@@ -498,8 +529,10 @@ el.btnStory.addEventListener('click', () => {
   el.storyHello.textContent = (s.hello ?? []).join(' ');
   el.storyNote.textContent = s.note ?? '';
   el.story.showModal();
+  voice.say(`story-${level.id}`);
 });
 el.storyClose.addEventListener('click', () => el.story.close());
+el.story.addEventListener('close', () => voice.stop());
 
 // ---------- HUD ----------
 function updateHud(t) {

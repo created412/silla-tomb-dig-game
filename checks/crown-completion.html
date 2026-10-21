@@ -36,15 +36,16 @@ const click=s=>{const b=d.querySelector(s);if(!b||b.disabled)throw Error('버튼
 const visible=s=>!d.querySelector(s).classList.contains('hidden');
 function pointer(type,i){const canvas=d.querySelector('#dig'),r=canvas.getBoundingClientRect(),l=w.sillaDebug.layout,dp=canvas.width/r.width;canvas.dispatchEvent(new w.PointerEvent(type,{bubbles:true,pointerId:1,pointerType:'touch',isPrimary:true,clientX:r.left+(l.x0+(i%12+.5)*l.cell)/dp+(type==='pointermove'?2:0),clientY:r.top+(l.y0+(Math.floor(i/12)+.5)*l.cell)/dp,buttons:type==='pointerup'?0:1}));}
 async function panel(n=seen){await until(()=>visible('#comic'));check(d.querySelector('#comic-canvas').dataset.panel===String(n),`금관 이야기 ${n+1}/4 열림`);seen=n+1;await until(()=>!d.querySelector('#comic-next').disabled);click('#comic-next');}
-async function stroke(i,layer){if(visible('#comic'))await panel();pointer('pointerdown',i);for(let k=0;k<60&&w.sillaDebug.challenge.dig[layer][i]>0;k++){await wait(30);pointer('pointermove',i);if(visible('#comic')){pointer('pointerup',i);await panel();pointer('pointerdown',i);}}pointer('pointerup',i);}
+async function conversation(){while(visible('#dialogue')){click('#dialogue-next');await wait(170);}}
+async function stroke(i,layer){await conversation();if(visible('#comic'))await panel();pointer('pointerdown',i);for(let k=0;k<100&&w.sillaDebug.challenge.dig[layer][i]>0;k++){await wait(30);pointer('pointermove',i);if(visible('#dialogue')||visible('#comic')){pointer('pointerup',i);await conversation();if(visible('#comic'))await panel();pointer('pointerdown',i);}}pointer('pointerup',i);}
 document.querySelector('#play').onclick=()=>run(async()=>{
  seen=0;await load();click('[data-index="0"]');click('#btn-start');
- while(w.sillaDebug.phase==='wake'){d.querySelector('#dialogue').dispatchEvent(new w.PointerEvent('pointerdown',{bubbles:true}));await wait(170);}
+ await conversation();
  const cells=[...w.sillaDebug.challenge.dig.artifactCells];
  for(const i of cells){await stroke(i,'soil');if(visible('#comic'))await panel();await stroke(i,'wood');if(visible('#comic'))await panel();}
  await until(()=>w.sillaDebug.phase==='found');check(w.sillaDebug.challenge.dig.revealed.size===6,'보이는 유물 여섯 곳을 발굴하면 완료');
  await panel(2);
- while(!visible('#comic')){d.querySelector('#dialogue').dispatchEvent(new w.PointerEvent('pointerdown',{bubbles:true}));await wait(170);}
+ await conversation();await until(()=>visible('#comic'));
  check(d.querySelector('#comic-canvas').dataset.panel==='3','금관 이야기 4/4 질문까지 연결');
  click(`#comic-choices [data-k="${COMICS.crown.choices.findIndex(c=>c.right)}"]`);click('#comic-next');
  await until(()=>visible('#join'));check(d.querySelector('#join-name').textContent.includes('거북'),'다음 토우 거북 합류');click('#join-ok');

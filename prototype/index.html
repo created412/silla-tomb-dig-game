@@ -20,10 +20,19 @@
 
     <div id="powers" class="hidden" aria-label="토우 능력"></div>
 
-    <div id="dialogue" class="hidden">
-      <span id="speaker">🐸</span>
-      <span id="line"></span>
-      <span id="tap-hint">▶</span>
+    <div id="dialogue" class="story-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="dialogue-title">
+      <div class="story-spread">
+        <div class="scene-picture">
+          <canvas id="dialogue-scene" data-scene="0" aria-label="토우 친구들의 모험 그림"></canvas>
+          <p class="scene-label" id="dialogue-title">토우 친구들의 이야기</p>
+        </div>
+        <div class="story-copy">
+          <div class="speaker-heading"><canvas id="dialogue-actor" data-actor="frog" aria-hidden="true"></canvas><span id="speaker">두꺼비</span><span id="dialogue-page"></span></div>
+          <p id="line" aria-live="polite"></p>
+          <div class="voice-controls"><button data-voice-replay>↻ 다시 듣기</button><button data-voice-mute aria-pressed="false">소리 켜짐</button><span data-voice-status></span></div>
+          <button id="dialogue-next" class="big story-next">다음 이야기 <span id="tap-hint">→</span></button>
+        </div>
+      </div>
     </div>
 
     <div id="title" class="overlay">
@@ -65,25 +74,30 @@
       </div>
     </div>
 
-    <div id="comic" class="overlay hidden">
-      <div class="comic-box">
-        <p class="kicker" id="comic-title"></p>
-        <canvas id="comic-canvas" data-comic="" data-panel="0" aria-label="기억 조각 그림"></canvas>
-        <div class="comic-bubble"><span id="comic-who"></span><span id="comic-text"></span></div>
-        <div id="comic-choices" class="hidden"></div>
-        <div class="row"><button id="comic-next" class="big" disabled>다음 ▶</button></div>
+    <div id="comic" class="story-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="comic-title">
+      <div class="story-spread comic-box">
+        <div class="scene-picture"><canvas id="comic-canvas" data-comic="" data-panel="0" aria-label="기억 조각 그림"></canvas><p class="scene-label" id="comic-title"></p></div>
+        <div class="story-copy">
+          <div class="speaker-heading"><canvas id="comic-actor" data-actor="frog" aria-hidden="true"></canvas><span id="comic-who"></span></div>
+          <p id="comic-text" aria-live="polite"></p>
+          <div id="comic-choices" class="hidden"></div>
+          <div class="voice-controls"><button data-voice-replay>↻ 다시 듣기</button><button data-voice-mute aria-pressed="false">소리 켜짐</button><span data-voice-status></span></div>
+          <button id="comic-next" class="big story-next" disabled>계속 발굴하기 →</button>
+        </div>
       </div>
     </div>
 
-    <div id="join" class="overlay hidden">
-      <div class="panel join-panel">
-        <p class="kicker">새 친구 합류!</p>
-        <canvas id="join-actor" data-actor="frog" data-mood="artifactRevealed" aria-label="새 토우"></canvas>
-        <h2 id="join-name"></h2>
-        <p id="join-power"></p>
-        <p id="join-intro"></p>
-        <p class="rule" id="join-when"></p>
-        <div class="row"><button id="join-ok" class="big">반가워!</button></div>
+    <div id="join" class="story-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="join-name">
+      <div class="story-spread join-panel">
+        <div class="scene-picture join-picture"><canvas data-scene="3" aria-hidden="true"></canvas><canvas id="join-actor" data-actor="frog" data-mood="artifactRevealed" aria-label="새 토우"></canvas><p class="scene-label">새 친구가 깨어났어!</p></div>
+        <div class="story-copy">
+          <h2 id="join-name"></h2>
+          <p id="join-intro"></p>
+          <p id="join-power"></p>
+          <p id="join-when"></p>
+          <div class="voice-controls"><button data-voice-replay>↻ 다시 듣기</button><button data-voice-mute aria-pressed="false">소리 켜짐</button><span data-voice-status></span></div>
+          <button id="join-ok" class="big story-next">반가워! 함께 가자 →</button>
+        </div>
       </div>
     </div>
 
@@ -107,6 +121,7 @@
       <p id="story-what"></p>
       <p id="story-hello"></p>
       <p id="story-note"></p>
+      <div class="voice-controls"><button data-voice-replay>↻ 다시 듣기</button><button data-voice-mute aria-pressed="false">소리 켜짐</button><span data-voice-status></span></div>
     </dialog>
   </div>
   <script type="module" src="src/main.js"></script>
