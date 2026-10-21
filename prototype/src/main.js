@@ -17,8 +17,8 @@ import {
 import { loadStars, saveStar, isUnlocked } from './stars-store.js';
 import { ARTIFACT_STORIES } from './artifact-stories.js';
 import { COMICS } from './comics.js';
-import { paintDom, comicSheet } from './art-dom.js';
-import { createVoicePlayer } from './voice-player.js';
+import { paintDom, comicSheet } from './art-dom.js?v=guardian-1';
+import { createVoicePlayer } from './voice-player.js?v=guardian-1';
 import { createBossView } from './boss.js';
 import { bossUnlocked, loadBossBadge } from './boss-model.js';
 

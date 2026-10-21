@@ -13,7 +13,7 @@ let main=await(await fetch(base+'src/main.js')).text();
 main=main.replace(/from '\.\/([^']+)'/g,(_,path)=>`from '${base}src/${path}'`);
 main+='\nwindow.storyFixture={playReaction,forceReaction,showPanel,showJoin,clearTransient,startLevel};';
 const moduleURL=URL.createObjectURL(new Blob([main],{type:'text/javascript'}));
-const html=(await(await fetch(base+'index.html')).text()).replace('<head>',`<head><base href="${base}"><script>Object.defineProperty(window,'localStorage',{value:{getItem:()=>null,setItem:()=>{}}});Math.random=()=>.5;<\/script>`).replace('src="src/main.js"',`src="${moduleURL}"`);
+const html=(await(await fetch(base+'index.html')).text()).replace('<head>',`<head><base href="${base}"><script>Object.defineProperty(window,'localStorage',{value:{getItem:()=>null,setItem:()=>{}}});Math.random=()=>.5;<\/script>`).replace(/src="src\/main\.js[^\"]*"/,`src="${moduleURL}"`);
 async function load(){const f=document.createElement('iframe'),loaded=new Promise(r=>f.onload=r);f.srcdoc=html;frame.replaceWith(f);frame=f;await loaded;d=f.contentDocument;w=f.contentWindow;for(let i=0;i<200&&!w.storyFixture;i++)await wait(20);if(!w.storyFixture)throw Error('앱 로딩 실패');}
 const click=id=>d.querySelector(id).click();
 const visible=id=>!d.querySelector(id).classList.contains('hidden');

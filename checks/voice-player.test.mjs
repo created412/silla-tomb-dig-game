@@ -29,6 +29,7 @@ test('voice player cancels stale loading, stops on advance, replays and mutes wi
     instance.events.ended(); assert.equal(states.at(-1).status, 'ended');
     player.stop(); assert.equal(instance.paused, true); assert.equal(instance.src, undefined);
     player.say('missing'); await new Promise(resolve => setImmediate(resolve)); assert.equal(states.at(-1).status, 'unavailable');
-    assert.equal(fetched.length, 1); assert.match(fetched[0], /assets\/voices\/manifest\.json$/);
+    assert.equal(fetched.length, 1); assert.match(new URL(fetched[0]).pathname, /assets\/voices\/manifest\.json$/);
+    assert.ok(new URL(fetched[0]).searchParams.get('v'), 'new releases must bypass old manifest caches');
   } finally { globalThis.Audio = oldAudio; globalThis.fetch = oldFetch; }
 });

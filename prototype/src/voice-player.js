@@ -10,7 +10,7 @@ export function createVoicePlayer(onChange = () => {}) {
   let catalog = {}, current = null, muted = false, token = 0;
   let status = 'idle';
   const notify = () => onChange({ muted, status, available: Boolean(current && catalog[current]) });
-  const ready = fetch(new URL('../assets/voices/manifest.json', import.meta.url))
+  const ready = fetch(new URL('../assets/voices/manifest.json?v=guardian-1', import.meta.url))
     .then(r => { if (!r.ok) throw new Error('voice manifest'); return r.json(); })
     .then(data => { catalog = data.clips || {}; }).catch(() => {});
   function stop() { token++; audio.pause(); audio.removeAttribute('src'); audio.load(); status = 'idle'; notify(); }
