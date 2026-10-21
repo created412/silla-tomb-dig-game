@@ -9,6 +9,7 @@ export const BIRD_HINT_MS = 3000;
 export const SUNSET_WARN_MS = 20000;
 export const SNAKE_WOOD_FLOOR = 0.4;
 export const DARK_START = 0.75; // 해 진행 75%부터 어두워짐
+export const WARN_WINDOW_MS = 3000; // 세게 문지르기·나무 찍기는 먼저 경고, 이 안에 또 하면 금
 const STAR3_TIME_LEFT = 0.4;
 
 const N = COLS * ROWS;
@@ -43,6 +44,7 @@ export function createChallenge(level, rng) {
   return {
     level, dig, worms, cracks: 0, crackCells: [], sunMs: level.sunMs, elapsedMs: 0,
     powers, fleeUntil: -Infinity, hintUntil: -Infinity, warned: false, outcome: null,
+    warnAt: -Infinity,
   };
 }
 
@@ -71,15 +73,25 @@ export function isLocked(ch, nowMs) {
 function crack(ch, cell, out) {
   ch.cracks += 1;
   ch.crackCells.push(cell);
+  ch.warnAt = -Infinity; // 금이 간 뒤 다음 실수는 다시 경고부터
   out.push({ type: 'crack', cell, cracks: ch.cracks });
   if (ch.cracks >= CRACKS_TO_BREAK) { ch.outcome = 'broken'; out.push({ type: 'broken' }); }
+}
+
+// 실수(세게 문지르기, 나무 찍기): 처음은 경고, WARN_WINDOW_MS 안에 또 하면 금.
+// 흙을 빠르게 문지르던 손이 그대로 나무에 닿는 흔한 경우를 한 번은 봐준다.
+function offense(ch, cell, nowMs, out) {
+  if (nowMs - ch.warnAt <= WARN_WINDOW_MS) { crack(ch, cell, out); return; }
+  ch.warnAt = nowMs;
+  out.push({ type: 'warn', cell });
 }
 
 export function processEvents(ch, events, nowMs) {
   const out = [...events];
   for (const e of events) {
     if (ch.outcome) break;
-    if ((e.type === 'tooHard' || e.type === 'collapse') && ch.dig.artifactCells.has(e.cell)) crack(ch, e.cell, out);
+    if (e.type === 'tooHard' && ch.dig.artifactCells.has(e.cell)) offense(ch, e.cell, nowMs, out);
+    else if (e.type === 'collapse' && ch.dig.artifactCells.has(e.cell)) crack(ch, e.cell, out);
     else if (e.type === 'artifactRevealed') { ch.outcome = 'found'; out.push({ type: 'found' }); }
   }
   return out;
@@ -95,7 +107,7 @@ export function afterRub(ch, cell, nowMs) {
 export function tapWood(ch, cell, nowMs) {
   if (ch.outcome || !ch.dig.artifactCells.has(cell) || topLayer(ch.dig, cell) !== 'wood') return [];
   const out = [];
-  crack(ch, cell, out);
+  offense(ch, cell, nowMs, out);
   return out;
 }
 
