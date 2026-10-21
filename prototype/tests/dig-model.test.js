@@ -113,7 +113,7 @@ test('brush: 살살 900ms면 나무 0', () => {
   const s = woodOnly(1, 1);
   brush(s, 0, 450, 0.3, 0); assert.ok(Math.abs(s.wood[0] - 0.5) < 1e-9);
   brush(s, 0, 1000, 0.3, 500); assert.equal(s.wood[0], 0);
-  assert.equal(BRUSH_RATE, 1 / 900); assert.equal(GENTLE_MAX_SPEED, 0.6); assert.equal(TOO_HARD_COOLDOWN_MS, 1000);
+  assert.equal(BRUSH_RATE, 1 / 900); assert.equal(GENTLE_MAX_SPEED, 1.2); assert.equal(TOO_HARD_COOLDOWN_MS, 1000);
 });
 
 test('brush: 세게 하면 진척 없고 tooHard, 1초에 한 번만', () => {
