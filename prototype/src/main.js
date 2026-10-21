@@ -1,4 +1,5 @@
 // 단계 기계: title → card → (wake) → dig → found | broken → result
+// 발굴 중 4컷 "기억 조각"이 끼어들고, 처음 깬 무덤 뒤에는 새 토우 합류 장면이 나온다.
 import { topLayer } from './dig-model.js';
 import { hintForLayer } from './hud.js';
 import { layoutGrid, cellAt } from './grid.js';
@@ -8,16 +9,18 @@ import { createRenderer } from './renderer.js';
 import { createSfx } from './sfx.js';
 import { attachInput } from './input.js';
 import { createEffects } from './effects.js';
-import { LEVELS, ARTIFACTS, FRIENDS, COLS, ROWS } from './levels.js';
+import { LEVELS, ARTIFACTS, FRIENDS, TOWOO_ABOUT, COLS, ROWS } from './levels.js';
 import {
   createChallenge, processEvents, afterRub, tapWood, usePower, stars, isLocked,
   WORM_FLEE_MS,
 } from './challenge.js';
 import { loadStars, saveStar, isUnlocked } from './stars-store.js';
 import { ARTIFACT_STORIES } from './artifact-stories.js';
+import { COMICS } from './comics.js';
+import { paintDom, comicSheet } from './art-dom.js';
 
 const TOP_PAD = 72, BOTTOM_PAD = 176, RIGHT_PAD = 126, SKY_BAND = 56; // CSS px. 아래 176 = 대사 상자(~60) + 토우(~100)
-const REACTION_MS = 2000, ADVANCE_GUARD_MS = 150, REVEAL_MS = 2400;
+const REACTION_MS = 2000, ADVANCE_GUARD_MS = 150, REVEAL_MS = 2400, PANEL_MIN_MS = 1500;
 const SKY_TIME = 0.15; // 하늘은 아침 해 고정 (시간 제한 없음)
 
 const $ = id => document.getElementById(id);
@@ -25,18 +28,22 @@ const canvas = $('dig');
 const el = {
   stage: $('stage'), hud: $('hud'), levelName: $('level-name'), hint: $('hint'), cracks: [...document.querySelectorAll('#cracks .crack')],
   powers: $('powers'), dialogue: $('dialogue'), speaker: $('speaker'), line: $('line'), tapHint: $('tap-hint'),
-  title: $('title'), levels: $('levels'),
+  title: $('title'), levels: $('levels'), shelf: $('shelf'), btnDex: $('btn-dex'),
   card: $('card'), cardKicker: $('card-kicker'), cardTitle: $('card-title'), cardInfo: $('card-info'), cardFriends: $('card-friends'),
   btnStart: $('btn-start'), btnBack: $('btn-back'),
-  result: $('result'), resultTitle: $('result-title'), resultSub: $('result-sub'), resultStars: [...document.querySelectorAll('#result-stars span')],
+  result: $('result'), resultArt: $('result-art'), resultTitle: $('result-title'), resultSub: $('result-sub'), resultStars: [...document.querySelectorAll('#result-stars span')],
   resultStarsBox: $('result-stars'), btnRetry: $('btn-retry'), btnNext: $('btn-next'), btnStory: $('btn-story'), btnHome: $('btn-home'),
-  story: $('story'), storyClose: $('story-close'), storyTitle: $('story-title'), storyMeta: $('story-meta'), storyWhat: $('story-what'), storyHello: $('story-hello'), storyNote: $('story-note'),
+  story: $('story'), storyClose: $('story-close'), storyTitle: $('story-title'), storyMeta: $('story-meta'), storyArt: $('story-art'), storyWhat: $('story-what'), storyHello: $('story-hello'), storyNote: $('story-note'),
+  comic: $('comic'), comicTitle: $('comic-title'), comicCanvas: $('comic-canvas'), comicWho: $('comic-who'), comicText: $('comic-text'), comicChoices: $('comic-choices'), comicNext: $('comic-next'),
+  join: $('join'), joinActor: $('join-actor'), joinName: $('join-name'), joinPower: $('join-power'), joinIntro: $('join-intro'), joinWhen: $('join-when'), joinOk: $('join-ok'),
+  dex: $('dex'), dexClose: $('dex-close'), dexAbout: $('dex-about-text'), dexCards: $('dex-cards'),
 };
 
 const renderer = createRenderer(canvas);
 const effects = createEffects(canvas);
 const sfx = createSfx();
 const dialogue = createDialogue(LINES);
+const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
 let storage = null; try { storage = localStorage; } catch { /* 저장 불가 */ }
 
 let phase = 'title';
@@ -47,7 +54,10 @@ let wormCell = -1, wormUntil = -Infinity;
 let foundAt = 0, resultKind = null, resultTimers = [];
 let lastTouchedCell = -1, lastAdvanceAt = -Infinity;
 let talkId = null, reactionTimer = null, wakeShown = false;
+let panelsShown = 0, comicOpen = false, comicTimer = null, comicOnClose = null; // 4컷
+let joinQueue = [], joinOnDone = null;                                           // 합류 장면
 const now = () => performance.now();
+const emojiOf = who => FRIENDS[who]?.emoji ?? '🐸';
 // 받침에 따라 조사 고르기: josa('금관','을','를') → '을', josa('말다래','을','를') → '를'
 function josa(word, withBatchim, without) {
   const code = word.charCodeAt(word.length - 1);
@@ -55,6 +65,7 @@ function josa(word, withBatchim, without) {
   return hangul && (code - 0xac00) % 28 !== 0 ? withBatchim : without;
 }
 const fillName = text => text.replace('{name}이', ARTIFACTS[level.id].name + josa(ARTIFACTS[level.id].name, '이', '')).replace('{name}', ARTIFACTS[level.id].name);
+const inputBlocked = () => comicOpen || !el.join.classList.contains('hidden') || !el.dex.classList.contains('hidden');
 
 // ---------- 레이아웃 ----------
 function resize() {
@@ -76,7 +87,7 @@ resize();
 function showLine(line, tappable) {
   if (!line) { el.dialogue.classList.add('hidden'); return; }
   el.dialogue.classList.remove('hidden');
-  el.speaker.textContent = line.who === 'frog' ? '🐸' : '🐍';
+  el.speaker.textContent = emojiOf(line.who);
   el.line.textContent = fillName(line.text);
   el.tapHint.classList.toggle('hidden', !tappable);
   renderer.speak(line.who);
@@ -99,7 +110,7 @@ function scheduleReaction() {
   }, REACTION_MS);
 }
 
-// 꼭 보여야 하는 반응: 보이던 반응을 끊고 바로 띄운다 (지렁이, 해 경고)
+// 꼭 보여야 하는 반응: 보이던 반응을 끊고 바로 띄운다 (지렁이, 금)
 function forceReaction(id) {
   if (talkId) return;
   clearTimeout(reactionTimer);
@@ -127,15 +138,17 @@ function advance() {
   showLine(null);
   end?.();
 }
-canvas.addEventListener('pointerdown', () => { if (talkId) advance(); });
+canvas.addEventListener('pointerdown', () => { if (talkId && !inputBlocked()) advance(); });
 el.dialogue.addEventListener('pointerdown', ev => { ev.stopPropagation(); advance(); });
 
 // ---------- 단계 ----------
-// 화면을 넘길 때 이전 화면의 타이머·대사 큐가 따라오지 않게 전부 비운다
+// 화면을 넘길 때 이전 화면의 타이머·대사 큐·만화·합류가 따라오지 않게 전부 비운다
 function clearTransient() {
   for (const t of resultTimers) clearTimeout(t); resultTimers = [];
   clearTimeout(reactionTimer); reactionTimer = null;
-  talkId = null; talkEnd = null;
+  clearTimeout(comicTimer); comicTimer = null;
+  talkId = null; talkEnd = null; comicOnClose = null; joinQueue = []; joinOnDone = null;
+  comicOpen = false; el.comic.classList.add('hidden'); el.join.classList.add('hidden');
   dialogue.play('__none__');
   showLine(null);
 }
@@ -151,6 +164,7 @@ function setPhase(next) {
 }
 
 function starText(n) { return '★'.repeat(n) + '☆'.repeat(3 - n); }
+const unlockedCount = () => LEVELS.filter((_, i) => isUnlocked(starsObj, i)).length;
 
 function buildLevels() {
   el.levels.innerHTML = '';
@@ -163,6 +177,11 @@ function buildLevels() {
     b.addEventListener('click', () => { sfx.unlock(); openCard(i); });
     el.levels.appendChild(b);
   });
+  // 찾은 유물 선반
+  el.shelf.innerHTML = '';
+  for (const l of LEVELS) if ((starsObj[l.id] ?? 0) > 0) {
+    const c = document.createElement('canvas'); c.dataset.art = l.id; c.title = ARTIFACTS[l.id].name; el.shelf.appendChild(c);
+  }
 }
 
 function openCard(i) {
@@ -171,9 +190,12 @@ function openCard(i) {
   const name = ARTIFACTS[level.id].name;
   el.cardTitle.textContent = `${name}${josa(name, '을', '를')} 찾아라`;
   el.cardInfo.textContent = `🪱 지렁이 ${level.worms}마리 · ${level.rockCoverage ? `🪨 돌 ${Math.round(level.rockCoverage * 100)}%` : '🪨 돌 없음'} · 지금까지 ${starText(starsObj[level.id] ?? 0)}`;
-  el.cardFriends.innerHTML = Object.entries(FRIENDS).map(([who, f]) =>
-    `<span class="${level.friends.includes(who) ? '' : 'locked'}">${f.emoji} ${f.name} · ${level.friends.includes(who) ? f.power : '아직 안 와'}</span>`).join('');
+  el.cardFriends.innerHTML = Object.entries(FRIENDS).map(([who, f]) => {
+    const here = level.friends.includes(who);
+    return `<span class="chip ${here ? '' : 'locked'}"><canvas data-actor="${who}" data-seed="${who.length * 97}" ${here ? '' : 'data-locked="1"'}></canvas><span>${f.name}<small>${here ? f.power : `무덤 ${f.joinsAt + 1}부터`}</small></span></span>`;
+  }).join('');
   renderer.setScene(level.scene === 2);
+  comicSheet(level.id); // 4컷 그림 미리 불러오기
   setPhase('card');
 }
 
@@ -199,7 +221,7 @@ function startLevel() {
   buildPowers();
   el.cracks.forEach(c => c.classList.remove('on'));
   el.levelName.textContent = `무덤 ${levelIndex + 1} · ${ARTIFACTS[level.id].name}`;
-  selectedPower = null; wormCell = -1; wormUntil = -Infinity; lastTouchedCell = -1; resultKind = null;
+  selectedPower = null; wormCell = -1; wormUntil = -Infinity; lastTouchedCell = -1; resultKind = null; panelsShown = 0;
   if (levelIndex === 0 && !wakeShown) {
     wakeShown = true;
     setPhase('wake');
@@ -209,6 +231,108 @@ function startLevel() {
   }
 }
 
+// ---------- 4컷 기억 조각 ----------
+// n: 0~2 이야기 컷, 3 질문 컷. 닫히면 onClose.
+function showPanel(n, onClose) {
+  const comic = COMICS[level.id]; if (!comic) { onClose?.(); return; }
+  comicOpen = true; comicOnClose = onClose; panelsShown = Math.max(panelsShown, n + 1);
+  setSelectedPower(null);
+  el.comicTitle.textContent = `${comic.title} · ${n + 1} / 4`;
+  el.comicCanvas.dataset.comic = level.id; el.comicCanvas.dataset.panel = String(n);
+  el.comicChoices.innerHTML = ''; el.comicChoices.classList.toggle('hidden', n !== 3);
+  el.comicNext.classList.toggle('hidden', n === 3);
+  el.comic.classList.remove('hidden');
+  sfx.glimmer();
+  if (n < 3) {
+    const p = comic.panels[n];
+    el.comicWho.textContent = emojiOf(p.who); el.comicText.textContent = p.text;
+    el.comicNext.disabled = true;
+    clearTimeout(comicTimer);
+    comicTimer = setTimeout(() => { el.comicNext.disabled = false; }, PANEL_MIN_MS);
+  } else {
+    el.comicWho.textContent = '❓'; el.comicText.textContent = comic.question;
+    comic.choices.forEach((c, k) => {
+      const b = document.createElement('button'); b.textContent = c.text; b.dataset.k = k;
+      b.addEventListener('click', () => answerChoice(k));
+      el.comicChoices.appendChild(b);
+    });
+  }
+}
+function answerChoice(k) {
+  const comic = COMICS[level.id], c = comic.choices[k];
+  const b = el.comicChoices.querySelector(`button[data-k="${k}"]`);
+  if (!b || b.disabled) return;
+  el.comicWho.textContent = emojiOf(c.gag.who); el.comicText.textContent = c.gag.text;
+  if (c.right) {
+    sfx.found();
+    b.dataset.right = '1';
+    for (const x of el.comicChoices.querySelectorAll('button')) x.disabled = true;
+    el.comicNext.textContent = '계속 ▶'; el.comicNext.disabled = false; el.comicNext.classList.remove('hidden');
+  } else {
+    sfx.collapse();
+    if (ch) ch.quizMiss = true;
+    b.dataset.wrong = '1'; b.disabled = true;
+  }
+}
+function closePanel() {
+  el.comic.classList.add('hidden'); comicOpen = false;
+  el.comicNext.textContent = '다음 ▶';
+  const f = comicOnClose; comicOnClose = null; f?.();
+}
+el.comicNext.addEventListener('click', () => { if (!el.comicNext.disabled) closePanel(); });
+
+// 발굴 중 컷 열기 조건: 1컷 = 유물 칸 하나가 나무까지 드러남, 2컷 = 유물 3칸 이상 완전히 드러남
+function checkComicCues() {
+  if (!ch || comicOpen || phase !== 'dig' || talkId) return;
+  if (panelsShown === 0) {
+    for (const i of ch.dig.artifactCells) if (ch.dig.soil[i] === 0 && ch.dig.rock[i] === 0) { showPanel(0); return; }
+  } else if (panelsShown === 1 && ch.dig.revealed.size >= 3) {
+    showPanel(1);
+  }
+}
+
+// ---------- 합류 장면 ----------
+function showJoin(who, onDone) {
+  const f = FRIENDS[who];
+  el.joinActor.dataset.actor = who;
+  el.joinName.textContent = `${f.emoji} ${f.name}`;
+  el.joinPower.textContent = `능력: ${f.power} — ${f.desc}`;
+  el.joinIntro.textContent = f.intro.join(' ');
+  el.joinWhen.textContent = `무덤 ${f.joinsAt + 1}부터 오른쪽 버튼에서 나를 눌러 봐.`;
+  el.join.classList.remove('hidden');
+  sfx.found();
+  joinOnDone = onDone;
+}
+el.joinOk.addEventListener('click', () => {
+  el.join.classList.add('hidden');
+  const next = joinQueue.shift();
+  if (next) showJoin(next, joinOnDone); else { const f = joinOnDone; joinOnDone = null; f?.(); }
+});
+// 이번 판을 처음 깼고 다음 무덤에 새 친구가 있으면 합류 장면을 큐에 담는다
+function queueJoins(prevStars) {
+  joinQueue = [];
+  if (prevStars > 0 || levelIndex + 1 >= LEVELS.length) return;
+  const next = LEVELS[levelIndex + 1];
+  for (const who of next.friends) if (!level.friends.includes(who)) joinQueue.push(who);
+}
+function runJoins(onDone) {
+  const first = joinQueue.shift();
+  if (first) showJoin(first, onDone); else onDone();
+}
+
+// ---------- 도감 ----------
+function openDex() {
+  el.dexAbout.innerHTML = TOWOO_ABOUT.map(t => `<p>${t}</p>`).join('');
+  const open = unlockedCount();
+  el.dexCards.innerHTML = Object.entries(FRIENDS).map(([who, f]) => {
+    const met = f.joinsAt < open;
+    return `<div class="dex-card ${met ? '' : 'locked'}"><canvas data-actor="${who}" data-seed="${who.length * 131}" ${met ? '' : 'data-locked="1"'}></canvas><h3>${met ? `${f.emoji} ${f.name}` : '???'}</h3><div class="power">${met ? f.power : `무덤 ${f.joinsAt + 1}에서 만나`}</div><p>${met ? f.desc : '아직 흙 속에서 자고 있어.'}</p>${met ? `<p class="real">${f.real}</p>` : ''}</div>`;
+  }).join('');
+  el.dex.classList.remove('hidden');
+}
+el.btnDex.addEventListener('click', () => { sfx.unlock(); openDex(); });
+el.dexClose.addEventListener('click', () => el.dex.classList.add('hidden'));
+
 // ---------- 토우 능력 ----------
 function setSelectedPower(who) {
   selectedPower = who;
@@ -216,7 +340,7 @@ function setSelectedPower(who) {
   updateHud(now());
 }
 function onPowerButton(who) {
-  if (phase !== 'dig' || !ch) return;
+  if (phase !== 'dig' || !ch || inputBlocked()) return;
   sfx.unlock();
   if (ch.powers[who] !== 1) { playReaction('powerUsed'); return; }
   if (selectedPower === who) { setSelectedPower(null); return; }
@@ -247,7 +371,7 @@ function applyPower(who, cell) {
   handle(events);
 }
 canvas.addEventListener('pointerdown', e => {
-  if (phase !== 'dig' || !selectedPower || !ch || isLocked(ch, now())) return;
+  if (phase !== 'dig' || !selectedPower || !ch || isLocked(ch, now()) || inputBlocked()) return;
   const rect = canvas.getBoundingClientRect();
   const cell = cellAt(layout, (e.clientX - rect.left) * canvas.width / rect.width, (e.clientY - rect.top) * canvas.height / rect.height);
   if (cell < 0) return;
@@ -259,7 +383,7 @@ canvas.addEventListener('pointerdown', e => {
 // ---------- 발굴 입력 ----------
 attachInput(canvas, {
   getLayout: () => layout,
-  getState: () => (phase === 'dig' && ch && !selectedPower && !isLocked(ch, now()) ? ch.dig : null),
+  getState: () => (phase === 'dig' && ch && !selectedPower && !isLocked(ch, now()) && !inputBlocked() ? ch.dig : null),
   onEvents: ev => handle(processEvents(ch, ev, now())),
   onRub: cell => { const t = now(); renderer.addDust(cell, layout, t, 'soil'); sfx.rub(); handle(afterRub(ch, cell, t)); },
   onBrush: cell => { renderer.addDust(cell, layout, now(), 'wood'); sfx.brush(); },
@@ -307,6 +431,7 @@ function onWorm(cell, t) {
   forceReaction('worm');
 }
 
+// 찾았다: 연출 → 3컷 → 만담 → 4컷(질문) → (합류) → 결과
 function onFound(t) {
   foundAt = t;
   setSelectedPower(null);
@@ -315,7 +440,13 @@ function onFound(t) {
   sfx.found();
   setPhase('found');
   clearTimeout(reactionTimer); showLine(null);
-  resultTimers.push(setTimeout(() => playTalk('found', () => showResult('found')), REVEAL_MS));
+  const prevStars = starsObj[level.id] ?? 0;
+  resultTimers.push(setTimeout(() => {
+    showPanel(2, () => playTalk('found', () => showPanel(3, () => {
+      queueJoins(prevStars);
+      runJoins(() => showResult('found'));
+    })));
+  }, REVEAL_MS));
 }
 
 function onBroken(t) {
@@ -334,13 +465,15 @@ function showResult(kind) {
   const name = ARTIFACTS[level.id].name;
   el.resultStars.forEach(s => s.classList.remove('on'));
   el.resultStarsBox.classList.toggle('hidden', kind !== 'found');
+  el.resultArt.classList.toggle('hidden', kind !== 'found');
+  el.resultArt.dataset.art = level.id;
   el.btnNext.classList.toggle('hidden', !(kind === 'found' && levelIndex < LEVELS.length - 1));
   el.btnStory.classList.toggle('hidden', kind !== 'found');
   if (kind === 'found') {
     const n = stars(ch);
     starsObj = saveStar(storage, starsObj, level.id, n);
     el.resultTitle.textContent = `찾았다! ${name}`;
-    el.resultSub.textContent = n === 3 ? '금 하나 없이 찾았어. 완벽!' : n === 2 ? '금이 조금 갔지만 찾았어.' : '겨우 찾았어. 다음엔 더 살살!';
+    el.resultSub.textContent = n === 3 ? '금 하나 없이, 질문도 맞혔어. 완벽!' : ch.quizMiss && ch.cracks === 0 ? '찾았어! 다음엔 기억 조각을 잘 봐.' : n === 2 ? '금이 조금 갔지만 찾았어.' : '겨우 찾았어. 다음엔 더 살살!';
     for (let k = 0; k < n; k++) resultTimers.push(setTimeout(() => { el.resultStars[k].classList.add('on'); sfx.star(); }, 400 + k * 500));
     resultTimers.push(setTimeout(() => playReaction(`star${n}`), 400 + n * 500 + 200));
   } else {
@@ -360,6 +493,7 @@ el.btnStory.addEventListener('click', () => {
   const s = ARTIFACT_STORIES[level.id]; if (!s) return;
   el.storyTitle.textContent = ARTIFACTS[level.id].name;
   el.storyMeta.textContent = [s.period, s.age, s.place].filter(Boolean).join(' · ');
+  el.storyArt.dataset.art = level.id;
   el.storyWhat.textContent = s.what;
   el.storyHello.textContent = (s.hello ?? []).join(' ');
   el.storyNote.textContent = s.note ?? '';
@@ -382,7 +516,7 @@ function rendererPhase() {
   return 'dig';
 }
 function frame(t) {
-  if (phase === 'dig' && ch) updateHud(t);
+  if (phase === 'dig' && ch) { updateHud(t); checkComicCues(); }
   const rp = rendererPhase();
   renderer.draw(rp === 'title' ? null : ch?.dig ?? null, layout, t, rp, t - foundAt);
   if (rp !== 'title' && ch) {
@@ -393,6 +527,7 @@ function frame(t) {
       effects.drawWorm(wormCell, layout, t, wormUntil);
     }
   }
+  paintDom(document, t, reduced.matches);
   requestAnimationFrame(frame);
 }
 buildLevels();
@@ -400,4 +535,4 @@ setPhase('title');
 requestAnimationFrame(frame);
 
 // 교사·검증용 훅 (콘솔에서 sillaDebug.challenge 로 현재 판 상태를 본다)
-window.sillaDebug = { get challenge() { return ch; }, get phase() { return phase; }, get layout() { return layout; } };
+window.sillaDebug = { get challenge() { return ch; }, get phase() { return phase; }, get layout() { return layout; }, get panels() { return panelsShown; } };

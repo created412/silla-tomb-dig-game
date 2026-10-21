@@ -42,6 +42,7 @@ export function createChallenge(level, rng) {
     level, dig, worms, cracks: 0, crackCells: [],
     powers, fleeUntil: -Infinity, hintUntil: -Infinity, outcome: null,
     warnAt: -Infinity,
+    quizMiss: false, // 4컷 마지막 질문을 틀렸는가 (별 1개 감점)
   };
 }
 
@@ -129,5 +130,5 @@ export function usePower(ch, who, cell, nowMs) {
 
 export function stars(ch) {
   if (ch.outcome !== 'found') return 0;
-  return Math.max(1, 3 - ch.cracks); // 금 0개 = 3, 1개 = 2, 2개 = 1
+  return Math.max(1, 3 - ch.cracks - (ch.quizMiss ? 1 : 0)); // 금 0개 = 3, 1개 = 2, 2개 = 1. 질문 틀리면 -1
 }

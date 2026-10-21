@@ -194,6 +194,19 @@ test('bird power sets hint window and is single-use; unknown friend fails', () =
   assert.equal(usePower(ch, 'turtle', 0, 2000).ok, false); // 레벨 1엔 거북 없음
 });
 
+test('a wrong comic answer costs one star (quizMiss)', () => {
+  const ch = make(0);
+  processEvents(ch, [{ type: 'artifactRevealed' }], 0);
+  assert.equal(stars(ch), 3);
+  ch.quizMiss = true;
+  assert.equal(stars(ch), 2);
+  const a = [...ch.dig.artifactCells][0];
+  const ch2 = make(0);
+  processEvents(ch2, [{ type: 'collapse', cell: a }, { type: 'collapse', cell: a }, { type: 'artifactRevealed' }], 0);
+  ch2.quizMiss = true;
+  assert.equal(stars(ch2), 1, '별은 1개 아래로 내려가지 않음');
+});
+
 test('stars depend only on cracks: 0 → 3, 1 → 2, 2 → 1, not found → 0', () => {
   const ch = make(0);
   assert.equal(stars(ch), 0);

@@ -85,7 +85,7 @@ export function createRenderer(canvas) {
     ctx.save();ctx.translate(w/2,cy);ctx.rotate(reduced.matches?0:Math.sin(t/9000)*.025);
     for(let i=0;i<14;i++){const a=i/14*Math.PI*2;path(ctx,[[Math.cos(a)*size*.34,Math.sin(a)*size*.34],[Math.cos(a-.035)*size*.78,Math.sin(a-.035)*size*.78],[Math.cos(a+.035)*size*.78,Math.sin(a+.035)*size*.78]],'rgba(244,211,132,.07)');}ctx.restore();
     const s=(.3+.7*eased)*size,dy=(1-eased)*h*.18;
-    ctx.save();ctx.shadowColor='rgba(6,26,21,.6)';ctx.shadowBlur=15*dp;ctx.shadowOffsetY=12*dp;drawArtifact(ctx,artifactId,w/2-s*.56,cy-s*.5+dy,s*1.12,s);ctx.restore();
+    ctx.save();ctx.shadowColor='rgba(6,26,21,.6)';ctx.shadowBlur=15*dp;ctx.shadowOffsetY=12*dp;if(!drawGeneratedArtifact(ctx,artifactId,w/2-s*.56,cy-s*.5+dy,s*1.12,s))drawArtifact(ctx,artifactId,w/2-s*.56,cy-s*.5+dy,s*1.12,s);ctx.restore();
     if(p>.4)for(let i=0;i<12;i++){const a=i*2.4,r=size*(.47+(i%3)*.08),wave=reduced.matches?1:.65+.35*Math.sin(t/330+i);star(ctx,w/2+Math.cos(a)*r,cy+Math.sin(a)*r*.75,(3+(i%3)*2)*dp*wave);}
     friends(t,phase,eased);
   }

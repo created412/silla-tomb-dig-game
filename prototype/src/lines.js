@@ -2,6 +2,8 @@
 // found[0]의 {name}은 main.js가 유물 이름으로 바꾼다.
 export const LINES = {
   wake: [
+    { who: 'frog', text: '우린 토우야. 신라 사람들이 흙으로 빚은 작은 인형.' },
+    { who: 'snake', text: '무덤에 같이 묻혔다가… 지금 깼어.' },
     { who: 'frog', text: '오래 잠들었더니… 우리 주인이 기억 안 나.' },
     { who: 'snake', text: '저기 반짝이는 게 단서 아닐까?' },
     { who: 'frog', text: '같이 찾아줄래? 나는 손이 너무 작아.' },

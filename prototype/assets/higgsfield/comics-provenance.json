@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-21",
+  "request": "Five 4-panel artifact memory comics (how each artifact was used ~1500 years ago, told by the clay toy companions) and one towoo intro illustration, in the existing Higgsfield diorama style. Requested by the planner (teacher).",
+  "model": "gpt_image_2_5",
+  "quality": "medium",
+  "resolution": "1k",
+  "creditsEach": 0.5,
+  "totalCredits": 3.0,
+  "assets": [
+    { "file": "comic-crown.png",  "jobId": "842d9858-47d0-4f29-b494-eeda30d5bf86", "aspect": "1:1", "panels": "TL palace hall crowned figure / TR crown spangles close-up / BL ceremony seen from afar / BR crown alone (question panel)" },
+    { "file": "comic-saddle.png", "jobId": "177ec4bc-2cf9-4644-9d6e-9b8e9d796d4e", "aspect": "1:1", "panels": "TL rider with mudguard / TR mud splash / BL painting the winged horse on birch bark / BR mudguard alone" },
+    { "file": "comic-glass.png",  "jobId": "382f7e19-13ab-4f2d-8bed-2233b013b3a3", "aspect": "1:1", "panels": "TL western glassblower / TR caravan and boat journey / BL Silla noble admiring the cup / BR cup alone" },
+    { "file": "comic-ewer.png",   "jobId": "01028ed1-568a-415a-b823-454700a40248", "aspect": "1:1", "panels": "TL pouring / TR handle snaps / BL gold-wire repair / BR ewer alone" },
+    { "file": "comic-belt.png",   "jobId": "c56b7b94-c15e-4638-82dd-abfb6d1fe10f", "aspect": "1:1", "panels": "TL fastening the belt / TR pendants close-up / BL goldsmith joining plaques / BR belt alone" },
+    { "file": "towoo-shelf.png",  "jobId": "e77cf572-ee90-4536-b1e0-d5e9b4d5b9fa", "aspect": "3:2", "use": "도감 상단 '토우가 뭐야?' 삽화" }
+  ],
+  "styleNote": "People are stylized clay figurines (towoo-like), no text in images; all captions live in src/comics.js so the teacher can edit them. Scenes are fictional educational illustrations, not reconstructions; historical review by the teacher pending.",
+  "processing": "Panels are cropped at runtime from the 2x2 sheet (src/art-dom.js), 2.5% inset to hide gutters. No paid post-processing."
+}

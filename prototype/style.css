@@ -72,8 +72,10 @@ button.level:disabled { opacity: .5; cursor: not-allowed; filter: grayscale(.6);
 .panel p { margin: 6px 0; font-size: 20px; }
 .panel .rule { font-size: 18px; opacity: .9; }
 #card-friends { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
-#card-friends span { background: rgba(255,247,226,.14); border-radius: 12px; padding: 6px 10px; font-size: 18px; }
-#card-friends span.locked { opacity: .45; }
+#card-friends .chip { background: rgba(255,247,226,.14); border-radius: 14px; padding: 6px 12px 6px 6px; font-size: 18px; display: flex; align-items: center; gap: 8px; }
+#card-friends .chip canvas { width: 54px; height: 54px; }
+#card-friends .chip small { display: block; font-size: 14px; opacity: .85; }
+#card-friends .chip.locked { opacity: .5; }
 
 .row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 14px; }
 button.big { min-height: 56px; min-width: 140px; padding: 12px 24px; font-size: 22px; font-weight: 700;
@@ -107,3 +109,50 @@ button.big.ghost { background: transparent; color: #fff; border: 3px solid rgba(
   .panel h2 { font-size: 26px; }
   .panel p { font-size: 17px; }
 }
+
+/* 제목: 도감 버튼 + 찾은 유물 선반 */
+.title-row { align-items: center; margin-top: 16px; }
+#shelf { display: flex; gap: 6px; align-items: flex-end; min-height: 56px; padding: 4px 10px; border-bottom: 4px solid #6b4a2b; border-radius: 0 0 6px 6px; }
+#shelf canvas { width: 56px; height: 56px; }
+#shelf:empty { display: none; }
+
+/* 4컷 만화 */
+#comic { z-index: 8; background: rgba(8, 24, 20, .82); }
+.comic-box { width: min(92vw, 560px); max-height: 100%; display: flex; flex-direction: column; gap: 10px; }
+#comic-canvas { width: 100%; aspect-ratio: 1 / 1; max-height: calc(100vh - 230px); max-height: calc(100dvh - 230px); border-radius: 16px; background: #2a3b36; box-shadow: 0 8px 30px rgba(0,0,0,.5); }
+.comic-bubble { background: var(--paper); color: var(--ink); border-radius: 16px; padding: 10px 16px; font-size: 21px; line-height: 1.4; display: flex; gap: 10px; align-items: center; }
+.comic-bubble #comic-who { font-size: 30px; }
+#comic-choices { display: flex; flex-direction: column; gap: 8px; }
+#comic-choices button { min-height: 48px; font-size: 20px; border-radius: 14px; border: 3px solid rgba(255,255,255,.5); background: rgba(255,247,226,.95); color: var(--ink); cursor: pointer; text-align: left; padding: 8px 14px; }
+#comic-choices button[data-wrong="1"] { opacity: .45; text-decoration: line-through; }
+#comic-choices button[data-right="1"] { border-color: var(--gold); background: #fff0b8; }
+#comic-next:disabled { opacity: .5; cursor: wait; position: relative; overflow: hidden; }
+#comic-next:disabled::after { content: ''; position: absolute; left: 0; bottom: 0; height: 4px; background: var(--gold-dark); animation: fill 1.5s linear forwards; }
+@keyframes fill { from { width: 0; } to { width: 100%; } }
+.comic-box .row { justify-content: flex-end; margin-top: 0; }
+
+/* 합류 */
+#join { z-index: 8; }
+.join-panel { text-align: center; max-width: 520px; }
+#join-actor { width: 220px; height: 200px; }
+.join-panel h2 { margin: 4px 0 0; }
+
+/* 도감 */
+#dex { z-index: 8; }
+.dex-panel { max-width: 900px; max-height: 100%; overflow: auto; }
+#dex-close { float: right; }
+.dex-about { display: flex; gap: 16px; align-items: center; margin-bottom: 14px; }
+#dex-shelf { width: 240px; max-width: 40%; border-radius: 14px; box-shadow: 0 4px 16px rgba(0,0,0,.4); }
+#dex-about-text p { margin: 4px 0; font-size: 19px; }
+#dex-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+.dex-card { background: rgba(255,247,226,.1); border-radius: 16px; padding: 12px; text-align: center; }
+.dex-card canvas { width: 140px; height: 130px; }
+.dex-card h3 { margin: 4px 0 0; font-size: 22px; color: var(--gold); }
+.dex-card .power { font-size: 18px; font-weight: 700; }
+.dex-card p { font-size: 16px; margin: 6px 0; opacity: .9; }
+.dex-card.locked { opacity: .6; }
+.dex-card .real { font-size: 15px; border-top: 1px solid rgba(255,255,255,.2); padding-top: 6px; }
+
+/* 결과·이야기 유물 그림 */
+#result-art { width: 120px; height: 120px; }
+#story-art { width: 200px; height: 160px; float: right; margin: 0 0 8px 12px; }
