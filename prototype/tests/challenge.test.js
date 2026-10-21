@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { LEVELS, ARTIFACTS, COLS } from '../src/levels.js';
 import { topLayer } from '../src/dig-model.js';
 import {
-  CRACKS_TO_BREAK, WORM_FLEE_MS, BIRD_HINT_MS, SUNSET_WARN_MS, SNAKE_WOOD_FLOOR,
+  CRACKS_TO_BREAK, WORM_FLEE_MS, BIRD_HINT_MS, SUNSET_WARN_MS, SNAKE_WOOD_FLOOR, WARN_WINDOW_MS,
   placeArtifact, createChallenge, tick, timeLeftRatio, isLocked,
   processEvents, afterRub, tapWood, usePower, stars,
 } from '../src/challenge.js';
@@ -46,51 +46,72 @@ test('worms never sit on artifact cells and count matches level', () => {
   }
 });
 
-test('tooHard on artifact cell adds a crack; off artifact does not', () => {
+test('tooHard on artifact cell warns first, cracks on a second offense within the window', () => {
   const ch = make(0);
   const a = [...ch.dig.artifactCells][0];
   const off = [...Array(84).keys()].find(i => !ch.dig.artifactCells.has(i));
   const out = processEvents(ch, [{ type: 'tooHard', cell: a }], 0);
-  assert.deepEqual(out, [{ type: 'tooHard', cell: a }, { type: 'crack', cell: a, cracks: 1 }]);
-  assert.equal(ch.cracks, 1);
+  assert.deepEqual(out, [{ type: 'tooHard', cell: a }, { type: 'warn', cell: a }]);
+  assert.equal(ch.cracks, 0);
+  const out2 = processEvents(ch, [{ type: 'tooHard', cell: a }], WARN_WINDOW_MS);
+  assert.deepEqual(out2, [{ type: 'tooHard', cell: a }, { type: 'crack', cell: a, cracks: 1 }]);
   assert.deepEqual(ch.crackCells, [a]);
-  assert.deepEqual(processEvents(ch, [{ type: 'tooHard', cell: off }], 0), [{ type: 'tooHard', cell: off }]);
+  assert.deepEqual(processEvents(ch, [{ type: 'tooHard', cell: off }], 4000), [{ type: 'tooHard', cell: off }]);
   assert.equal(ch.cracks, 1);
 });
 
-test('collapse on artifact cell adds a crack', () => {
+test('a warning expires: offenses farther apart than the window only warn', () => {
+  const ch = make(0);
+  const a = [...ch.dig.artifactCells][0];
+  processEvents(ch, [{ type: 'tooHard', cell: a }], 0);
+  const out = processEvents(ch, [{ type: 'tooHard', cell: a }], WARN_WINDOW_MS + 1);
+  assert.equal(out.at(-1).type, 'warn');
+  assert.equal(ch.cracks, 0);
+});
+
+test('after a crack the next offense warns again (no double-crack streaks)', () => {
+  const ch = make(0);
+  const a = [...ch.dig.artifactCells][0];
+  processEvents(ch, [{ type: 'tooHard', cell: a }], 0);
+  processEvents(ch, [{ type: 'tooHard', cell: a }], 1000); // crack 1
+  const out = processEvents(ch, [{ type: 'tooHard', cell: a }], 2000);
+  assert.equal(out.at(-1).type, 'warn');
+  assert.equal(ch.cracks, 1);
+});
+
+test('collapse on artifact cell cracks immediately (no warning)', () => {
   const ch = make(0);
   const a = [...ch.dig.artifactCells][2];
   const out = processEvents(ch, [{ type: 'collapse', cell: a }], 0);
-  assert.ok(out.some(e => e.type === 'crack'));
+  assert.equal(out.at(-1).type, 'crack');
   assert.equal(ch.cracks, 1);
 });
 
 test('third crack breaks the artifact and sets outcome', () => {
   const ch = make(0);
   const a = [...ch.dig.artifactCells][0];
-  processEvents(ch, [{ type: 'tooHard', cell: a }], 0);
-  processEvents(ch, [{ type: 'tooHard', cell: a }], 1000);
-  const out = processEvents(ch, [{ type: 'tooHard', cell: a }], 2000);
+  processEvents(ch, [{ type: 'collapse', cell: a }], 0);
+  processEvents(ch, [{ type: 'collapse', cell: a }], 1000);
+  const out = processEvents(ch, [{ type: 'collapse', cell: a }], 2000);
   assert.equal(ch.cracks, CRACKS_TO_BREAK);
   assert.equal(ch.outcome, 'broken');
   assert.equal(out.at(-1).type, 'broken');
   // 이후 입력은 통과만 하고 금은 더 늘지 않는다
-  processEvents(ch, [{ type: 'tooHard', cell: a }], 3000);
+  processEvents(ch, [{ type: 'collapse', cell: a }], 3000);
   assert.equal(ch.cracks, CRACKS_TO_BREAK);
 });
 
-test('tapWood cracks only on wood over artifact', () => {
+test('tapWood warns, then cracks, only on wood over artifact', () => {
   const ch = make(0);
   const a = [...ch.dig.artifactCells][1];
   assert.deepEqual(tapWood(ch, a, 0), []); // 아직 흙 위
   expose(ch, a);
   assert.equal(topLayer(ch.dig, a), 'wood');
-  const out = tapWood(ch, a, 0);
-  assert.equal(out[0].type, 'crack');
+  assert.equal(tapWood(ch, a, 0)[0].type, 'warn');
+  assert.equal(tapWood(ch, a, 500)[0].type, 'crack');
   const off = [...Array(84).keys()].find(i => !ch.dig.artifactCells.has(i));
   expose(ch, off);
-  assert.deepEqual(tapWood(ch, off, 0), []);
+  assert.deepEqual(tapWood(ch, off, 600), []);
   assert.equal(ch.cracks, 1);
 });
 
@@ -198,14 +219,14 @@ test('stars: 3 for clean and fast, 2 for one crack, 1 otherwise, 0 if not found'
   assert.equal(stars(ch), 3);
   const ch2 = make(0);
   const a = [...ch2.dig.artifactCells][0];
-  processEvents(ch2, [{ type: 'tooHard', cell: a }, { type: 'artifactRevealed' }], 0);
+  processEvents(ch2, [{ type: 'collapse', cell: a }, { type: 'artifactRevealed' }], 0);
   assert.equal(stars(ch2), 2);
   const ch3 = make(0);
   tick(ch3, LEVELS[0].sunMs * 0.7);
   processEvents(ch3, [{ type: 'artifactRevealed' }], 0);
   assert.equal(stars(ch3), 2); // 금 0개지만 느림
   const ch4 = make(0);
-  processEvents(ch4, [{ type: 'tooHard', cell: a }], 0);
-  processEvents(ch4, [{ type: 'tooHard', cell: a }, { type: 'artifactRevealed' }], 1500);
+  processEvents(ch4, [{ type: 'collapse', cell: a }], 0);
+  processEvents(ch4, [{ type: 'collapse', cell: a }, { type: 'artifactRevealed' }], 1500);
   assert.equal(stars(ch4), 1);
 });

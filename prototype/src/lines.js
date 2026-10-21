@@ -18,6 +18,7 @@ export const LINES = {
   glimmer: [{ who: 'frog', text: '어? 뭔가 반짝여!' }],
   rockDrag: [{ who: 'snake', text: '돌은 문질러도 소용없어. 톡톡 두드려.' }],
 
+  warn: [{ who: 'frog', text: '살살! 한 번만 더 하면 금 가!' }],
   crack1: [{ who: 'frog', text: '으악! 금 갔어! 살살!' }],
   crack2: [{ who: 'snake', text: '한 번만 더 가면 끝이야…' }],
   broken: [

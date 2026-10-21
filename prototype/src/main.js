@@ -277,12 +277,13 @@ function handle(events) {
   const t = now();
   for (const e of events) {
     switch (e.type) {
-      case 'tooHard': renderer.react('tooHard', t); renderer.speak('frog'); if (!ch.dig.artifactCells.has(e.cell)) playReaction('tooHard'); break;
+      case 'tooHard': if (!ch.dig.artifactCells.has(e.cell)) { renderer.react('tooHard', t); renderer.speak('frog'); playReaction('tooHard'); } break;
       case 'collapse': renderer.shake(300, t); sfx.collapse(); renderer.addDust(e.cell, layout, t, 'collapse'); if (!ch.dig.artifactCells.has(e.cell)) playReaction('collapse'); break;
       case 'glimmer': sfx.glimmer(); renderer.react('glimmer', t); playReaction('glimmer'); break;
       case 'chip': sfx.tap(); renderer.addDust(e.cell, layout, t, 'rock'); break;
       case 'rockBroken': sfx.crack(); renderer.addDust(e.cell, layout, t, 'rock'); break;
       case 'artifactCell': sfx.tap(); break;
+      case 'warn': sfx.tap(); renderer.react('tooHard', t); renderer.speak('frog'); forceReaction('warn'); el.cracks.forEach(c => c.classList.add('warn')); setTimeout(() => el.cracks.forEach(c => c.classList.remove('warn')), 600); break;
       case 'crack': onCrack(e, t); break;
       case 'broken': onBroken(t); break;
       case 'worm': onWorm(e.cell, t); break;
@@ -299,8 +300,8 @@ function onCrack(e, t) {
   renderer.react('tooHard', t);
   renderer.speak('frog');
   el.cracks.forEach((c, k) => c.classList.toggle('on', k < e.cracks));
-  if (e.cracks === 1) playReaction('crack1');
-  else if (e.cracks === 2) playReaction('crack2');
+  if (e.cracks === 1) forceReaction('crack1');
+  else if (e.cracks === 2) forceReaction('crack2');
 }
 
 function onWorm(cell, t) {
