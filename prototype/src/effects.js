@@ -54,12 +54,6 @@ export function createEffects(canvas) {
       }
     },
 
-    drawDarkness(dk) {
-      if (dk <= 0) return;
-      ctx.fillStyle = `rgba(10,16,40,${0.82 * Math.min(1, dk)})`;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-    },
-
     // 금 간 유물 칸: 흰빛 금 선 (셀 인덱스로 시드, 매 프레임 동일)
     drawCracks(cells, layout, tMs) {
       const d = dp();

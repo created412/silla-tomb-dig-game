@@ -74,7 +74,6 @@ export function createSfx() {
       tone({ type: 'sine', from: 900, to: 600, ms: 90, gain: 0.12, at: 0.09 });
     },
     star() { tone({ type: 'triangle', from: 880, ms: 60, gain: 0.2 }); tone({ type: 'triangle', from: 1320, ms: 120, gain: 0.14, at: 0.05 }); },
-    sunset() { tone({ type: 'sine', from: 330, to: 165, ms: 600, gain: 0.12 }); },
     power() { tone({ type: 'triangle', from: 440, to: 660, ms: 120, gain: 0.16 }); },
   };
 }

@@ -1,4 +1,4 @@
-// 한 판의 도전 규칙. dig-model 위에 얹는 순수 계층: 무작위 배치, 꽝 돌, 지렁이, 금, 해, 토우 능력, 별.
+// 한 판의 도전 규칙. dig-model 위에 얹는 순수 계층: 무작위 배치, 꽝 돌, 지렁이, 금, 토우 능력, 별. 시간 제한 없음.
 // 무작위는 주입한 rng()로만 쓴다.
 import { COLS, ROWS, ARTIFACTS } from './levels.js';
 import { createDig, topLayer } from './dig-model.js';
@@ -6,11 +6,8 @@ import { createDig, topLayer } from './dig-model.js';
 export const CRACKS_TO_BREAK = 3;
 export const WORM_FLEE_MS = 2000;
 export const BIRD_HINT_MS = 3000;
-export const SUNSET_WARN_MS = 20000;
 export const SNAKE_WOOD_FLOOR = 0.4;
-export const DARK_START = 0.75; // 해 진행 75%부터 어두워짐
 export const WARN_WINDOW_MS = 3000; // 세게 문지르기·나무 찍기는 먼저 경고, 이 안에 또 하면 금
-const STAR3_TIME_LEFT = 0.4;
 
 const N = COLS * ROWS;
 
@@ -42,28 +39,10 @@ export function createChallenge(level, rng) {
   const powers = {};
   for (const who of level.friends) powers[who] = 1;
   return {
-    level, dig, worms, cracks: 0, crackCells: [], sunMs: level.sunMs, elapsedMs: 0,
-    powers, fleeUntil: -Infinity, hintUntil: -Infinity, warned: false, outcome: null,
+    level, dig, worms, cracks: 0, crackCells: [],
+    powers, fleeUntil: -Infinity, hintUntil: -Infinity, outcome: null,
     warnAt: -Infinity,
   };
-}
-
-export function tick(ch, dtMs) {
-  if (ch.outcome) return [];
-  ch.elapsedMs = Math.min(ch.sunMs, ch.elapsedMs + dtMs);
-  const events = [];
-  if (!ch.warned && ch.sunMs - ch.elapsedMs <= SUNSET_WARN_MS) { ch.warned = true; events.push({ type: 'sunsetWarn' }); }
-  if (ch.elapsedMs >= ch.sunMs) { ch.outcome = 'sunset'; events.push({ type: 'sunset' }); }
-  return events;
-}
-
-export function timeLeftRatio(ch) {
-  return Math.max(0, 1 - ch.elapsedMs / ch.sunMs);
-}
-
-export function darkness(ch) {
-  const p = 1 - timeLeftRatio(ch);
-  return p < DARK_START ? 0 : Math.min(1, (p - DARK_START) / (1 - DARK_START));
 }
 
 export function isLocked(ch, nowMs) {
@@ -150,7 +129,5 @@ export function usePower(ch, who, cell, nowMs) {
 
 export function stars(ch) {
   if (ch.outcome !== 'found') return 0;
-  if (ch.cracks === 0 && timeLeftRatio(ch) >= STAR3_TIME_LEFT) return 3;
-  if (ch.cracks <= 1) return 2;
-  return 1;
+  return Math.max(1, 3 - ch.cracks); // 금 0개 = 3, 1개 = 2, 2개 = 1
 }

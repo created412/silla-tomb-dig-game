@@ -45,7 +45,7 @@ button.power[data-used="1"] { opacity: .4; text-decoration: line-through; box-sh
 #line { flex: 1; }
 #tap-hint { font-size: 14px; color: var(--teal); }
 #stage[data-phase="result"] #dialogue { bottom: 190px; right: 16px; }
-#stage[data-phase="wake"] #dialogue, #stage[data-phase="found"] #dialogue, #stage[data-phase="broken"] #dialogue, #stage[data-phase="sunset"] #dialogue { bottom: 112px; }
+#stage[data-phase="wake"] #dialogue, #stage[data-phase="found"] #dialogue, #stage[data-phase="broken"] #dialogue { bottom: 112px; }
 
 /* 오버레이 */
 .overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 24px; z-index: 6; }
