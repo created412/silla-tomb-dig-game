@@ -1,4 +1,4 @@
-// 단계 기계: title → card → (wake) → dig → found | broken | sunset → result
+// 단계 기계: title → card → (wake) → dig → found | broken → result
 import { topLayer } from './dig-model.js';
 import { hintForLayer } from './hud.js';
 import { layoutGrid, cellAt } from './grid.js';
@@ -10,7 +10,7 @@ import { attachInput } from './input.js';
 import { createEffects } from './effects.js';
 import { LEVELS, ARTIFACTS, FRIENDS, COLS, ROWS } from './levels.js';
 import {
-  createChallenge, tick, processEvents, afterRub, tapWood, usePower, stars, isLocked, darkness, timeLeftRatio,
+  createChallenge, processEvents, afterRub, tapWood, usePower, stars, isLocked,
   WORM_FLEE_MS,
 } from './challenge.js';
 import { loadStars, saveStar, isUnlocked } from './stars-store.js';
@@ -18,6 +18,7 @@ import { ARTIFACT_STORIES } from './artifact-stories.js';
 
 const TOP_PAD = 72, BOTTOM_PAD = 176, RIGHT_PAD = 126, SKY_BAND = 56; // CSS px. 아래 176 = 대사 상자(~60) + 토우(~100)
 const REACTION_MS = 2000, ADVANCE_GUARD_MS = 150, REVEAL_MS = 2400;
+const SKY_TIME = 0.15; // 하늘은 아침 해 고정 (시간 제한 없음)
 
 const $ = id => document.getElementById(id);
 const canvas = $('dig');
@@ -44,7 +45,7 @@ let starsObj = loadStars(storage);
 let selectedPower = null;
 let wormCell = -1, wormUntil = -Infinity;
 let foundAt = 0, resultKind = null, resultTimers = [];
-let lastFrameT = 0, lastTouchedCell = -1, lastAdvanceAt = -Infinity;
+let lastTouchedCell = -1, lastAdvanceAt = -Infinity;
 let talkId = null, reactionTimer = null, wakeShown = false;
 const now = () => performance.now();
 // 받침에 따라 조사 고르기: josa('금관','을','를') → '을', josa('말다래','을','를') → '를'
@@ -164,17 +165,12 @@ function buildLevels() {
   });
 }
 
-function sunText(ms) {
-  const s = Math.round(ms / 1000), m = Math.floor(s / 60), r = s % 60;
-  return m ? `약 ${m}분${r ? ` ${r}초` : ''}` : `약 ${r}초`;
-}
-
 function openCard(i) {
   levelIndex = i; level = LEVELS[i];
   el.cardKicker.textContent = `무덤 ${i + 1} · ${level.tomb}`;
   const name = ARTIFACTS[level.id].name;
   el.cardTitle.textContent = `${name}${josa(name, '을', '를')} 찾아라`;
-  el.cardInfo.textContent = `🌞 해가 떠 있는 시간: ${sunText(level.sunMs)} · 🪱 지렁이 ${level.worms}마리 · 지금까지 ${starText(starsObj[level.id] ?? 0)}`;
+  el.cardInfo.textContent = `🪱 지렁이 ${level.worms}마리 · ${level.rockCoverage ? `🪨 돌 ${Math.round(level.rockCoverage * 100)}%` : '🪨 돌 없음'} · 지금까지 ${starText(starsObj[level.id] ?? 0)}`;
   el.cardFriends.innerHTML = Object.entries(FRIENDS).map(([who, f]) =>
     `<span class="${level.friends.includes(who) ? '' : 'locked'}">${f.emoji} ${f.name} · ${level.friends.includes(who) ? f.power : '아직 안 와'}</span>`).join('');
   renderer.setScene(level.scene === 2);
@@ -288,8 +284,6 @@ function handle(events) {
       case 'broken': onBroken(t); break;
       case 'worm': onWorm(e.cell, t); break;
       case 'found': onFound(t); break;
-      case 'sunsetWarn': sfx.sunset(); forceReaction('sunsetWarn'); break;
-      case 'sunset': onSunset(t); break;
     }
   }
 }
@@ -335,15 +329,6 @@ function onBroken(t) {
   resultTimers.push(setTimeout(() => playTalk('broken', () => showResult('broken')), 800));
 }
 
-function onSunset(t) {
-  setSelectedPower(null);
-  sfx.sunset();
-  renderer.react('tooHard', t);
-  setPhase('sunset');
-  clearTimeout(reactionTimer); showLine(null);
-  resultTimers.push(setTimeout(() => playTalk('sunset', () => showResult('sunset')), 600));
-}
-
 function showResult(kind) {
   resultKind = kind;
   const name = ARTIFACTS[level.id].name;
@@ -355,15 +340,12 @@ function showResult(kind) {
     const n = stars(ch);
     starsObj = saveStar(storage, starsObj, level.id, n);
     el.resultTitle.textContent = `찾았다! ${name}`;
-    el.resultSub.textContent = n === 3 ? '금도 없고 해도 많이 남았어. 완벽!' : n === 2 ? (ch.cracks ? '금이 조금 갔지만 찾았어.' : '찾았지만 해가 많이 기울었어.') : '겨우 찾았어. 다음엔 더 살살!';
+    el.resultSub.textContent = n === 3 ? '금 하나 없이 찾았어. 완벽!' : n === 2 ? '금이 조금 갔지만 찾았어.' : '겨우 찾았어. 다음엔 더 살살!';
     for (let k = 0; k < n; k++) resultTimers.push(setTimeout(() => { el.resultStars[k].classList.add('on'); sfx.star(); }, 400 + k * 500));
     resultTimers.push(setTimeout(() => playReaction(`star${n}`), 400 + n * 500 + 200));
-  } else if (kind === 'broken') {
+  } else {
     el.resultTitle.textContent = `${name}${josa(name, '이', '가')} 깨졌어…`;
     el.resultSub.textContent = '유물 위에서는 두드리지 말고, 세게 문지르지 마. 다시 파면 돼!';
-  } else {
-    el.resultTitle.textContent = '해가 졌어…';
-    el.resultSub.textContent = '해 지기 전에 찾아야 해. 토우 능력을 써 봐! 내일 다시 파자.';
   }
   setPhase('result');
 }
@@ -400,18 +382,15 @@ function rendererPhase() {
   return 'dig';
 }
 function frame(t) {
-  const dt = Math.min(50, t - lastFrameT); lastFrameT = t;
-  if (phase === 'dig' && ch) { handle(tick(ch, dt)); updateHud(t); }
+  if (phase === 'dig' && ch) updateHud(t);
   const rp = rendererPhase();
   renderer.draw(rp === 'title' ? null : ch?.dig ?? null, layout, t, rp, t - foundAt);
   if (rp !== 'title' && ch) {
-    effects.drawSky(1 - timeLeftRatio(ch), SKY_BAND, t);
+    effects.drawSky(SKY_TIME, SKY_BAND, t);
     if (rp === 'dig') {
       if (ch.hintUntil > t) effects.drawHint([...ch.dig.artifactCells], layout, t);
       effects.drawCracks(ch.crackCells, layout, t);
       effects.drawWorm(wormCell, layout, t, wormUntil);
-      const night = phase === 'sunset' || (phase === 'result' && resultKind === 'sunset');
-      effects.drawDarkness(night ? 1 : darkness(ch));
     }
   }
   requestAnimationFrame(frame);

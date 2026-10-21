@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import { LEVELS, ARTIFACTS, COLS } from '../src/levels.js';
 import { topLayer } from '../src/dig-model.js';
 import {
-  CRACKS_TO_BREAK, WORM_FLEE_MS, BIRD_HINT_MS, SUNSET_WARN_MS, SNAKE_WOOD_FLOOR, WARN_WINDOW_MS,
-  placeArtifact, createChallenge, tick, timeLeftRatio, isLocked,
+  CRACKS_TO_BREAK, WORM_FLEE_MS, BIRD_HINT_MS, SNAKE_WOOD_FLOOR, WARN_WINDOW_MS,
+  placeArtifact, createChallenge, isLocked,
   processEvents, afterRub, tapWood, usePower, stars,
 } from '../src/challenge.js';
 
@@ -128,27 +128,10 @@ test('rubbing a worm cell to zero releases the worm and locks input for 2s', () 
   assert.deepEqual(afterRub(ch, w, 3000), []); // 한 번 나온 지렁이는 다시 안 나옴
 });
 
-test('tick warns once at 20s left and sets sunset at the end', () => {
+test('createChallenge has no clock: no sun, no elapsed time', () => {
   const ch = make(0);
-  const sun = LEVELS[0].sunMs;
-  assert.deepEqual(tick(ch, sun - SUNSET_WARN_MS - 1), []);
-  assert.deepEqual(tick(ch, 1), [{ type: 'sunsetWarn' }]);
-  assert.deepEqual(tick(ch, 1), []);
-  assert.ok(Math.abs(timeLeftRatio(ch) - (SUNSET_WARN_MS - 1) / sun) < 1e-6);
-  const out = tick(ch, SUNSET_WARN_MS - 1);
-  assert.deepEqual(out, [{ type: 'sunset' }]);
-  assert.equal(ch.outcome, 'sunset');
-  assert.deepEqual(tick(ch, 1000), []);
-  assert.equal(timeLeftRatio(ch), 0);
-});
-
-test('found beats sunset in the same frame', () => {
-  const ch = make(0);
-  const out = processEvents(ch, [{ type: 'artifactRevealed' }], 0);
-  assert.equal(ch.outcome, 'found');
-  assert.equal(out.at(-1).type, 'found');
-  assert.deepEqual(tick(ch, 10 * 60 * 1000), []);
-  assert.equal(ch.outcome, 'found');
+  assert.equal(ch.sunMs, undefined);
+  assert.equal(ch.elapsedMs, undefined);
 });
 
 test('frog power clears 3x3 soil and still releases a worm there', () => {
@@ -211,20 +194,15 @@ test('bird power sets hint window and is single-use; unknown friend fails', () =
   assert.equal(usePower(ch, 'turtle', 0, 2000).ok, false); // 레벨 1엔 거북 없음
 });
 
-test('stars: 3 for clean and fast, 2 for one crack, 1 otherwise, 0 if not found', () => {
+test('stars depend only on cracks: 0 → 3, 1 → 2, 2 → 1, not found → 0', () => {
   const ch = make(0);
   assert.equal(stars(ch), 0);
-  tick(ch, LEVELS[0].sunMs * 0.5);
   processEvents(ch, [{ type: 'artifactRevealed' }], 0);
   assert.equal(stars(ch), 3);
   const ch2 = make(0);
   const a = [...ch2.dig.artifactCells][0];
   processEvents(ch2, [{ type: 'collapse', cell: a }, { type: 'artifactRevealed' }], 0);
   assert.equal(stars(ch2), 2);
-  const ch3 = make(0);
-  tick(ch3, LEVELS[0].sunMs * 0.7);
-  processEvents(ch3, [{ type: 'artifactRevealed' }], 0);
-  assert.equal(stars(ch3), 2); // 금 0개지만 느림
   const ch4 = make(0);
   processEvents(ch4, [{ type: 'collapse', cell: a }], 0);
   processEvents(ch4, [{ type: 'collapse', cell: a }, { type: 'artifactRevealed' }], 1500);

@@ -25,11 +25,6 @@ export const LINES = {
     { who: 'frog', text: '으아아아!' },
     { who: 'snake', text: '…복원실로 가자. 다시 파면 돼.' },
   ],
-  sunsetWarn: [{ who: 'snake', text: '해 넘어간다… 서둘러.' }],
-  sunset: [
-    { who: 'frog', text: '깜깜해… 아무것도 안 보여.' },
-    { who: 'snake', text: '내일 다시. 해는 또 뜨니까.' },
-  ],
   worm: [
     { who: 'frog', text: '지, 지렁이다!!' },
     { who: 'snake', text: '…저게 뭐가 무섭다고.' },
