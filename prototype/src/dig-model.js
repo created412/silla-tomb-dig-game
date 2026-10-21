@@ -85,7 +85,7 @@ export function tap(state, i, nowMs) {
 }
 
 export const BRUSH_RATE = 1 / 900;        // 나무 한 셀 = 900ms 살살 붓질
-export const GENTLE_MAX_SPEED = 0.6;      // px/ms, 이보다 빠르면 "살살!"
+export const GENTLE_MAX_SPEED = 1.2;      // CSS px/ms, 이보다 빠르면 "살살!" (보통 긋기 1.0 전후, 0.6은 너무 엄격했음)
 export const TOO_HARD_COOLDOWN_MS = 1000;
 
 export function brush(state, i, dtMs, speedPxPerMs, nowMs) {

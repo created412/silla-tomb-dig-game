@@ -123,3 +123,38 @@ test('T3: pointerdown 시점에 getState가 null이면 그 제스처는 끝까�
   t = 200; fire('pointerdown', 50, 50); t = 280; fire('pointerup', 50, 50);
   assert.deepEqual(taps, [0], '잠금 해제 뒤 새 제스처는 정상');
 });
+
+test('I6: 붓질 속도는 최근 120ms 평균 — 1ms짜리 손 떨림 한 번은 "살살"을 깨지 않는다', () => {
+  const h = harness();
+  h.state.soil[0] = 0; h.state.rock[0] = 0;   // 셀 0 나무 노출
+  h.fire('pointerdown', 50, 50);
+  // 100ms 동안 천천히 (총 20px = 0.2 px/ms)
+  for (let k = 1; k <= 5; k++) { h.setT(k * 20); h.fire('pointermove', 50 + k * 4, 50); }
+  // 1ms 사이에 6px 튐 (순간 속도 6 px/ms, 120ms 평균으로는 (20+6)/101 ≈ 0.26)
+  h.setT(101); h.fire('pointermove', 76, 50);
+  assert.ok(!h.events.some(e => e.type === 'tooHard'), '평균 속도로 판정해야 함');
+  assert.ok(h.state.wood[0] < 1, '나무가 깎여야 함');
+});
+
+test('I6: 120ms 내내 빠르면 (2 px/ms) tooHard', () => {
+  const h = harness();
+  h.state.soil[0] = 0; h.state.rock[0] = 0;
+  h.fire('pointerdown', 50, 50);
+  for (let k = 1; k <= 8; k++) { h.setT(k * 16); h.fire('pointermove', k % 2 ? 82 : 50, 50); } // 32px/16ms = 2 px/ms, 셀 0 안 왕복
+  assert.ok(h.events.some(e => e.type === 'tooHard'));
+});
+
+test('S1: 흙에서 시작한 손놀림은 흙이 걷혀도 나무를 붓질하지 않는다 (빠르게 지나가도 tooHard 없음)', () => {
+  const h = harness();
+  h.state.rock[0] = 0;                        // 셀 0: 흙 아래 바로 나무
+  h.fire('pointerdown', 50, 50);
+  for (let k = 1; k <= 40; k++) { h.setT(k * 20); h.fire('pointermove', k % 2 ? 90 : 50, 50); } // 2 px/ms, 800ms → 흙 0
+  assert.equal(h.state.soil[0], 0, '흙은 걷혀야 함');
+  assert.equal(h.state.wood[0], 1, '같은 손놀림으로는 나무가 깎이지 않음');
+  assert.ok(!h.events.some(e => e.type === 'tooHard'), '전환 직후 빠른 움직임은 tooHard가 아님');
+  h.fire('pointerup', 50, 50);
+  // 새 손놀림이 나무 위에서 시작하면 붓질
+  h.setT(1000); h.fire('pointerdown', 50, 50);
+  for (let k = 1; k <= 5; k++) { h.setT(1000 + k * 20); h.fire('pointermove', 50 + k * 4, 50); }
+  assert.ok(h.state.wood[0] < 1, '나무에서 시작한 손놀림은 붓질');
+});
