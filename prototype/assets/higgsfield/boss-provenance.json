@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-21",
+  "file": "boss-scenes.png",
+  "jobId": "d941551c-f233-4d45-8222-50a2dd7d67f6",
+  "credits": 0.25,
+  "params": {
+    "model": "gpt_image_2_5",
+    "quality": "low",
+    "resolution": "1k",
+    "aspect_ratio": "16:9",
+    "background": "opaque",
+    "count": 1,
+    "medias": [
+      {
+        "role": "image",
+        "value": "0ab15572-6031-4c2b-9b90-4d1b49e8caca"
+      }
+    ],
+    "prompt": "Create one original illustrated 2 by 2 scene atlas for the final boss chapter of a Korean children's Silla archaeology game, for ages 5 to 12. Warm premium handcrafted clay miniature storybook look, jade hills and amber afternoon sunlight. EXACT four equal landscape panels with central split at 50 percent width and height, no gutters, no text or letters or logos anywhere. Reuse attached clay animal designs: ochre toad, snake, jade-shell turtle, small bird. Top left: the four small clay friends peek from a safe distance behind foreground leaves, spotting a clumsy adult fictional tomb robber in brown overalls and green cap near a closed grassy burial mound, adult has worried comic face, empty wooden handcart, no weapons, no violence. Top right: wide open sunlit archaeological field, a large grassy mound in background, clear earth foreground occupying lower half for game controls, a small adult robber and empty wooden cart far upper right, bushes at left, loose small stones and wooden planks at edges, do not fill center with objects. Bottom left: the bird signals two friendly adult Korean heritage site caretakers in blue work jackets approaching a grassy mound in daylight, the same clumsy robber stops his cart and raises empty hands in surprise; toad snake turtle watch safely, no physical confrontation. Bottom right: four clay animal friends celebrating with friendly caretakers at a protected grassy archaeological site, little wooden display table showing a golden crown, blue glass vessel, horse painting and gold belt as respectful miniatures, warm rays of light, celebratory but no written signs. No ghosts, skeletons, burial remains, scary night scene, weapons, handcuffs, violence, or injury. Charming expressive faces, rich original environments, all panels self contained. The humans are fictional adults, never children. No grave destruction."
+  },
+  "scope": "Fictional adult antagonist and caretakers, original Silla-inspired clay companions."
+}

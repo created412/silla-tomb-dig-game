@@ -19,6 +19,8 @@ import { ARTIFACT_STORIES } from './artifact-stories.js';
 import { COMICS } from './comics.js';
 import { paintDom, comicSheet } from './art-dom.js';
 import { createVoicePlayer } from './voice-player.js';
+import { createBossView } from './boss.js';
+import { bossUnlocked, loadBossBadge } from './boss-model.js';
 
 const TOP_PAD = 72, BOTTOM_PAD = 176, RIGHT_PAD = 126, SKY_BAND = 56; // CSS px. 아래 176 = 대사 상자(~60) + 토우(~100)
 const ADVANCE_GUARD_MS = 150, REVEAL_MS = 2400, PANEL_MIN_MS = 1500;
@@ -53,6 +55,7 @@ document.querySelectorAll('[data-voice-replay]').forEach(b => b.addEventListener
 document.querySelectorAll('[data-voice-mute]').forEach(b => b.addEventListener('click', () => voice.toggleMute()));
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
 let storage = null; try { storage = localStorage; } catch { /* 저장 불가 */ }
+const bossView = createBossView({ voice, sfx, storage, onExit: () => { buildLevels(); setPhase('title'); $('btn-boss').focus({ preventScroll: true }); } });
 
 let phase = 'title';
 let levelIndex = 0, level = LEVELS[0], ch = null, layout = null;
@@ -200,7 +203,17 @@ function buildLevels() {
   for (const l of LEVELS) if ((starsObj[l.id] ?? 0) > 0) {
     const c = document.createElement('canvas'); c.dataset.art = l.id; c.title = ARTIFACTS[l.id].name; el.shelf.appendChild(c);
   }
+  const unlocked = bossUnlocked(starsObj), badge = loadBossBadge(storage);
+  $('btn-boss').disabled = !unlocked;
+  $('btn-boss').querySelector('strong').textContent = unlocked ? (badge ? '✦ 유적 수호대 · 다시 도전' : '유적을 지켜라!') : '🔒 유적을 지켜라';
+  $('btn-boss').querySelector('small').textContent = unlocked ? '도굴꾼 등장! 네 친구의 힘을 모아!' : '유물 다섯 개를 찾으면 열려!';
 }
+
+function openBoss() {
+  if (!bossUnlocked(starsObj)) return;
+  clearTransient(); setSelectedPower(null); sfx.unlock(); setPhase('boss'); bossView.open();
+}
+$('btn-boss').addEventListener('click', openBoss);
 
 function openCard(i) {
   levelIndex = i; level = LEVELS[i];
@@ -498,7 +511,8 @@ function showResult(kind) {
   el.resultStarsBox.classList.toggle('hidden', kind !== 'found');
   el.resultArt.classList.toggle('hidden', kind !== 'found');
   el.resultArt.dataset.art = level.id;
-  el.btnNext.classList.toggle('hidden', !(kind === 'found' && levelIndex < LEVELS.length - 1));
+  el.btnNext.classList.toggle('hidden', kind !== 'found');
+  el.btnNext.textContent = levelIndex === LEVELS.length - 1 ? '마지막 도전 · 유적 지키기 ▶' : '다음 무덤 ▶';
   el.btnStory.classList.toggle('hidden', kind !== 'found');
   if (kind === 'found') {
     const n = stars(ch);
@@ -518,7 +532,7 @@ function showResult(kind) {
 el.btnStart.addEventListener('click', () => { sfx.unlock(); startLevel(); });
 el.btnBack.addEventListener('click', () => { buildLevels(); setPhase('title'); });
 el.btnRetry.addEventListener('click', () => { sfx.unlock(); startLevel(); });
-el.btnNext.addEventListener('click', () => { sfx.unlock(); openCard(levelIndex + 1); });
+el.btnNext.addEventListener('click', () => { sfx.unlock(); if (levelIndex === LEVELS.length - 1) openBoss(); else openCard(levelIndex + 1); });
 el.btnHome.addEventListener('click', () => { buildLevels(); setPhase('title'); });
 el.btnStory.addEventListener('click', () => {
   const s = ARTIFACT_STORIES[level.id]; if (!s) return;
@@ -547,6 +561,7 @@ function updateHud(t) {
 
 // ---------- 루프 ----------
 function rendererPhase() {
+  if (phase === 'boss') return 'title';
   if (phase === 'title' || phase === 'card') return 'title';
   if (phase === 'found' || (phase === 'result' && resultKind === 'found')) return 'found';
   return 'dig';
@@ -576,4 +591,4 @@ setPhase('title');
 requestAnimationFrame(frame);
 
 // 교사·검증용 훅 (콘솔에서 sillaDebug.challenge 로 현재 판 상태를 본다)
-window.sillaDebug = { get challenge() { return ch; }, get phase() { return phase; }, get layout() { return layout; }, get panels() { return panelsShown; } };
+window.sillaDebug = { get challenge() { return ch; }, get phase() { return phase; }, get layout() { return layout; }, get panels() { return panelsShown; }, get boss() { return bossView.state; } };

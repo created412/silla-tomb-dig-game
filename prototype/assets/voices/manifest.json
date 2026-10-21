@@ -318,6 +318,46 @@
     "story-belt": {
       "file": "story-belt.mp3",
       "who": "snake"
+    },
+    "boss-intro-0": {
+      "file": "boss-intro-0.mp3",
+      "who": "bird"
+    },
+    "boss-intro-1": {
+      "file": "boss-intro-1.mp3",
+      "who": "snake"
+    },
+    "boss-step-0": {
+      "file": "boss-step-0.mp3",
+      "who": "bird"
+    },
+    "boss-step-1": {
+      "file": "boss-step-1.mp3",
+      "who": "frog"
+    },
+    "boss-step-2": {
+      "file": "boss-step-2.mp3",
+      "who": "turtle"
+    },
+    "boss-step-3": {
+      "file": "boss-step-3.mp3",
+      "who": "snake"
+    },
+    "boss-failed": {
+      "file": "boss-failed.mp3",
+      "who": "frog"
+    },
+    "boss-ending-0": {
+      "file": "boss-ending-0.mp3",
+      "who": "bird"
+    },
+    "boss-ending-1": {
+      "file": "boss-ending-1.mp3",
+      "who": "snake"
+    },
+    "boss-ending-2": {
+      "file": "boss-ending-2.mp3",
+      "who": "frog"
     }
   }
 }

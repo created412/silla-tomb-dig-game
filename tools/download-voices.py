@@ -6,6 +6,10 @@ import urllib.request
 
 root = Path(__file__).resolve().parents[1] / 'prototype/assets/voices'
 data = json.loads((root / 'jobs.json').read_text(encoding='utf-8'))
+boss_jobs = root / 'boss-jobs.json'
+if boss_jobs.exists():
+    data['clips'].extend(json.loads(boss_jobs.read_text(encoding='utf-8'))['clips'])
+assert len({c['key'] for c in data['clips']}) == len(data['clips']), 'duplicate voice key'
 
 def download(item):
     path = root / (item['key'] + '.mp3')

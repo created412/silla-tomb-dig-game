@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>토우 친구들과 신라 발굴 도전</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="boss.css">
 </head>
 <body>
   <div id="stage" data-phase="title">
@@ -40,6 +41,7 @@
         <p class="kicker">살살, 천천히. 유물을 깨뜨리지 말고!</p>
         <h1>토우 친구들과<br><span class="gold">신라 발굴 도전</span></h1>
         <div id="levels" aria-label="무덤 고르기"></div>
+        <button id="btn-boss" class="boss-entry" disabled><span>마지막 도전</span><strong>🔒 유적을 지켜라</strong><small>유물 다섯 개를 찾으면 열려!</small></button>
         <div class="row title-row"><button id="btn-dex" class="big ghost">🐸 토우 친구들</button><div id="shelf" aria-label="찾은 유물"></div></div>
         <p class="sub">흙은 문질러 · 돌은 톡톡 · 나무는 붓으로 살살</p>
       </div>
@@ -112,6 +114,25 @@
         <div id="dex-cards"></div>
       </div>
     </div>
+
+    <section id="boss" class="hidden" aria-label="마지막 도전 유적 지키기">
+      <header class="boss-header"><div><span class="boss-eyebrow">마지막 도전 · 유적 수호대</span><h2 id="boss-heading"></h2></div><div id="boss-hearts" aria-live="polite"></div><button id="boss-home" class="boss-small">무덤으로</button></header>
+      <ol id="boss-progress" aria-label="수호 작전 진행"></ol>
+      <div id="boss-field">
+        <canvas id="boss-landscape" data-boss="1" aria-label="도굴꾼이 나타난 발굴 현장"></canvas>
+        <div id="boss-warning">도굴을 막아라!</div>
+        <div id="boss-targets" aria-label="작전 목표"></div>
+        <canvas id="boss-helper" data-actor="bird" aria-hidden="true"></canvas>
+        <div id="boss-impact" aria-hidden="true"></div>
+      </div>
+      <footer class="boss-controls"><p id="boss-instruction" aria-live="polite"></p><div id="boss-friends" aria-label="도와줄 토우 고르기"></div><p id="boss-feedback" role="status"></p><button id="boss-continue" class="big hidden">다음 작전 →</button></footer>
+      <div id="boss-dialogue" class="story-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="boss-talk-title">
+        <div class="story-spread"><div class="scene-picture"><canvas id="boss-talk-art" data-boss="0" aria-label="마지막 모험 이야기"></canvas><p id="boss-talk-title" class="scene-label"></p></div><div class="story-copy"><div class="speaker-heading"><canvas id="boss-talk-actor" data-actor="bird" aria-hidden="true"></canvas><span id="boss-talk-who"></span></div><p id="boss-talk-text"></p><div class="voice-controls"><button data-voice-replay>↻ 다시 듣기</button><button data-voice-mute aria-pressed="false">소리 켜짐</button><span data-voice-status></span></div><button id="boss-talk-next" class="big story-next">작전 시작!</button></div></div>
+      </div>
+      <div id="boss-victory" class="hidden" role="dialog" aria-modal="true" aria-labelledby="boss-victory-title">
+        <canvas data-boss="3" aria-hidden="true"></canvas><div class="boss-award"><div class="guardian-medal" aria-hidden="true">✦</div><p>네 친구의 힘으로 지켜 낸 이야기</p><h2 id="boss-victory-title">신라 유적 수호대</h2><p>유물과 발견한 자리를 함께 지켰어!</p><div id="boss-treasures" aria-label="함께 지킨 유물 다섯 개"></div><div class="row"><button id="boss-save" class="big">수호 배지 저장하기</button><button id="boss-replay" class="big ghost">다시 도전</button><button id="boss-exit" class="big ghost">무덤으로</button></div><p id="boss-save-status" role="status">저장하기를 눌러 수호 배지를 간직해!</p></div>
+      </div>
+    </section>
 
     <dialog id="story">
       <button id="story-close" class="big ghost">닫기 ×</button>
