@@ -506,7 +506,10 @@ function updateHud(t) {
   if (!ch) return;
   if (isLocked(ch, t)) el.hint.textContent = '🐸 도망갔다! 잠깐만…';
   else if (selectedPower) { const f = FRIENDS[selectedPower]; el.hint.textContent = `${f.emoji} ${f.name}: 어디에 쓸까? 땅을 눌러!`; }
-  else el.hint.textContent = hintForLayer(lastTouchedCell >= 0 ? topLayer(ch.dig, lastTouchedCell) : 'soil');
+  else if (ch.dig.revealed.size >= 3 && !ch.dig.done) {
+    const left = ch.dig.artifactCells.size - ch.dig.revealed.size;
+    el.hint.textContent = `발굴 ${ch.dig.revealed.size} / ${ch.dig.artifactCells.size} · 반짝이는 ${left}곳을 마저 걷어 줘!`;
+  } else el.hint.textContent = hintForLayer(lastTouchedCell >= 0 ? topLayer(ch.dig, lastTouchedCell) : 'soil');
 }
 
 // ---------- 루프 ----------
@@ -516,7 +519,12 @@ function rendererPhase() {
   return 'dig';
 }
 function frame(t) {
-  if (phase === 'dig' && ch) { updateHud(t); checkComicCues(); }
+  if (phase === 'dig' && ch) {
+    updateHud(t); checkComicCues();
+    if (ch.dig.revealed.size >= 3 && !ch.dig.done) {
+      renderer.hint([...ch.dig.artifactCells].filter(i => !ch.dig.revealed.has(i)), t + 100);
+    }
+  }
   const rp = rendererPhase();
   renderer.draw(rp === 'title' ? null : ch?.dig ?? null, layout, t, rp, t - foundAt);
   if (rp !== 'title' && ch) {

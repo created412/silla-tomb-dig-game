@@ -52,18 +52,11 @@ export function createRenderer(canvas) {
     if(key!==cacheKey){cacheKey=key;cache=createTerrain(layout,dp);}
     ctx.save();ctx.shadowColor='rgba(6,25,20,.45)';ctx.shadowBlur=20*dp;ctx.shadowOffsetY=10*dp;ctx.fillStyle='#513b28';ctx.beginPath();ctx.roundRect(x0-9*dp,y0-9*dp,w+18*dp,h+24*dp,16*dp);ctx.fill();ctx.restore();
     ctx.fillStyle='#49382a';ctx.fillRect(x0,y0,w,h);
-    // 매장된 금띠를 먼저 보여 주고, 완전히 발견하면 전체 도판을 비율대로 보여 준다.
-    const first=Math.min(...state.artifactCells),r=cellRect(layout,first),gw=cell*state.artifactCells.size;
-    const generatedCrown=artifactId==='crown'&&drawGeneratedArtifact(ctx,artifactId,r.x,r.y-cell,gw,cell*3);
-    if(artifactId==='crown'&&!generatedCrown) {
-    const gold=ctx.createLinearGradient(r.x,r.y,r.x+gw,r.y+cell);gold.addColorStop(0,'#ad7c25');gold.addColorStop(.4,'#ffe795');gold.addColorStop(.7,'#c59432');gold.addColorStop(1,'#f3d277');
-    ctx.fillStyle=gold;ctx.beginPath();ctx.roundRect(r.x+cell*.07,r.y+cell*.18,gw-cell*.14,cell*.65,cell*.12);ctx.fill();
-    for(let k=0;k<24;k++){ellipse(ctx,r.x+gw*(k+.5)/24,r.y+cell*.32,dp,dp,'#7d5b28');if(k%2===0)ellipse(ctx,r.x+gw*(k+.5)/24,r.y+cell*.55,cell*.06,cell*.08,'#ffe49b','#a7792c');}
-    } else if(!generatedCrown) {
-      const cells=[...state.artifactCells],xs=cells.map(i=>i%cols),ys=cells.map(i=>Math.floor(i/cols));
-      const ax=x0+Math.min(...xs)*cell,ay=y0+Math.min(...ys)*cell;
-      if(!drawGeneratedArtifact(ctx,artifactId,ax,ay,(Math.max(...xs)-Math.min(...xs)+1)*cell,(Math.max(...ys)-Math.min(...ys)+1)*cell))drawArtifact(ctx,artifactId,ax,ay,(Math.max(...xs)-Math.min(...xs)+1)*cell,(Math.max(...ys)-Math.min(...ys)+1)*cell);
-    }
+    // 그림과 완료 판정은 같은 유물 칸의 경계를 쓴다. 금관도 예외로 확대하지 않는다.
+    const cells=[...state.artifactCells],xs=cells.map(i=>i%cols),ys=cells.map(i=>Math.floor(i/cols));
+    const ax=x0+Math.min(...xs)*cell,ay=y0+Math.min(...ys)*cell;
+    const aw=(Math.max(...xs)-Math.min(...xs)+1)*cell,ah=(Math.max(...ys)-Math.min(...ys)+1)*cell;
+    if(!drawGeneratedArtifact(ctx,artifactId,ax,ay,aw,ah))drawArtifact(ctx,artifactId,ax,ay,aw,ah);
     cache.draw(ctx,'wood',state);
     for(const i of state.glimmered)if(state.wood[i]>0){
       const r=cellRect(layout,i),cx=r.x+r.w*.5,cy=r.y+r.h*.5,pulse=reduced.matches?.6:.55+.2*Math.sin(t/260+i),g=ctx.createRadialGradient(cx,cy,1,cx,cy,r.w*.8);

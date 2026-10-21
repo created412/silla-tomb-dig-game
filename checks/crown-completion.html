@@ -1,0 +1,54 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><title>금관 완료 회귀 검사</title>
+<style>body{margin:0;background:#163b2b;color:white;font:16px sans-serif}header{padding:10px;display:flex;gap:12px;align-items:center}button{padding:10px}iframe{width:100%;height:calc(100vh - 65px);border:0}#probe{position:absolute;left:-1100px;width:1024px;height:768px}</style>
+<header><button id="geometry">그림·발굴 범위 검사</button><button id="play">금관 이야기·완료 검사</button><span id="status">준비</span></header>
+<canvas id="probe" width="1024" height="768"></canvas><iframe></iframe>
+<script type="module">
+import {createRenderer} from '../prototype/src/renderer.js';
+import {createChallenge} from '../prototype/src/challenge.js';
+import {LEVELS} from '../prototype/src/levels.js';
+import {COMICS} from '../prototype/src/comics.js';
+const results=[],wait=ms=>new Promise(r=>setTimeout(r,ms)),status=document.querySelector('#status');
+function check(pass,message){results.push({pass:!!pass,message});document.body.dataset.results=JSON.stringify(results);status.textContent=message;if(!pass)throw Error(message);}
+async function until(fn){for(let i=0;i<400;i++){if(fn())return;await wait(40);}throw Error('검사 대기 시간 초과');}
+async function run(fn){delete document.body.dataset.done;delete document.body.dataset.error;const buttons=[...document.querySelectorAll('header button')];buttons.forEach(b=>b.disabled=true);try{await fn();document.body.dataset.done='true';status.textContent=`통과 ${results.length}개`;}catch(e){document.body.dataset.error=e.message;status.textContent='실패: '+e.message;}finally{buttons.forEach(b=>b.disabled=false);}}
+document.querySelector('#geometry').onclick=()=>run(async()=>{
+ const canvas=document.querySelector('#probe'),ctx=canvas.getContext('2d'),draw=ctx.drawImage.bind(ctx);let art;
+ ctx.drawImage=(...a)=>{if(a.length===9&&a[0] instanceof HTMLCanvasElement&&a[0].width===341&&a[0].height===344)art=a;return draw(...a);};
+ const renderer=createRenderer(canvas),layout={x0:80,y0:100,cell:64,cols:12,rows:7};renderer.setCrew([]);
+ for(const l of LEVELS)for(const seed of [0,.5,.999]){
+  const d=createChallenge(l,()=>seed).dig;renderer.setArtifact(l.id);art=null;
+  await until(()=>{renderer.draw(d,layout,0);return !!art;});
+  const [,sx,sy,sw,sh,x,y,w,h]=art,cells=[...d.artifactCells],xs=cells.map(i=>i%12),ys=cells.map(i=>Math.floor(i/12));
+  const left=80+Math.min(...xs)*64,top=100+Math.min(...ys)*64,right=80+(Math.max(...xs)+1)*64,bottom=100+(Math.max(...ys)+1)*64;
+  check(x>=left&&y>=top&&x+w<=right&&y+h<=bottom,`${l.id}/${seed}: 그림이 완료 판정 영역 안에 있음`);
+  const pixels=art[0].getContext('2d').getImageData(0,0,341,344).data;
+  const visibleCells=new Set();
+  for(let py=0;py<344;py++)for(let px=0;px<341;px++)if(pixels[(py*341+px)*4+3]>100){const dx=x+(px-sx)/sw*w,dy=y+(py-sy)/sh*h;visibleCells.add(Math.floor((dy-100)/64)*12+Math.floor((dx-80)/64));}
+  check(cells.every(i=>visibleCells.has(i)),`${l.id}/${seed}: 모든 필수 칸에 실제 유물 그림이 있음`);
+ }
+ ctx.drawImage=draw;
+});
+const memory=new Map();window.fixtureStorage={getItem:k=>memory.get(k)??null,setItem:(k,v)=>memory.set(k,v)};
+let frame=document.querySelector('iframe'),d,w,seen=0;
+const html=(await(await fetch('../prototype/index.html')).text()).replace('<head>','<head><base href="../prototype/"><script>Object.defineProperty(window,"localStorage",{value:parent.fixtureStorage});Math.random=()=>.5;<\/script>');
+async function load(){const f=document.createElement('iframe'),p=new Promise(r=>f.onload=r);f.srcdoc=html;frame.replaceWith(f);frame=f;await p;d=f.contentDocument;w=f.contentWindow;await until(()=>w.sillaDebug);}
+const click=s=>{const b=d.querySelector(s);if(!b||b.disabled)throw Error('버튼 없음: '+s);b.click();};
+const visible=s=>!d.querySelector(s).classList.contains('hidden');
+function pointer(type,i){const canvas=d.querySelector('#dig'),r=canvas.getBoundingClientRect(),l=w.sillaDebug.layout,dp=canvas.width/r.width;canvas.dispatchEvent(new w.PointerEvent(type,{bubbles:true,pointerId:1,pointerType:'touch',isPrimary:true,clientX:r.left+(l.x0+(i%12+.5)*l.cell)/dp+(type==='pointermove'?2:0),clientY:r.top+(l.y0+(Math.floor(i/12)+.5)*l.cell)/dp,buttons:type==='pointerup'?0:1}));}
+async function panel(n=seen){await until(()=>visible('#comic'));check(d.querySelector('#comic-canvas').dataset.panel===String(n),`금관 이야기 ${n+1}/4 열림`);seen=n+1;await until(()=>!d.querySelector('#comic-next').disabled);click('#comic-next');}
+async function stroke(i,layer){if(visible('#comic'))await panel();pointer('pointerdown',i);for(let k=0;k<60&&w.sillaDebug.challenge.dig[layer][i]>0;k++){await wait(30);pointer('pointermove',i);if(visible('#comic')){pointer('pointerup',i);await panel();pointer('pointerdown',i);}}pointer('pointerup',i);}
+document.querySelector('#play').onclick=()=>run(async()=>{
+ seen=0;await load();click('[data-index="0"]');click('#btn-start');
+ while(w.sillaDebug.phase==='wake'){d.querySelector('#dialogue').dispatchEvent(new w.PointerEvent('pointerdown',{bubbles:true}));await wait(170);}
+ const cells=[...w.sillaDebug.challenge.dig.artifactCells];
+ for(const i of cells){await stroke(i,'soil');if(visible('#comic'))await panel();await stroke(i,'wood');if(visible('#comic'))await panel();}
+ await until(()=>w.sillaDebug.phase==='found');check(w.sillaDebug.challenge.dig.revealed.size===6,'보이는 유물 여섯 곳을 발굴하면 완료');
+ await panel(2);
+ while(!visible('#comic')){d.querySelector('#dialogue').dispatchEvent(new w.PointerEvent('pointerdown',{bubbles:true}));await wait(170);}
+ check(d.querySelector('#comic-canvas').dataset.panel==='3','금관 이야기 4/4 질문까지 연결');
+ click(`#comic-choices [data-k="${COMICS.crown.choices.findIndex(c=>c.right)}"]`);click('#comic-next');
+ await until(()=>visible('#join'));check(d.querySelector('#join-name').textContent.includes('거북'),'다음 토우 거북 합류');click('#join-ok');
+ await until(()=>visible('#result'));check(d.querySelector('#result-title').textContent.includes('찾았다'),'발굴 완료 결과 화면');
+ check(visible('#btn-next'),'다음 무덤 버튼 해금');check(w.sillaDebug.panels===4,'금관 이야기 네 컷 모두 완료');
+});
+</script></html>
