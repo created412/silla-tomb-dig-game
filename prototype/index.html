@@ -31,6 +31,7 @@
         <p class="kicker">살살, 천천히. 유물을 깨뜨리지 말고!</p>
         <h1>토우 친구들과<br><span class="gold">신라 발굴 도전</span></h1>
         <div id="levels" aria-label="무덤 고르기"></div>
+        <div class="row title-row"><button id="btn-dex" class="big ghost">🐸 토우 친구들</button><div id="shelf" aria-label="찾은 유물"></div></div>
         <p class="sub">흙은 문질러 · 돌은 톡톡 · 나무는 붓으로 살살</p>
       </div>
     </div>
@@ -50,6 +51,7 @@
     </div>
 
     <div id="result" class="bottom-panel hidden">
+      <canvas id="result-art" class="hidden" data-art="crown" aria-hidden="true"></canvas>
       <div class="result-text">
         <h2 id="result-title"></h2>
         <div id="result-stars" class="hidden"><span>★</span><span>★</span><span>★</span></div>
@@ -63,10 +65,45 @@
       </div>
     </div>
 
+    <div id="comic" class="overlay hidden">
+      <div class="comic-box">
+        <p class="kicker" id="comic-title"></p>
+        <canvas id="comic-canvas" data-comic="" data-panel="0" aria-label="기억 조각 그림"></canvas>
+        <div class="comic-bubble"><span id="comic-who"></span><span id="comic-text"></span></div>
+        <div id="comic-choices" class="hidden"></div>
+        <div class="row"><button id="comic-next" class="big" disabled>다음 ▶</button></div>
+      </div>
+    </div>
+
+    <div id="join" class="overlay hidden">
+      <div class="panel join-panel">
+        <p class="kicker">새 친구 합류!</p>
+        <canvas id="join-actor" data-actor="frog" data-mood="artifactRevealed" aria-label="새 토우"></canvas>
+        <h2 id="join-name"></h2>
+        <p id="join-power"></p>
+        <p id="join-intro"></p>
+        <p class="rule" id="join-when"></p>
+        <div class="row"><button id="join-ok" class="big">반가워!</button></div>
+      </div>
+    </div>
+
+    <div id="dex" class="overlay hidden">
+      <div class="panel dex-panel">
+        <button id="dex-close" class="big ghost">닫기 ×</button>
+        <h2>토우 친구들</h2>
+        <div class="dex-about">
+          <img id="dex-shelf" src="assets/higgsfield/towoo-shelf.png" alt="선반 위 토우 인형들">
+          <div id="dex-about-text"></div>
+        </div>
+        <div id="dex-cards"></div>
+      </div>
+    </div>
+
     <dialog id="story">
       <button id="story-close" class="big ghost">닫기 ×</button>
       <h2 id="story-title"></h2>
       <p id="story-meta"></p>
+      <canvas id="story-art" data-art="crown" aria-label="유물 그림"></canvas>
       <p id="story-what"></p>
       <p id="story-hello"></p>
       <p id="story-note"></p>

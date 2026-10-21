@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import { LINES } from '../src/lines.js';
 import { createDialogue } from '../src/dialogue.js';
 
-test('LINES: 만담 2개는 4줄, 반응 대사는 1줄, 모두 40자 이내', () => {
-  assert.equal(LINES.wake.length, 4); assert.equal(LINES.found.length, 4);
+test('LINES: 만담은 wake 6줄·found 4줄, 반응 대사는 1줄, 모두 40자 이내', () => {
+  assert.equal(LINES.wake.length, 6); assert.equal(LINES.found.length, 4);
   for (const id of ['tooHard', 'collapse', 'glimmer', 'rockDrag']) assert.equal(LINES[id].length, 1);
   for (const arr of Object.values(LINES)) for (const l of arr) {
     assert.ok(['frog', 'snake'].includes(l.who)); assert.ok(l.text.length <= 40);

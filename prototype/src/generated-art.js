@@ -1,7 +1,7 @@
 // Local, cached crops of the commissioned Higgsfield atlases.
 export const materialsImage=new Image();
 materialsImage.src=new URL('../assets/higgsfield/dig-materials.png',import.meta.url).href;
-const relicImage=new Image(),relics=new Map();
+const relicImage=new Image(),relics=new Map();relicImage.crossOrigin='anonymous'; // getImageData를 쓰므로 CDN(교차 출처)에서도 오염되지 않게
 relicImage.src=new URL('../assets/higgsfield/relics-atlas.png',import.meta.url).href;
 relicImage.onload=()=>{
  const cw=relicImage.width/3,ch=relicImage.height/2;
