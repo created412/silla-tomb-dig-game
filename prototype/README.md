@@ -2,6 +2,10 @@
 
 초등 5~6학년용 정적 웹 게임. 흙·돌·나무 3층을 손으로 파서 유물을 찾는다. **살살, 천천히. 유물을 깨뜨리지 말고.** 시간 제한은 없다.
 
+2026-10-22: 발굴 전에 토우를 직접 움직이는 탐험길 5개를 추가했다. 두꺼비 점프 → 금관 발굴 → 새 획득·비행 → 거북 방어 → 뱀 기어가기 → 네 친구 협동으로 이어진다. 방향키/A·D로 이동, Space로 능력, 1~4로 친구 선택, Esc로 쉰다. 휴대폰은 화면의 이동·능력 버튼을 함께 누른다. 실패하면 가까운 발판에서 다시 시작하며 모은 빛 조각은 유지된다. ‘저장하기’를 눌러야 완료 기록과 선택 구간이 저장된다. 이어가기는 저장된 구간의 시작부터다.
+
+탐험 검사: `node --test checks/adventure-model.test.mjs checks/adventure-save.test.mjs`. [전체 검증 기록](../docs/visual-review/active-adventure.md).
+
 - 플레이: https://created412.github.io/silla-tomb-dig-game/prototype/
 - 설계: `docs/superpowers/specs/2026-10-20-challenge-dig-design.md`
 - 구현 계획: `docs/superpowers/plans/2026-10-20-challenge-dig.md`

@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="music.css">
   <link rel="stylesheet" href="memory.css?v=thought-1">
   <link rel="stylesheet" href="mobile.css?v=mobile-2">
+  <link rel="stylesheet" href="adventure.css?v=adventure-1">
 </head>
 <body>
   <div id="stage" data-phase="title">
@@ -48,12 +49,14 @@
 
     <div id="title" class="overlay">
       <div class="title-box">
-        <p class="kicker">살살, 천천히. 유물을 깨뜨리지 말고!</p>
+        <p class="kicker">폴짝! 훨훨! 토우와 길을 찾고, 신라를 만나요.</p>
         <h1>토우 친구들과<br><span class="gold">신라 발굴 도전</span></h1>
+        <div class="adventure-title-actions"><button id="btn-continue-adventure" class="big">탐험 이어가기</button><button id="btn-new-adventure" class="big ghost">탐험 새로 시작하기</button></div>
         <div id="levels" aria-label="무덤 고르기"></div>
         <button id="btn-boss" class="boss-entry" disabled><span>마지막 도전</span><strong>🔒 유적을 지켜라</strong><small>유물 다섯 개를 찾으면 열려!</small></button>
         <div class="row title-row"><button id="btn-dex" class="big ghost">🐸 토우 친구들</button><div id="shelf" aria-label="찾은 유물"></div></div>
-        <p class="sub">흙은 문질러 · 돌은 톡톡 · 나무는 붓으로 살살</p>
+        <div class="row"><button id="btn-save-title" class="big ghost">저장하기</button><span id="save-title-status" class="save-status" role="status">저장하기를 눌러야 기록이 남아요.</span></div>
+        <p class="sub">토우로 길 찾기 → 유물 발굴 → 새 친구와 다음 모험</p>
       </div>
     </div>
 
@@ -65,7 +68,7 @@
         <div id="card-friends"></div>
         <p class="rule">⏳ 시간 제한 없음 · ⚡ 유물 위를 세게 문지르거나 찍으면 경고, 또 하면 금 · 금 3개면 깨져!</p>
         <div class="row">
-          <button id="btn-start" class="big">파러 가자!</button>
+          <button id="btn-start" class="big">탐험 출발!</button>
           <button id="btn-back" class="big ghost">무덤 고르기</button>
         </div>
       </div>
@@ -83,6 +86,7 @@
         <button id="btn-next" class="big">다음 무덤 ▶</button>
         <button id="btn-story" class="big ghost">유물 이야기</button>
         <button id="btn-home" class="big ghost">무덤 고르기</button>
+        <button id="btn-save-result" class="big ghost">저장하기</button>
       </div>
     </div>
 
@@ -159,6 +163,6 @@
       <div class="voice-controls"><button data-voice-replay>↻ 다시 듣기</button><button data-voice-mute aria-pressed="false">소리 켜짐</button><span data-voice-status></span></div>
     </dialog>
   </div>
-  <script type="module" src="src/main.js?v=mobile-2"></script>
+  <script type="module" src="src/main.js?v=adventure-1"></script>
 </body>
 </html>

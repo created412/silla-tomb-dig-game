@@ -9,7 +9,8 @@ import { createRenderer } from './renderer.js?v=mobile-2';
 import { createSfx } from './sfx.js';
 import { attachInput } from './input.js';
 import { createEffects } from './effects.js';
-import { LEVELS, ARTIFACTS, FRIENDS, TOWOO_ABOUT, COLS, ROWS } from './levels.js';
+import { ARTIFACTS, TOWOO_ABOUT, COLS, ROWS } from './levels.js';
+import { ADVENTURE_LEVELS as LEVELS, ADVENTURE_FRIENDS as FRIENDS } from './adventure-progression.js';
 import {
   createChallenge, processEvents, afterRub, tapWood, usePower, stars, isLocked,
   WORM_FLEE_MS,
@@ -22,6 +23,9 @@ import { createVoicePlayer } from './voice-player.js?v=guardian-1';
 import { createBossView } from './boss.js';
 import { bossUnlocked, loadBossBadge } from './boss-model.js';
 import { createMusicPlayer } from './music-player.js?v=suno-original-2';
+import { createAdventureView } from './adventure-view.js?v=adventure-1';
+import { ACTORS, ROUTES } from './adventure-model.js?v=adventure-1';
+import { loadAdventureSave, saveAdventure } from './adventure-save.js';
 
 const SKY_BAND = 56; // CSS px. 발굴 영역은 mobile.css의 #dig-bounds와 공유한다.
 const ADVANCE_GUARD_MS = 150, REVEAL_MS = 2400, PANEL_MIN_MS = 1500;
@@ -84,7 +88,10 @@ const bossView = createBossView({ voice, sfx, storage, onExit: () => { buildLeve
 
 let phase = 'title';
 let levelIndex = 0, level = LEVELS[0], ch = null, layout = null;
-let starsObj = loadStars(storage);
+const initialAdventure = loadAdventureSave(storage);
+let starsObj = initialAdventure.stars, resumeIndex = initialAdventure.index;
+const adventureView = createAdventureView({host:el.stage,sfx,onDig:startLevel,onHome:()=>{buildLevels();setPhase('title');},onSave:saveProgress,onMusic:()=>music.toggle()});
+showMusicState({enabled:music.enabled,status:'ready'});
 let selectedPower = null;
 let wormCell = -1, wormUntil = -Infinity;
 let foundAt = 0, resultKind = null, resultTimers = [];
@@ -242,6 +249,7 @@ function clearTransient() {
   showLine(null);
 }
 function setPhase(next) {
+  if (phase === 'explore' && next !== 'explore') adventureView.close();
   if (next !== 'dig') hideSideReaction();
   phase = next;
   el.stage.dataset.phase = phase;
@@ -257,6 +265,7 @@ function starText(n) { return '★'.repeat(n) + '☆'.repeat(3 - n); }
 const unlockedCount = () => LEVELS.filter((_, i) => isUnlocked(starsObj, i)).length;
 
 function buildLevels() {
+  $('btn-continue-adventure').textContent = Object.values(starsObj).some(n=>n>0) ? '탐험 이어가기' : '첫 탐험 시작하기';
   el.levels.innerHTML = '';
   LEVELS.forEach((l, i) => {
     const b = document.createElement('button');
@@ -285,11 +294,12 @@ function openBoss() {
 $('btn-boss').addEventListener('click', openBoss);
 
 function openCard(i) {
+  resumeIndex = i;
   levelIndex = i; level = LEVELS[i];
   el.cardKicker.textContent = `무덤 ${i + 1} · ${level.tomb}`;
   const name = ARTIFACTS[level.id].name;
   el.cardTitle.textContent = `${name}${josa(name, '을', '를')} 찾아라`;
-  el.cardInfo.textContent = `🪱 지렁이 ${level.worms}마리 · ${level.rockCoverage ? `🪨 돌 ${Math.round(level.rockCoverage * 100)}%` : '🪨 돌 없음'} · 지금까지 ${starText(starsObj[level.id] ?? 0)}`;
+  el.cardInfo.textContent = `${ROUTES[i].name} → ${name} 발굴 · 지금까지 ${starText(starsObj[level.id] ?? 0)}`;
   el.cardFriends.innerHTML = Object.entries(FRIENDS).map(([who, f]) => {
     const here = level.friends.includes(who);
     return `<span class="chip ${here ? '' : 'locked'}"><canvas data-actor="${who}" data-seed="${who.length * 97}" ${here ? '' : 'data-locked="1"'}></canvas><span>${f.name}<small>${here ? f.power : `무덤 ${f.joinsAt + 1}부터`}</small></span></span>`;
@@ -331,6 +341,26 @@ function startLevel() {
     setPhase('dig');
   }
 }
+
+function startAdventure() {
+  clearTransient();
+  const begin=()=>{setPhase('explore');adventureView.open(levelIndex,ARTIFACTS[level.id].name);};
+  if(levelIndex===0&&!wakeShown){wakeShown=true;setPhase('wake');playTalk('wake',begin);}else begin();
+}
+function saveProgress(){
+  const ok=saveAdventure(storage,starsObj,resumeIndex);
+  $('save-title-status').textContent=ok?'저장했어요. 다음에도 이어서 만나요!':'이 브라우저에서는 저장할 수 없어요.';
+  $('btn-save-result').textContent=ok?'저장했어!':'저장하지 못했어';
+  return ok;
+}
+$('btn-save-title').addEventListener('click',saveProgress);
+$('btn-save-result').addEventListener('click',saveProgress);
+$('btn-continue-adventure').addEventListener('click',()=>{sfx.unlock();openCard(resumeIndex);});
+$('btn-new-adventure').addEventListener('click',()=>{
+  starsObj=loadStars(null);resumeIndex=0;wakeShown=false;
+  $('save-title-status').textContent='새 탐험은 저장하기 전까지 이전 기록을 덮지 않아요.';
+  sfx.unlock();openCard(0);
+});
 
 // ---------- 4컷 기억 조각 ----------
 // n: 0~2 이야기 컷, 3 질문 컷. 닫히면 onClose.
@@ -412,7 +442,7 @@ function showJoin(who, onDone) {
   el.joinName.textContent = `${f.emoji} ${f.name}`;
   el.joinPower.textContent = `능력: ${f.power} — ${f.desc}`;
   el.joinIntro.textContent = f.intro.join(' ');
-  el.joinWhen.textContent = `무덤 ${f.joinsAt + 1}부터 오른쪽 버튼에서 나를 눌러 봐.`;
+  el.joinWhen.textContent = `다음 탐험에서는 나를 직접 움직여 봐! ${ACTORS[who].hint}`;
   el.join.classList.remove('hidden');
   voice.say(`join-${who}`);
   el.joinOk.focus({ preventScroll: true });
@@ -589,7 +619,9 @@ function showResult(kind) {
   el.btnStory.classList.toggle('hidden', kind !== 'found');
   if (kind === 'found') {
     const n = stars(ch);
-    starsObj = saveStar(storage, starsObj, level.id, n);
+    starsObj = saveStar(null, starsObj, level.id, n);
+    resumeIndex = Math.min(levelIndex + 1, LEVELS.length - 1);
+    $('btn-save-result').textContent='저장하기';
     el.resultTitle.textContent = `찾았다! ${name}`;
     el.resultSub.textContent = n === 3 ? '금 하나 없이, 질문도 맞혔어. 완벽!' : ch.quizMiss && ch.cracks === 0 ? '찾았어! 다음엔 기억 조각을 잘 봐.' : n === 2 ? '금이 조금 갔지만 찾았어.' : '겨우 찾았어. 다음엔 더 살살!';
     for (let k = 0; k < n; k++) resultTimers.push(setTimeout(() => { el.resultStars[k].classList.add('on'); sfx.star(); }, 400 + k * 500));
@@ -602,7 +634,7 @@ function showResult(kind) {
 }
 
 // ---------- 버튼 ----------
-el.btnStart.addEventListener('click', () => { sfx.unlock(); startLevel(); });
+el.btnStart.addEventListener('click', () => { sfx.unlock(); startAdventure(); });
 el.btnBack.addEventListener('click', () => { buildLevels(); setPhase('title'); });
 el.btnRetry.addEventListener('click', () => { sfx.unlock(); startLevel(); });
 el.btnNext.addEventListener('click', () => { sfx.unlock(); if (levelIndex === LEVELS.length - 1) openBoss(); else openCard(levelIndex + 1); });
@@ -640,6 +672,7 @@ function rendererPhase() {
   return 'dig';
 }
 function frame(t) {
+  if(phase==='explore'){adventureView.frame(t);paintDom(document,t,reduced.matches);requestAnimationFrame(frame);return;}
   if (phase === 'dig' && ch) {
     updateHud(t); checkComicCues();
     if (ch.dig.revealed.size >= 3 && !ch.dig.done) {
@@ -668,4 +701,4 @@ setPhase('title');
 requestAnimationFrame(frame);
 
 // 교사·검증용 훅 (콘솔에서 sillaDebug.challenge 로 현재 판 상태를 본다)
-window.sillaDebug = { get challenge() { return ch; }, get phase() { return phase; }, get layout() { return layout; }, get panels() { return panelsShown; }, get boss() { return bossView.state; } };
+window.sillaDebug = { get challenge() { return ch; }, get phase() { return phase; }, get layout() { return layout; }, get panels() { return panelsShown; }, get boss() { return bossView.state; }, get adventure(){return adventureView.state;}, get adventurePaused(){return adventureView.paused;} };
