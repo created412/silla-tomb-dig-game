@@ -23,7 +23,7 @@ import { createVoicePlayer } from './voice-player.js?v=guardian-1';
 import { createBossView } from './boss.js';
 import { bossUnlocked, loadBossBadge } from './boss-model.js';
 import { createMusicPlayer } from './music-player.js?v=suno-original-2';
-import { createAdventureView } from './adventure-view.js?v=adventure-1';
+import { createAdventureView } from './adventure-view.js?v=props-1';
 import { ACTORS, ROUTES } from './adventure-model.js?v=adventure-1';
 import { loadAdventureSave, saveAdventure } from './adventure-save.js';
 

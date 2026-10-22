@@ -1,6 +1,7 @@
 import {ACTORS,createAdventure,stepAdventure,switchFriend,retryAdventure} from './adventure-model.js?v=adventure-1';
 import {drawCharacter} from './characters.js';
 import {worldImage,secondWorldImage} from './clay-art.js';
+import {drawAdventureProp,drawAdventureTerrain} from './adventure-art.js?v=props-1';
 
 // 화면·입력은 여기, 물리와 통과 조건은 adventure-model에 둔다.
 export function createAdventureView({host,sfx,onDig,onHome,onSave,onMusic}){
@@ -120,6 +121,7 @@ export function createAdventureView({host,sfx,onDig,onHome,onSave,onMusic}){
   // 햇빛 아래 풀과 뿌리가 보이는 발판. 배경 이미지는 기존 제작 자산만 쓴다.
   for(const f of state.route.platforms){
    if(f.x+f.w<cam-80||f.x>cam+viewWidth+80)continue;
+   if(drawAdventureTerrain(ctx,f))continue;
    const g=ctx.createLinearGradient(0,f.y,0,610);g.addColorStop(0,'#926b45');g.addColorStop(.25,'#694e38');g.addColorStop(1,'#263d31');
    rounded(f.x,f.y,f.w,260,18,g,'#4a4832');rounded(f.x-3,f.y-9,f.w+6,18,9,'#74964c');
    for(let x=f.x+15;x<f.x+f.w;x+=27){ctx.strokeStyle='#a1bb64';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x,f.y);ctx.lineTo(x-4,f.y-15-(Math.sin(x)*6));ctx.lineTo(x+5,f.y-8);ctx.stroke();}
@@ -127,17 +129,22 @@ export function createAdventureView({host,sfx,onDig,onHome,onSave,onMusic}){
   }
   // 구간 시작 표식과 쉬는 발판의 작은 깃발.
   flag(170,460,'출발');
-  if(state.checkpoint.x>300)flag(state.checkpoint.x,state.checkpoint.y,'다시 여기');
+  if(state.checkpoint.x>300){
+   const cp=state.checkpoint;
+   // Keep the rest marker away from the actual obstacle silhouette.
+   if(!state.route.gates.some(g=>Math.abs(g.x-cp.x)<150))flag(cp.x,cp.y,'쉼터');
+  }
   for(const g of state.route.gates){
    if(g.x<cam-120||g.x>cam+viewWidth+120)continue;
    const open=state.opened.has(g.id);
    if(g.kind==='crawl'){
-    rounded(g.x-45,345,90,open?63:84,12,'#715b42','#b49b67');
-    ctx.strokeStyle='#b09669';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(g.x-35,360);ctx.lineTo(g.x+35,399);ctx.stroke();
-    label(g.x,318,open?'쏙! 통과':'뱀 · 몸 낮추기',open?'#cbe39c':'#fff2ce');
+    if(!drawAdventureProp(ctx,'tunnel',g.x,464,188,126)){
+     ctx.strokeStyle='#715b42';ctx.lineWidth=28;ctx.beginPath();ctx.arc(g.x,452,54,Math.PI,0);ctx.stroke();
+    }
+    if(!open&&Math.abs(g.x-state.player.x)<290)label(g.x,319,'뱀 · 몸 낮추기','#fff2ce');
    }else if(!open){
-    if(g.kind==='dig'){ctx.fillStyle='#b59053';ctx.beginPath();ctx.ellipse(g.x,448,50,48,0,Math.PI,0);ctx.fill();for(let i=0;i<5;i++)leaf(g.x-36+i*17,423-i%2*10,'#85a15b');label(g.x,372,'두꺼비 · 폴짝!','#fff2ce');}
-    else{rock(g.x,423,40,t*.001);label(g.x,352,'거북 · 등껍질','#fff2ce');}
+    if(g.kind==='dig'){if(!drawAdventureProp(ctx,'mound',g.x,464,142,78)){ctx.fillStyle='#b59053';ctx.beginPath();ctx.ellipse(g.x,448,50,48,0,Math.PI,0);ctx.fill();}label(g.x,372,'두꺼비 · 폴짝!','#fff2ce');}
+    else{rock(g.x,423,40,0);label(g.x,352,'거북 · 등껍질','#fff2ce');}
    }
   }
   for(const l of state.route.lights){
@@ -147,10 +154,10 @@ export function createAdventureView({host,sfx,onDig,onHome,onSave,onMusic}){
    ctx.strokeStyle='#f9e9a0';ctx.lineWidth=2;ctx.beginPath();ctx.arc(l.x,y,25,0,Math.PI*2);ctx.stroke();spark(l.x,y,15,'#fff5ac');
   }
   for(const r of state.stones)rock(r.x,r.y,22,r.x/30);
-  const goal=state.route.goal;flag(goal,460,'발굴 현장');
-  rounded(goal-62,463,124,25,8,'#e4d19a','#816b42');
-  ctx.strokeStyle='#ecd99c';ctx.lineWidth=4;ctx.setLineDash([7,8]);ctx.strokeRect(goal-68,365,136,93);ctx.setLineDash([]);
-  if(state.collected.size===3&&state.opened.size===state.route.gates.length){spark(goal,320,20,'#fff0a0');label(goal,286,'여기야!','#fff2ce');}
+  const goal=state.route.goal;
+  if(!drawAdventureProp(ctx,'station',goal,464,200,133))flag(goal,460,'발굴 현장');
+  label(goal,310,'발굴 현장','#fff2ce');
+  if(state.collected.size===3&&state.opened.size===state.route.gates.length)spark(goal,268,18,'#fff0a0');
   const p=state.player;
   ctx.fillStyle='#102d2540';ctx.beginPath();ctx.ellipse(p.x,p.grounded?p.y+3:460,29,7,0,0,Math.PI*2);ctx.fill();
   ctx.save();ctx.translate(p.x,p.y);
@@ -159,14 +166,22 @@ export function createAdventureView({host,sfx,onDig,onHome,onSave,onMusic}){
   if(state.invulnerable>0)ctx.globalAlpha=.65+.35*Math.abs(Math.sin(t/90));
   // 원본 아틀라스의 얼굴이 이동 방향을 향한다.
   ctx.scale(p.facing,1);drawCharacter(ctx,state.actor,0,0,87,t,state.status==='arrived'?'artifactRevealed':'idle',false,reduced.matches);ctx.restore();
+  // Roots stay in front while the snake slips through the opening, rather than
+  // looking like a sticker walking across a solid rectangle.
+  for(const g of state.route.gates)if(g.kind==='crawl'&&Math.abs(p.x-g.x)<72)drawAdventureProp(ctx,'tunnel',g.x,464,188,126);
   if(state.actor==='turtle'&&state.acting){ctx.strokeStyle='#d4f2bc';ctx.lineWidth=5;ctx.beginPath();ctx.arc(p.x,p.y-36,55,Math.PI*1.05,Math.PI*1.95);ctx.stroke();}
   particles=particles.filter(q=>q.life>0);for(const q of particles){q.life-=dt;q.x+=q.vx*dt;q.y+=q.vy*dt;q.vy+=140*dt;ctx.globalAlpha=Math.max(0,q.life);spark(q.x,q.y,3,q.color);}ctx.globalAlpha=1;
   ctx.restore();
  }
  function label(x,y,text,color){ctx.font='bold 16px "Malgun Gothic",sans-serif';const width=ctx.measureText(text).width+22;rounded(x-width/2,y-21,width,30,12,'#173f35e8');ctx.fillStyle=color;ctx.textAlign='center';ctx.fillText(text,x,y);}
- function flag(x,y,text){ctx.strokeStyle='#d9bc81';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y-110);ctx.stroke();ctx.fillStyle='#e8b954';ctx.beginPath();ctx.moveTo(x,y-110);ctx.lineTo(x+55,y-97);ctx.lineTo(x,y-79);ctx.fill();label(x,y-125,text,'#fff4cb');}
+ function flag(x,y,text){
+  if(drawAdventureProp(ctx,'sign',x,y+3,90,124)){
+   ctx.save();ctx.fillStyle='#fff0be';ctx.shadowColor='#352715';ctx.shadowBlur=3;ctx.font='bold 12px "Malgun Gothic",sans-serif';ctx.textAlign='center';ctx.fillText(text,x+13,y-85);ctx.restore();return;
+  }
+  ctx.strokeStyle='#91714b';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y-100);ctx.stroke();label(x,y-95,text,'#fff4cb');
+ }
  function spark(x,y,r,color){ctx.fillStyle=color;ctx.beginPath();ctx.moveTo(x,y-r);ctx.lineTo(x+r*.3,y-r*.3);ctx.lineTo(x+r,y);ctx.lineTo(x+r*.3,y+r*.3);ctx.lineTo(x,y+r);ctx.lineTo(x-r*.3,y+r*.3);ctx.lineTo(x-r,y);ctx.lineTo(x-r*.3,y-r*.3);ctx.closePath();ctx.fill();}
  function leaf(x,y,color){ctx.fillStyle=color;ctx.beginPath();ctx.ellipse(x,y,11,5,-.5,0,Math.PI*2);ctx.fill();}
- function rock(x,y,r,angle){ctx.save();ctx.translate(x,y);ctx.rotate(angle);ctx.fillStyle='#8b9280';ctx.strokeStyle='#cad1af';ctx.lineWidth=3;ctx.beginPath();for(let i=0;i<7;i++){const a=i*Math.PI*2/7,rr=r*(.9+Math.sin(i*5)*.12);ctx.lineTo(Math.cos(a)*rr,Math.sin(a)*rr);}ctx.closePath();ctx.fill();ctx.stroke();ctx.restore();}
+ function rock(x,y,r,angle){ctx.save();ctx.translate(x,y);ctx.rotate(angle);if(!drawAdventureProp(ctx,'boulder',0,r,r*2.35,r*2)){ctx.fillStyle='#8b9280';ctx.beginPath();ctx.arc(0,0,r,0,Math.PI*2);ctx.fill();}ctx.restore();}
  return {open,close,frame,get state(){return state;},get paused(){return paused;}};
 }

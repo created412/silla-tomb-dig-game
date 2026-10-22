@@ -49,7 +49,7 @@
  .adventure-controls { left:16px; right:16px; bottom:max(18px,env(safe-area-inset-bottom)); grid-template-columns:134px 1fr 105px; gap:8px; }
  .adventure-arrows { gap:8px; }
  .adventure-arrows button { width:62px; height:62px; font-size:22px; }
- #adventure-action { grid-column:3; min-height:68px; font-size:20px; border-radius:24px; }
+ #adventure-action { grid-column:3; min-height:68px; font-size:18px; white-space:nowrap; border-radius:24px; }
  #adventure-friends { position:absolute; bottom:88px; left:0; right:0; gap:8px; }
  #adventure-friends button { min-width:56px; min-height:55px; padding:1px 5px; font-size:12px; border-radius:12px; }
  #adventure-friends canvas { width:35px; height:33px; }
