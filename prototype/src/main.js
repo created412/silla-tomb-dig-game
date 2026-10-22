@@ -5,7 +5,7 @@ import { hintForLayer } from './hud.js';
 import { layoutGrid, cellAt } from './grid.js';
 import { LINES } from './lines.js';
 import { createDialogue } from './dialogue.js';
-import { createRenderer } from './renderer.js';
+import { createRenderer } from './renderer.js?v=overlap-1';
 import { createSfx } from './sfx.js';
 import { attachInput } from './input.js';
 import { createEffects } from './effects.js';
@@ -639,7 +639,11 @@ function frame(t) {
     }
   }
   const rp = rendererPhase();
-  renderer.draw(rp === 'title' ? null : ch?.dig ?? null, layout, t, rp, t - foundAt);
+  // DOM의 캐릭터와 캔버스의 캐릭터가 같은 자리에서 겹치지 않게 한쪽만 표시한다.
+  // 매 프레임 현재 화면에서 결정하므로 닫기·자동 종료·화면 전환 뒤 바로 복원된다.
+  const characterOverlay = sideReactionId !== null || comicOpen || el.story.open || phase === 'boss'
+    || [el.dialogue, el.join, el.dex, el.card].some(panel => !panel.classList.contains('hidden'));
+  renderer.draw(rp === 'title' ? null : ch?.dig ?? null, layout, t, rp, t - foundAt, !characterOverlay);
   if (rp !== 'title' && ch) {
     effects.drawSky(SKY_TIME, SKY_BAND, t);
     if (rp === 'dig') {

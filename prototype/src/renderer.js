@@ -10,7 +10,7 @@ export function createRenderer(canvas) {
   const fx={dust:[],shakeUntil:0,flashUntil:0,flashStart:0,mood:'idle',moodUntil:0,speaker:null};
   const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
   let cache=null,cacheKey='',landscape=null,landscapeKey='';
-  let artifactId='crown',companion=false,bird=false,hintCells=[],hintUntil=0,secondScene=false,crew=null;
+  let artifactId='crown',companion=false,bird=false,hintCells=[],hintUntil=0,secondScene=false,crew=null,friendsVisible=true;
   const dpr=()=>canvas.width/canvas.getBoundingClientRect().width;
   function landscapeScene() {
     const key=`${canvas.width}:${canvas.height}:${worldImage.naturalWidth}:${secondWorldImage.naturalWidth}:${secondScene}`;
@@ -18,6 +18,8 @@ export function createRenderer(canvas) {
     ctx.drawImage(landscape,0,0);
   }
   function friends(t,phase,foundProgress=0) {
+    // 말풍선·팝업에 토우가 나오면 배경의 토우는 그리지 않는다.
+    if(!friendsVisible)return;
     const w=canvas.width,h=canvas.height,dp=dpr();
     let size=Math.min(135*dp,h*.23),fy=h-10*dp,left=Math.max(size*.62,w*.12),right=w-left;
     if(phase==='title'){size=Math.min(220*dp,h*.37);fy=h*.87;left=w*.68-size*.45;right=w*.77+size*.3;}
@@ -84,7 +86,8 @@ export function createRenderer(canvas) {
   }
   return {
     fx,
-    draw(state,layout,t,phase='dig',elapsed=0){
+    draw(state,layout,t,phase='dig',elapsed=0,showFriends=true){
+      friendsVisible=showFriends;
       const w=canvas.width,h=canvas.height,dp=dpr();ctx.clearRect(0,0,w,h);
       if(phase==='title'){landscapeScene();friends(t,'title');return;}
       landscapeScene();if(phase==='again'){reveal(t,3000,'again');return;}
