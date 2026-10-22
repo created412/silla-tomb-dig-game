@@ -80,8 +80,8 @@ export function createAdventureView({host,sfx,onDig,onHome,onSave,onMusic}){
  function open(index,name){
   state=createAdventure(index);artifactName=name;active=true;paused=false;lastTime=0;cam=0;particles=[];messageUntil=0;lastCount=-1;lastActor='';lastTip='';
   root.classList.remove('hidden','has-modal');$('adventure-modal').classList.add('hidden');$('adventure-feedback').textContent='';
-  $('adventure-chapter').textContent=`탐험 ${index+1} · ${name}을 찾아서`;$('adventure-title').textContent=state.route.name;
-  $('adventure-friends').innerHTML=state.available.map(who=>`<button data-adventure-friend="${who}" aria-label="${ACTORS[who].name}로 바꾸기" aria-pressed="false"><canvas data-actor="${who}" aria-hidden="true"></canvas><span>${ACTORS[who].name}</span></button>`).join('');
+  $('adventure-chapter').textContent=`탐험 ${index+1} · ${name} 찾기`;$('adventure-title').textContent=state.route.name;
+  $('adventure-friends').innerHTML=state.available.map(who=>`<button data-adventure-friend="${who}" aria-label="${ACTORS[who].name} 선택" aria-pressed="false"><canvas data-actor="${who}" aria-hidden="true"></canvas><span>${ACTORS[who].name}</span></button>`).join('');
   root.querySelectorAll('[data-adventure-friend]').forEach(b=>b.onclick=()=>choose(b.dataset.adventureFriend));
   resize();updateHud();$('adventure-action').focus({preventScroll:true});
  }

@@ -20,7 +20,7 @@
 - [x] 1. `adventure-model.js` 이동·점프·비행·돌·틈·수집·체크포인트를 구현하고 `checks/adventure-model.test.mjs`에서 실제 입력 시뮬레이션으로 검증한다.
 - [x] 2. `adventure-view.js`, `adventure.css`로 스크롤 배경·토우·즉각 보상·모바일 멀티터치·키보드 조작·정지 화면을 구현한다.
 - [x] 3. `main.js`, `adventure-progression.js`, `index.html`에 탐험→발굴→보상→다음 탐험을 연결한다. 수동 저장과 기존 기록 읽기를 유지한다.
-- [ ] 4. `checks/adventure-integration.mjs`에서 전체 첫 구간 및 화면 크기·취소/회전/새 시작을 검증하고 기존 단위 검사와 발굴 완료를 확인한 뒤 배포한다.
+- [x] 4. `checks/adventure-integration.mjs`에서 전체 첫 구간 및 화면 크기·취소/회전/새 시작을 검증하고 기존 단위 검사와 발굴 완료를 확인한 뒤 배포한다.
 
 ## 검토 중점
 
@@ -32,4 +32,4 @@
 
 ## 검증 기록
 
-자동 검사와 독립 검토를 완료했다. 실제 브라우저는 연결 중단으로 제목 로딩만 확인했다. 상세 결과와 남은 화면 검증은 `docs/visual-review/active-adventure.md` 참조.
+자동 검사와 독립 검토를 완료했다. Chrome 연결 복구 후 PC와 휴대폰 세로·가로 크기의 실제 화면 및 토우 전환·일시정지를 확인했다. 상세 결과와 실기기 검증 범위는 `docs/visual-review/active-adventure.md` 참조.
