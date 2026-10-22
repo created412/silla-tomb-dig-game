@@ -1,0 +1,100 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><title>이야기 화면 검증</title>
+<style>body{margin:0;font:16px sans-serif;background:#143c30;color:white}header{padding:8px;display:flex;gap:8px}button,select{padding:8px}iframe{display:block;width:100%;height:calc(100vh - 58px);border:0}</style>
+<header><button id="run">대화 전체 검사</button><select id="preview"><option value="wake">시작 이야기</option><option value="comic">금관 기억</option><option value="quiz">금관 질문</option><option value="join">거북 합류</option><option value="warn">조심 안내</option><option value="glimmer">반짝 발견</option></select><button id="show">미리보기</button><button id="warn-again">반응 다시 보기</button><span id="status">준비</span></header><iframe></iframe>
+<script type="module">
+import {LINES} from '../prototype/src/lines.js';
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const status=document.querySelector('#status'),results=[];
+function check(ok,message){results.push({pass:!!ok,message});document.body.dataset.results=JSON.stringify(results);status.textContent=message;if(!ok)throw Error(message);}
+let frame=document.querySelector('iframe'),d,w;
+const screen=document.createElement('select');screen.setAttribute('aria-label','검증 화면 크기');
+screen.innerHTML='<option value="desktop">기본 화면</option><option value="phone">휴대폰 세로</option><option value="landscape">휴대폰 가로</option>';
+document.querySelector('header').append(screen);
+screen.onchange=()=>{frame.style.width=screen.value==='phone'?'390px':screen.value==='landscape'?'844px':'100%';frame.style.height=screen.value==='phone'?'844px':screen.value==='landscape'?'390px':'calc(100vh - 58px)';frame.style.margin='0 auto';};
+// 검증 페이지에서만 메모리 저장소·미리보기 함수를 사용한다. 배포 앱에는 추가 훅이 없다.
+const base=new URL('../prototype/',location.href).href;
+// 실제 배경 캐릭터 그리기 호출을 기록한다. 검증 페이지 밖에는 계측 코드를 넣지 않는다.
+const absoluteImports=source=>source.replace(/from '\.\/([^']+)'/g,(_,path)=>`from '${base}src/${path}'`);
+let rendererSource=absoluteImports(await(await fetch(base+'src/renderer.js',{cache:'no-store'})).text());
+rendererSource=rendererSource.replace('import { drawCharacter }','import { drawCharacter as originalDrawCharacter }');
+rendererSource+='\nfunction drawCharacter(...args){window.renderedFriends.push(args[1]);return originalDrawCharacter(...args);}';
+const rendererURL=URL.createObjectURL(new Blob([rendererSource],{type:'text/javascript'}));
+let main=await(await fetch(base+'src/main.js',{cache:'no-store'})).text();
+main=absoluteImports(main).replace(/from '[^']*\/renderer\.js[^']*'/,`from '${rendererURL}'`);
+main+='\nwindow.storyFixture={playReaction,forceReaction,showPanel,showJoin,clearTransient,startLevel,openCard};window.renderedFriends=[];const originalDraw=renderer.draw;renderer.draw=(...args)=>{window.renderedFriends=[];return originalDraw(...args);};';
+const moduleURL=URL.createObjectURL(new Blob([main],{type:'text/javascript'}));
+const html=(await(await fetch(base+'index.html')).text()).replace('<head>',`<head><base href="${base}"><script>Object.defineProperty(window,'localStorage',{value:{getItem:()=>null,setItem:()=>{}}});Math.random=()=>.5;<\/script>`).replace(/src="src\/main\.js[^\"]*"/,`src="${moduleURL}"`);
+async function load(){const f=document.createElement('iframe'),loaded=new Promise(r=>f.onload=r);f.srcdoc=html;frame.replaceWith(f);frame=f;await loaded;d=f.contentDocument;w=f.contentWindow;for(let i=0;i<200&&!w.storyFixture;i++)await wait(20);if(!w.storyFixture)throw Error('앱 로딩 실패');}
+const click=id=>d.querySelector(id).click();
+const visible=id=>!d.querySelector(id).classList.contains('hidden');
+async function nextAll(){for(let i=0;i<10&&visible('#dialogue');i++){click('#dialogue-next');await wait(170);}}
+const painted=()=>new Promise(resolve=>w.requestAnimationFrame(()=>w.requestAnimationFrame(resolve)));
+function layout(id){const box=d.querySelector(id).getBoundingClientRect(),text=d.querySelector(id==='comic'?'#comic-text':'#line');return box.width>=w.innerWidth*.98&&box.height>=w.innerHeight*.98;}
+document.querySelector('#run').onclick=async()=>{results.length=0;delete document.body.dataset.error;delete document.body.dataset.done;try{
+ await load();click('[data-index="0"]');click('#btn-start');
+ const l0={...w.sillaDebug.layout},first=d.querySelector('#line').textContent;
+ await wait(2200);check(d.querySelector('#line').textContent===first,'대사는 자동으로 사라지지 않음');
+ check(layout('#dialogue'),'시작 대화가 화면 전체를 덮음');
+ check(parseFloat(w.getComputedStyle(d.querySelector('#line')).fontSize)>=27,'본문 글자 27px 이상');
+ await nextAll();check(w.sillaDebug.phase==='dig','직접 넘긴 뒤 발굴 시작');
+ check(JSON.stringify(l0)===JSON.stringify(w.sillaDebug.layout),'대화 전후 발굴판 크기 동일');
+ const sideIds=['tooHard','collapse','glimmer','rockDrag','warn','crack1','crack2','powerUsed','powerMissFrog','powerMissTurtle','powerMissSnake'];
+ for(const id of Object.keys(LINES).filter(id=>!['wake','found'].includes(id))){
+   w.storyFixture.forceReaction(id);
+   if(sideIds.includes(id)){
+     check(visible('#reaction')&&!visible('#dialogue'),`${id}: 작은 말풍선으로 표시`);
+     await painted();check(w.renderedFriends.length===0,`${id}: 말풍선 뒤 배경 토우 중복 없음 (그려진 토우 ${w.renderedFriends.join(',')||'없음'})`);
+     check(JSON.stringify(l0)===JSON.stringify(w.sillaDebug.layout),`${id}: 발굴판 크기 유지`);
+     click('#reaction-close');
+     await painted();check(w.renderedFriends.length===2,`${id}: 닫으면 배경 토우 복원`);
+   } else {check(visible('#dialogue'),`${id}: 긴 대화 유지`);await nextAll();}
+ }
+ w.storyFixture.forceReaction('warn');
+ const c=d.querySelector('#dig'),r=c.getBoundingClientRect(),l=w.sillaDebug.layout,dp=c.width/r.width,i=0;
+ const before=w.sillaDebug.challenge.dig.soil[i];
+ function pointer(type){c.dispatchEvent(new w.PointerEvent(type,{bubbles:true,pointerId:1,clientX:r.left+(l.x0+(i%12+.5)*l.cell)/dp,clientY:r.top+(l.y0+(Math.floor(i/12)+.5)*l.cell)/dp,buttons:1}));}
+ pointer('pointerdown');for(let k=0;k<25;k++){await wait(30);pointer('pointermove');}pointer('pointerup');
+ check(w.sillaDebug.challenge.dig.soil[i]<before,'경고 말풍선 중에도 실제 발굴 입력 가능');
+ w.storyFixture.showPanel(0);
+ check(!visible('#reaction'),'기억이 떠오르면 짧은 안내 정리');
+ const cloud=d.querySelector('.memory-cloud').getBoundingClientRect();
+ check(cloud.width<w.innerWidth&&cloud.height<w.innerHeight*.9,'생각구름 바깥 발굴 현장이 보임');
+ check(d.querySelector('#memory-intro').textContent.includes('두꺼비'),'두꺼비가 떠올린 기억임을 안내');
+ check(d.querySelector('.memory-thinker canvas').dataset.actor==='frog','생각구름 아래 두꺼비 표시');
+ await painted();check(w.renderedFriends.length===0,'생각구름 두꺼비 뒤 배경 토우 중복 없음');
+ check(JSON.stringify(l0)===JSON.stringify(w.sillaDebug.layout),'생각구름 전후 발굴판 크기 유지');
+ const during=w.sillaDebug.challenge.dig.soil[1];
+ c.dispatchEvent(new w.PointerEvent('pointerdown',{bubbles:true,pointerId:2,clientX:r.left+(l.x0+1.5*l.cell)/dp,clientY:r.top+(l.y0+.5*l.cell)/dp,buttons:1}));
+ for(let k=0;k<8;k++){await wait(30);c.dispatchEvent(new w.PointerEvent('pointermove',{bubbles:true,pointerId:2,clientX:r.left+(l.x0+1.5*l.cell)/dp,clientY:r.top+(l.y0+.5*l.cell)/dp,buttons:1}));}
+ c.dispatchEvent(new w.PointerEvent('pointerup',{bubbles:true,pointerId:2}));
+ check(w.sillaDebug.challenge.dig.soil[1]===during,'기억을 보는 동안 뒤쪽 발굴 입력 차단');
+ w.storyFixture.showPanel(3);check(d.querySelector('#comic').dataset.memoryKind==='question','기억 질문으로 연결');
+ click('#comic-choices [data-k="0"]');check(d.querySelector('#comic-text').textContent.includes('이름표'),'오답 피드백 유지');
+ click('#comic-choices [data-k="1"]');click('#comic-next');
+ w.storyFixture.showJoin('turtle',()=>{});check(visible('#join'),'토우 합류도 같은 그림책 화면');click('#join-ok');
+ w.storyFixture.forceReaction('tooHard');await wait(5250);check(!visible('#reaction'),'짧은 경고는 자동으로 사라짐');
+ w.storyFixture.forceReaction('warn');w.storyFixture.clearTransient();check(!visible('#reaction'),'화면 이동 시 남은 경고 제거');
+ // 가장 많은 네 토우가 함께하는 무덤에서 크기별 중복·복원·말풍선 경계를 확인한다.
+ w.storyFixture.openCard(4);w.storyFixture.startLevel();await nextAll();
+ for(const [width,height] of [[1440,900],[1024,768],[768,1024],[390,844],[844,390]]){
+   frame.style.width=width+'px';frame.style.height=height+'px';await painted();
+   const size=`${width}×${height}`,board=JSON.stringify(w.sillaDebug.layout);
+   for(const id of ['glimmer','warn','powerMissSnake']){
+     w.storyFixture.forceReaction(id);await painted();
+     check(w.renderedFriends.length===0,`${size} ${id}: 네 토우 중복 없음`);
+     const bubble=d.querySelector('#reaction').getBoundingClientRect();
+     check(bubble.left>=0&&bubble.right<=width&&bubble.top>=0&&bubble.bottom<=height,`${size} ${id}: 말풍선 화면 안에 표시`);
+     click('#reaction-close');await painted();check(w.renderedFriends.length===4,`${size} ${id}: 네 토우 복원`);
+   }
+   w.storyFixture.showPanel(0);await painted();check(w.renderedFriends.length===0,`${size}: 기억 팝업 배경 중복 없음`);
+   w.storyFixture.clearTransient();await painted();check(w.renderedFriends.length===4,`${size}: 기억 종료 뒤 네 토우 복원`);
+   w.storyFixture.showJoin('snake',()=>{});await painted();check(w.renderedFriends.length===0,`${size}: 합류 화면 배경 중복 없음`);
+   click('#join-ok');await painted();check(w.renderedFriends.length===4,`${size}: 합류 종료 뒤 네 토우 복원`);
+   check(JSON.stringify(w.sillaDebug.layout)===board,`${size}: 반응·기억·합류 전후 발굴판 크기 유지`);
+ }
+ frame.style.width='100%';frame.style.height='calc(100vh - 58px)';
+ document.body.dataset.done='true';status.textContent=`통과 ${results.length}개`;
+}catch(e){document.body.dataset.error=e.message;status.textContent=e.message;}};
+document.querySelector('#show').onclick=async()=>{await load();click('[data-index="0"]');click('#btn-start');const scene=document.querySelector('#preview').value;if(scene==='wake')return;await nextAll();if(scene==='comic')w.storyFixture.showPanel(0);else if(scene==='quiz')w.storyFixture.showPanel(3);else if(scene==='join')w.storyFixture.showJoin('turtle',()=>{});else w.storyFixture.forceReaction(scene);};
+document.querySelector('#warn-again').onclick=()=>w?.storyFixture.forceReaction(document.querySelector('#preview').value==='glimmer'?'glimmer':'warn');
+</script></html>

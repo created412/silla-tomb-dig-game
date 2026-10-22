@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>토우 친구들과 신라 발굴 도전</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="boss.css">
+  <link rel="stylesheet" href="music.css">
+  <link rel="stylesheet" href="memory.css?v=thought-1">
+  <link rel="stylesheet" href="mobile.css?v=mobile-2">
+  <link rel="stylesheet" href="adventure.css?v=props-1">
+</head>
+<body>
+  <div id="stage" data-phase="title">
+    <canvas id="dig" aria-label="발굴 현장"></canvas>
+    <div id="dig-bounds" aria-hidden="true"></div>
+    <button id="field-music" class="music-toggle" data-music-toggle type="button">♪ 음악 켜짐</button>
+
+    <div id="hud" class="hidden">
+      <div id="level-name"></div>
+      <div id="hint">손가락으로 쓱쓱 문질러!</div>
+      <div id="cracks" aria-label="유물 금" title="유물에 간 금. 3개면 깨져!">
+        <span class="crack">⚡</span><span class="crack">⚡</span><span class="crack">⚡</span>
+      </div>
+    </div>
+
+    <div id="powers" class="hidden" aria-label="토우 능력"></div>
+
+    <aside id="reaction" class="hidden" aria-label="토우 친구의 한마디" data-who="frog">
+      <div class="reaction-face" aria-hidden="true"><img src="assets/startled-toad.svg" alt=""><canvas id="reaction-actor" data-actor="frog" data-mood="tooHard"></canvas></div>
+      <div class="reaction-bubble"><span id="reaction-who">두꺼비</span><p id="reaction-text" role="status" aria-live="polite" aria-atomic="true"></p><button id="reaction-close" type="button" aria-label="말풍선 닫기">×</button></div>
+    </aside>
+
+    <div id="dialogue" class="story-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="dialogue-title">
+      <div class="story-spread">
+        <div class="scene-picture">
+          <canvas id="dialogue-scene" data-scene="0" aria-label="토우 친구들의 모험 그림"></canvas>
+          <p class="scene-label" id="dialogue-title">토우 친구들의 이야기</p>
+        </div>
+        <div class="story-copy">
+          <div class="speaker-heading"><canvas id="dialogue-actor" data-actor="frog" aria-hidden="true"></canvas><span id="speaker">두꺼비</span><span id="dialogue-page"></span></div>
+          <p id="line" aria-live="polite"></p>
+          <div class="voice-controls"><button data-voice-replay>↻ 다시 듣기</button><button data-voice-mute aria-pressed="false">소리 켜짐</button><span data-voice-status></span></div>
+          <button id="dialogue-next" class="big story-next">다음 이야기 <span id="tap-hint">→</span></button>
+        </div>
+      </div>
+    </div>
+
+    <div id="title" class="overlay">
+      <div class="title-box">
+        <p class="kicker">폴짝! 훨훨! 토우와 길을 찾고, 신라를 만나요.</p>
+        <h1>토우 친구들과<br><span class="gold">신라 발굴 도전</span></h1>
+        <div class="adventure-title-actions"><button id="btn-continue-adventure" class="big">탐험 이어가기</button><button id="btn-new-adventure" class="big ghost">탐험 새로 시작하기</button></div>
+        <div id="levels" aria-label="무덤 고르기"></div>
+        <button id="btn-boss" class="boss-entry" disabled><span>마지막 도전</span><strong>🔒 유적을 지켜라</strong><small>유물 다섯 개를 찾으면 열려!</small></button>
+        <div class="row title-row"><button id="btn-dex" class="big ghost">🐸 토우 친구들</button><div id="shelf" aria-label="찾은 유물"></div></div>
+        <div class="row"><button id="btn-save-title" class="big ghost">저장하기</button><span id="save-title-status" class="save-status" role="status">저장하기를 눌러야 기록이 남아요.</span></div>
+        <p class="sub">토우로 길 찾기 → 유물 발굴 → 새 친구와 다음 모험</p>
+      </div>
+    </div>
+
+    <div id="card" class="overlay hidden">
+      <div class="panel">
+        <p class="kicker" id="card-kicker"></p>
+        <h2 id="card-title"></h2>
+        <p id="card-info"></p>
+        <div id="card-friends"></div>
+        <p class="rule">⏳ 시간 제한 없음 · ⚡ 유물 위를 세게 문지르거나 찍으면 경고, 또 하면 금 · 금 3개면 깨져!</p>
+        <div class="row">
+          <button id="btn-start" class="big">탐험 출발!</button>
+          <button id="btn-back" class="big ghost">무덤 고르기</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="result" class="bottom-panel hidden">
+      <canvas id="result-art" class="hidden" data-art="crown" aria-hidden="true"></canvas>
+      <div class="result-text">
+        <h2 id="result-title"></h2>
+        <div id="result-stars" class="hidden"><span>★</span><span>★</span><span>★</span></div>
+        <p id="result-sub"></p>
+      </div>
+      <div class="row">
+        <button id="btn-retry" class="big">다시 파기</button>
+        <button id="btn-next" class="big">다음 무덤 ▶</button>
+        <button id="btn-story" class="big ghost">유물 이야기</button>
+        <button id="btn-home" class="big ghost">무덤 고르기</button>
+        <button id="btn-save-result" class="big ghost">저장하기</button>
+      </div>
+    </div>
+
+    <div id="comic" class="story-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="memory-intro comic-title">
+      <div class="memory-stage">
+      <div class="memory-cloud">
+        <header class="memory-heading"><span id="memory-intro">두꺼비에게 옛 기억이 떠올랐어</span><span id="comic-title"></span></header>
+        <div class="scene-picture"><canvas id="comic-canvas" data-comic="" data-panel="0" aria-label="두꺼비 머릿속에 떠오른 옛 기억 그림"></canvas></div>
+        <div class="story-copy">
+          <div class="speaker-heading"><canvas id="comic-actor" data-actor="frog" aria-hidden="true"></canvas><span id="comic-who"></span></div>
+          <p id="comic-text" aria-live="polite"></p>
+          <div id="comic-choices" class="hidden"></div>
+          <div class="voice-controls"><button data-voice-replay>↻ 다시 듣기</button><button data-voice-mute aria-pressed="false">소리 켜짐</button><span data-voice-status></span></div>
+          <button id="comic-next" class="big story-next" disabled>계속 발굴하기 →</button>
+        </div>
+      </div>
+      <div class="memory-thinker" aria-hidden="true"><i></i><i></i><i></i><canvas data-actor="frog" data-mood="glimmer"></canvas><span>아… 조금씩 기억나!<small>토우의 기억으로 상상한 장면</small></span></div>
+      </div>
+    </div>
+
+    <div id="join" class="story-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="join-name">
+      <div class="story-spread join-panel">
+        <div class="scene-picture join-picture"><canvas data-scene="3" aria-hidden="true"></canvas><canvas id="join-actor" data-actor="frog" data-mood="artifactRevealed" aria-label="새 토우"></canvas><p class="scene-label">새 친구가 깨어났어!</p></div>
+        <div class="story-copy">
+          <h2 id="join-name"></h2>
+          <p id="join-intro"></p>
+          <p id="join-power"></p>
+          <p id="join-when"></p>
+          <div class="voice-controls"><button data-voice-replay>↻ 다시 듣기</button><button data-voice-mute aria-pressed="false">소리 켜짐</button><span data-voice-status></span></div>
+          <button id="join-ok" class="big story-next">반가워! 함께 가자 →</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="dex" class="overlay hidden">
+      <div class="panel dex-panel">
+        <button id="dex-close" class="big ghost">닫기 ×</button>
+        <h2>토우 친구들</h2>
+        <div class="dex-about">
+          <img id="dex-shelf" src="assets/higgsfield/towoo-shelf.png" alt="선반 위 토우 인형들">
+          <div id="dex-about-text"></div>
+        </div>
+        <div id="dex-cards"></div>
+      </div>
+    </div>
+
+    <section id="boss" class="hidden" aria-label="마지막 도전 유적 지키기">
+      <header class="boss-header"><div><span class="boss-eyebrow">마지막 도전 · 유적 수호대</span><h2 id="boss-heading"></h2></div><div id="boss-hearts" aria-live="polite"></div><button id="boss-home" class="boss-small">무덤으로</button></header>
+      <ol id="boss-progress" aria-label="수호 작전 진행"></ol>
+      <div id="boss-field">
+        <canvas id="boss-landscape" data-boss="1" aria-label="도굴꾼이 나타난 발굴 현장"></canvas>
+        <div id="boss-warning">도굴을 막아라!</div>
+        <div id="boss-targets" aria-label="작전 목표"></div>
+        <canvas id="boss-helper" data-actor="bird" aria-hidden="true"></canvas>
+        <div id="boss-impact" aria-hidden="true"></div>
+      </div>
+      <footer class="boss-controls"><p id="boss-instruction" aria-live="polite"></p><div id="boss-friends" aria-label="도와줄 토우 고르기"></div><p id="boss-feedback" role="status"></p><button id="boss-continue" class="big hidden">다음 작전 →</button></footer>
+      <div id="boss-dialogue" class="story-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="boss-talk-title">
+        <div class="story-spread"><div class="scene-picture"><canvas id="boss-talk-art" data-boss="0" aria-label="마지막 모험 이야기"></canvas><p id="boss-talk-title" class="scene-label"></p></div><div class="story-copy"><div class="speaker-heading"><canvas id="boss-talk-actor" data-actor="bird" aria-hidden="true"></canvas><span id="boss-talk-who"></span></div><p id="boss-talk-text"></p><div class="voice-controls"><button data-voice-replay>↻ 다시 듣기</button><button data-voice-mute aria-pressed="false">소리 켜짐</button><span data-voice-status></span></div><button id="boss-talk-next" class="big story-next">작전 시작!</button></div></div>
+      </div>
+      <div id="boss-victory" class="hidden" role="dialog" aria-modal="true" aria-labelledby="boss-victory-title">
+        <canvas data-boss="3" aria-hidden="true"></canvas><div class="boss-award"><div class="guardian-medal" aria-hidden="true">✦</div><p>네 친구의 힘으로 지켜 낸 이야기</p><h2 id="boss-victory-title">신라 유적 수호대</h2><p>유물과 발견한 자리를 함께 지켰어!</p><div id="boss-treasures" aria-label="함께 지킨 유물 다섯 개"></div><div class="row"><button id="boss-save" class="big">수호 배지 저장하기</button><button id="boss-replay" class="big ghost">다시 도전</button><button id="boss-exit" class="big ghost">무덤으로</button></div><p id="boss-save-status" role="status">저장하기를 눌러 수호 배지를 간직해!</p></div>
+      </div>
+    </section>
+
+    <dialog id="story">
+      <button id="story-close" class="big ghost">닫기 ×</button>
+      <h2 id="story-title"></h2>
+      <p id="story-meta"></p>
+      <canvas id="story-art" data-art="crown" aria-label="유물 그림"></canvas>
+      <p id="story-what"></p>
+      <p id="story-hello"></p>
+      <p id="story-note"></p>
+      <div class="voice-controls"><button data-voice-replay>↻ 다시 듣기</button><button data-voice-mute aria-pressed="false">소리 켜짐</button><span data-voice-status></span></div>
+    </dialog>
+  </div>
+  <script type="module" src="src/main.js?v=props-1"></script>
+</body>
+</html>

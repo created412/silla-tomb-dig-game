@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-21",
+  "purpose": "Fullscreen dialogue scenes requested by user",
+  "file": "dialogue-scenes.png",
+  "jobId": "8de54925-7184-47e6-bc82-7b2659270e96",
+  "credits": 0.25,
+  "balanceBefore": 64.61,
+  "balanceAfter": 64.36,
+  "params": {
+    "model": "gpt_image_2_5",
+    "quality": "low",
+    "resolution": "1k",
+    "aspect_ratio": "16:9",
+    "background": "opaque",
+    "count": 1,
+    "medias": [
+      {
+        "role": "image",
+        "value": "0ab15572-6031-4c2b-9b90-4d1b49e8caca"
+      }
+    ],
+    "prompt": "Create ONE original illustrated comic scene atlas for a Korean elementary school archaeology adventure. Use the attached clay animal companion designs as visual reference: a friendly ochre clay toad with tiny hands, a slender clay snake, small bird, turtle. Warm handmade clay miniatures mixed with richly painted children's storybook scenery, expressive clear body language, jade green foliage, honey gold lighting, respectful Korean Silla burial mound archaeology. EXACT 2 columns x 2 rows of FOUR equal wide cinematic panels, split precisely at 50% width and 50% height. NO gutters, NO borders. Each panel self contained, no character crosses midlines. NO text, letters, numbers, speech balloons, captions, logos, bones, graves opened with bodies, scary creatures or broken artifacts. Top-left: close view of toad and snake waking gently on a warm clay workshop shelf, soft morning light, ceramic texture, sleepy curious faces, friendly welcoming mood. Top-right: toad and snake explore a sunlit grassy Silla excavation mound together, spot a tiny golden glow peeking from soil, bird hovering above, intrigued expressions, child adventure comic composition. Bottom-left: toad, turtle and snake carefully help sweep small soil with a soft archaeology brush beside exposed wooden planks, concerned but friendly expressions, care and teamwork, no visible actual relic. Bottom-right: all four clay friends celebrating a successful discovery with joyful expressions around a warm golden glow from the ground, gentle gold sparkles, green hills in background, no crown or actual artifact, leave center open for game overlay. Rich varied environments filling each entire panel, clear readable figures, large faces, no blank background. This will be cropped into four separate landscape story scenes for a game."
+  },
+  "scope": "Original fictional clay companions. Four reusable story scenes in a single atlas. No historical reconstruction claim."
+}

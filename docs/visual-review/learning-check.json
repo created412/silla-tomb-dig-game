@@ -1,0 +1,238 @@
+[
+  {
+    "pass": true,
+    "message": "시작 화면 로딩"
+  },
+  {
+    "pass": true,
+    "message": "DPR 2 캔버스"
+  },
+  {
+    "pass": true,
+    "message": "도입 4줄 뒤 발굴"
+  },
+  {
+    "pass": true,
+    "message": "연타 시 반응 대사"
+  },
+  {
+    "pass": true,
+    "message": "여섯 부분 발굴 뒤 발견 장면"
+  },
+  {
+    "pass": true,
+    "message": "발견 연출 중 대사 숨김"
+  },
+  {
+    "pass": true,
+    "message": "연출 중 탭으로 대사가 건너뛰어지지 않음"
+  },
+  {
+    "pass": true,
+    "message": "2.6초 뒤 발견 첫 대사"
+  },
+  {
+    "pass": true,
+    "message": "Turtle joins after crown"
+  },
+  {
+    "pass": true,
+    "message": "Artifact 1: inspection"
+  },
+  {
+    "pass": true,
+    "message": "Inference requires two observations"
+  },
+  {
+    "pass": true,
+    "message": "Incorrect inference can be retried"
+  },
+  {
+    "pass": true,
+    "message": "Evidence earns a clue"
+  },
+  {
+    "pass": true,
+    "message": "Artifact 2: excavation starts"
+  },
+  {
+    "pass": true,
+    "message": "Artifact 2: discovered"
+  },
+  {
+    "pass": true,
+    "message": "Artifact 2: inspection"
+  },
+  {
+    "pass": true,
+    "message": "Inference requires two observations"
+  },
+  {
+    "pass": true,
+    "message": "Incorrect inference can be retried"
+  },
+  {
+    "pass": true,
+    "message": "Evidence earns a clue"
+  },
+  {
+    "pass": true,
+    "message": "Artifact 3: excavation starts"
+  },
+  {
+    "pass": true,
+    "message": "Artifact 3: discovered"
+  },
+  {
+    "pass": true,
+    "message": "Artifact 3: inspection"
+  },
+  {
+    "pass": true,
+    "message": "Inference requires two observations"
+  },
+  {
+    "pass": true,
+    "message": "Incorrect inference can be retried"
+  },
+  {
+    "pass": true,
+    "message": "Evidence earns a clue"
+  },
+  {
+    "pass": true,
+    "message": "Three clues on evidence board"
+  },
+  {
+    "pass": true,
+    "message": "Known name claim cannot advance"
+  },
+  {
+    "pass": true,
+    "message": "Unknown name leads to evidence workshop"
+  },
+  {
+    "pass": true,
+    "message": "Evidence alone cannot complete a scene"
+  },
+  {
+    "pass": true,
+    "message": "Wrong reason leaves scene unfinished"
+  },
+  {
+    "pass": true,
+    "message": "Retry focus stays on corrective feedback"
+  },
+  {
+    "pass": true,
+    "message": "Correct evidence reveals imagined scene"
+  },
+  {
+    "pass": true,
+    "message": "Evidence alone cannot complete a scene"
+  },
+  {
+    "pass": true,
+    "message": "Wrong reason leaves scene unfinished"
+  },
+  {
+    "pass": true,
+    "message": "Retry focus stays on corrective feedback"
+  },
+  {
+    "pass": true,
+    "message": "Correct evidence reveals imagined scene"
+  },
+  {
+    "pass": true,
+    "message": "Evidence alone cannot complete a scene"
+  },
+  {
+    "pass": true,
+    "message": "Wrong reason leaves scene unfinished"
+  },
+  {
+    "pass": true,
+    "message": "Retry focus stays on corrective feedback"
+  },
+  {
+    "pass": true,
+    "message": "Correct evidence reveals imagined scene"
+  },
+  {
+    "pass": true,
+    "message": "Three scenes unlock new case application"
+  },
+  {
+    "pass": true,
+    "message": "Incorrect transfer judgment can be revised"
+  },
+  {
+    "pass": true,
+    "message": "Case retry reveals explanatory feedback"
+  },
+  {
+    "pass": true,
+    "message": "Incorrect transfer judgment can be revised"
+  },
+  {
+    "pass": true,
+    "message": "Case retry reveals explanatory feedback"
+  },
+  {
+    "pass": true,
+    "message": "New cases completed before naming"
+  },
+  {
+    "pass": true,
+    "message": "Museum contains three artifacts"
+  },
+  {
+    "pass": true,
+    "message": "Evidence and transfer records saved"
+  },
+  {
+    "pass": true,
+    "message": "First judgment survives correction"
+  },
+  {
+    "pass": true,
+    "message": "Report shows corrected thinking"
+  },
+  {
+    "pass": true,
+    "message": "Return from learning report"
+  },
+  {
+    "pass": true,
+    "message": "Nickname saved without claiming real name"
+  },
+  {
+    "pass": true,
+    "message": "Return to title"
+  },
+  {
+    "pass": true,
+    "message": "Saved exhibit button visible"
+  },
+  {
+    "pass": true,
+    "message": "Reopen museum"
+  },
+  {
+    "pass": true,
+    "message": "Restart has no stale timers"
+  },
+  {
+    "pass": true,
+    "message": "Restart preserves exhibit"
+  },
+  {
+    "pass": true,
+    "message": "One log entry for completed run"
+  },
+  {
+    "pass": true,
+    "message": "Exhibit restored after reload"
+  }
+]

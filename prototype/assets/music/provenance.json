@@ -1,0 +1,15 @@
+{
+  "provider": "Suno",
+  "title": "토우 친구들의 반짝 발굴 모험",
+  "model": "v6",
+  "sourceUrl": "https://suno.com/song/3871c5ab-43b0-4951-873e-b89a7e2e314d",
+  "owner": "menacingetude996",
+  "createdBy": "User generated this game-specific track in Suno after the assistant generation failed.",
+  "downloaded": "2026-10-22",
+  "sourceDurationSeconds": 83.92,
+  "file": "towoo-silla-adventure.mp3",
+  "durationSeconds": 83.92,
+  "bytes": 1631895,
+  "processing": "-20 LUFS target, -2 dBTP ceiling, 0.2s fade-in, 0.8s fade-out, 128kbps stereo MP3",
+  "sha256": "f6e56a3de70c824445fda0505084ef4120f58f0da8e777cd374cf401739f77d9"
+}

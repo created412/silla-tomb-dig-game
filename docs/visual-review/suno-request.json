@@ -1,0 +1,8 @@
+{
+  "title": "토우 친구들의 반짝 발굴 모험",
+  "provider": "Suno",
+  "model": "v6",
+  "instrumental": true,
+  "prompt": "Instrumental children's archaeology adventure game soundtrack, 96 BPM gentle bouncing 4/4, bright major pentatonic melody. Delicate gayageum plucks, airy bamboo flute, soft marimba, pizzicato strings, tiny wooden percussion and warm acoustic bass. Curious clay animal friends exploring sunny grassy Silla burial mounds. Warm, playful, curious, reassuring, a little mischievous. Simple four-note motif, sparse arrangement leaving space for narration, soft consistent dynamics, no dramatic builds. Repeating 8-bar phrases, loop-friendly opening and ending on the same harmony, short soft tail. Clean acoustic background music, two minutes, no vocals.",
+  "excluded": "vocals, singing, speech, humming, choir, horror, aggressive drums, heavy bass, dramatic risers"
+}

@@ -1,0 +1,97 @@
+{
+  "provider": "ElevenLabs via Higgsfield",
+  "model": "text2speech_v2",
+  "variant": "elevenlabs",
+  "clips": [
+    {
+      "key": "boss-intro-0",
+      "who": "bird",
+      "panel": 0,
+      "title": "마지막 도전 · 유적을 지켜라",
+      "text": "잠깐! 도굴꾼이 몰래 유물을 가져가려 해!",
+      "job_id": "07968077-9b0e-41da-908b-0d34781ebbae",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_070806_07968077-9b0e-41da-908b-0d34781ebbae.mp3"
+    },
+    {
+      "key": "boss-intro-1",
+      "who": "snake",
+      "panel": 0,
+      "title": "우리 넷의 힘을 모아!",
+      "text": "관리인이 오고 있어. 우리는 멀리서 도굴을 막자!",
+      "job_id": "efacef77-2016-41da-a288-69a6b8c2128b",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_070805_efacef77-2016-41da-a288-69a6b8c2128b.mp3"
+    },
+    {
+      "key": "boss-step-0",
+      "who": "bird",
+      "panel": 0,
+      "title": "첫 번째 작전 · 새의 눈",
+      "text": "내가 위에서 볼게! 발자국이 보이는 풀숲을 찾아 줘.",
+      "job_id": "49cc154b-391c-488d-b566-3fbbb75ed62e",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_070805_49cc154b-391c-488d-b566-3fbbb75ed62e.mp3"
+    },
+    {
+      "key": "boss-step-1",
+      "who": "frog",
+      "panel": 1,
+      "title": "두 번째 작전 · 두꺼비의 점프",
+      "text": "관리인이 지나갈 길이야. 흙더미 세 곳을 폴짝 걷자!",
+      "job_id": "3bf4be60-88fc-4b2a-8968-ed965c146daf",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_070805_3bf4be60-88fc-4b2a-8968-ed965c146daf.mp3"
+    },
+    {
+      "key": "boss-step-2",
+      "who": "turtle",
+      "panel": 1,
+      "title": "세 번째 작전 · 거북의 등껍질",
+      "text": "돌이 굴러오네! 내 등껍질로 돌 세 개를 막을게.",
+      "job_id": "870fc412-7b0f-4f8d-b6d9-fc410e4ee441",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_070805_870fc412-7b0f-4f8d-b6d9-fc410e4ee441.mp3"
+    },
+    {
+      "key": "boss-step-3",
+      "who": "snake",
+      "panel": 2,
+      "title": "마지막 작전 · 뱀의 틈 통과",
+      "text": "좁은 틈은 내 차례! 반짝이는 틈을 따라 장치를 멈추자.",
+      "job_id": "cb690f98-32d1-4372-9878-8c33b3c33e98",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_070805_cb690f98-32d1-4372-9878-8c33b3c33e98.mp3"
+    },
+    {
+      "key": "boss-failed",
+      "who": "frog",
+      "panel": 0,
+      "title": "잠깐, 작전을 다시 세우자!",
+      "text": "앗, 길을 놓쳤어! 괜찮아. 이 단계부터 다시 해 보자.",
+      "job_id": "6fb4ced0-a9ea-4d77-b6b2-c5494827dba1",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_070810_6fb4ced0-a9ea-4d77-b6b2-c5494827dba1.mp3"
+    },
+    {
+      "key": "boss-ending-0",
+      "who": "bird",
+      "panel": 2,
+      "title": "도굴꾼을 막았어!",
+      "text": "관리인이 도착했어! 도굴꾼도 더는 못 가져가겠지?",
+      "job_id": "163451df-0ce5-42de-b5de-b48e13c5e4d9",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_070810_163451df-0ce5-42de-b5de-b48e13c5e4d9.mp3"
+    },
+    {
+      "key": "boss-ending-1",
+      "who": "snake",
+      "panel": 3,
+      "title": "우리의 기억을 지킨 너",
+      "text": "주인의 이름은 아직 몰라. 하지만 남겨진 이야기는 지켰어.",
+      "job_id": "96d3ce7c-0ec9-44e6-8099-82a496b49b32",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_070810_96d3ce7c-0ec9-44e6-8099-82a496b49b32.mp3"
+    },
+    {
+      "key": "boss-ending-2",
+      "who": "frog",
+      "panel": 3,
+      "title": "신라 유적 수호대!",
+      "text": "유물도, 발견한 자리도 소중해. 넌 이제 우리의 수호대야!",
+      "job_id": "7b683e50-1579-4fe0-b405-3b6536c62427",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_070810_7b683e50-1579-4fe0-b405-3b6536c62427.mp3"
+    }
+  ]
+}

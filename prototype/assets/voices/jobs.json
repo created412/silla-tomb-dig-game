@@ -1,0 +1,726 @@
+{
+  "date": "2026-10-21",
+  "provider": "ElevenLabs via Higgsfield",
+  "model": "text2speech_v2",
+  "variant": "elevenlabs",
+  "credits": 14.65,
+  "balanceBefore": 64.36,
+  "balanceAfter": 49.71,
+  "voices": {
+    "Faye": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+    "Arthur": "30fc8796-ceb6-4a66-b3a7-4a145ef7f346"
+  },
+  "clips": [
+    {
+      "key": "line-wake-0",
+      "who": "frog",
+      "text": "우린 토우야. 신라 사람들이 흙으로 빚은 작은 인형.",
+      "spokenText": "우린 토우야. 신라 사람들이 흙으로 빚은 작은 인형.",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "4c4e9d8d-e87b-46b9-94f1-5cee4c23f72a",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062043_4c4e9d8d-e87b-46b9-94f1-5cee4c23f72a.mp3"
+    },
+    {
+      "key": "line-wake-1",
+      "who": "snake",
+      "text": "무덤에 같이 묻혔다가… 지금 깼어.",
+      "spokenText": "무덤에 같이 묻혔다가… 지금 깼어.",
+      "voiceId": "30fc8796-ceb6-4a66-b3a7-4a145ef7f346",
+      "jobId": "4de9840d-14ef-4c93-b558-6c47324fa94b",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062043_4de9840d-14ef-4c93-b558-6c47324fa94b.mp3"
+    },
+    {
+      "key": "line-wake-2",
+      "who": "frog",
+      "text": "오래 잠들었더니… 우리 주인이 기억 안 나.",
+      "spokenText": "오래 잠들었더니… 우리 주인이 기억 안 나.",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "d96fca09-d988-4c55-bb34-39c8332355b5",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062407_d96fca09-d988-4c55-bb34-39c8332355b5.mp3"
+    },
+    {
+      "key": "line-wake-3",
+      "who": "snake",
+      "text": "저기 반짝이는 게 단서 아닐까?",
+      "spokenText": "저기 반짝이는 게 단서 아닐까?",
+      "voiceId": "30fc8796-ceb6-4a66-b3a7-4a145ef7f346",
+      "jobId": "c72e6c03-03b5-4e03-9f22-44a6d090c7d6",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062407_c72e6c03-03b5-4e03-9f22-44a6d090c7d6.mp3"
+    },
+    {
+      "key": "line-wake-4",
+      "who": "frog",
+      "text": "같이 찾아줄래? 나는 손이 너무 작아.",
+      "spokenText": "같이 찾아줄래? 나는 손이 너무 작아.",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "dd96dca8-de16-4ade-b30e-d43e3119540f",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062407_dd96dca8-de16-4ade-b30e-d43e3119540f.mp3"
+    },
+    {
+      "key": "line-wake-5",
+      "who": "snake",
+      "text": "나는 손도 없어. 네 손을 빌려줘!",
+      "spokenText": "나는 손도 없어. 네 손을 빌려줘!",
+      "voiceId": "30fc8796-ceb6-4a66-b3a7-4a145ef7f346",
+      "jobId": "21a9ed67-f38e-4227-83d3-c9234f53a017",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062407_21a9ed67-f38e-4227-83d3-c9234f53a017.mp3"
+    },
+    {
+      "key": "found-crown",
+      "who": "frog",
+      "text": "찾았다! 금관이야!",
+      "spokenText": "찾았다! 금관이야!",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "2f5b3dbf-922f-49bf-897e-e039e76d0196",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062409_2f5b3dbf-922f-49bf-897e-e039e76d0196.mp3"
+    },
+    {
+      "key": "found-saddle",
+      "who": "frog",
+      "text": "찾았다! 천마 그림 말다래야!",
+      "spokenText": "찾았다! 천마 그림 말다래야!",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "8baa169d-e1ce-4a57-88d6-1dc999cdc49d",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062407_8baa169d-e1ce-4a57-88d6-1dc999cdc49d.mp3"
+    },
+    {
+      "key": "found-glass",
+      "who": "frog",
+      "text": "찾았다! 유리잔이야!",
+      "spokenText": "찾았다! 유리잔이야!",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "4e88733a-5bf9-48c9-b7c3-0fbf38e6b3c9",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062414_4e88733a-5bf9-48c9-b7c3-0fbf38e6b3c9.mp3"
+    },
+    {
+      "key": "found-ewer",
+      "who": "frog",
+      "text": "찾았다! 봉수형 유리병이야!",
+      "spokenText": "찾았다! 봉수형 유리병이야!",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "6ee751c0-889d-4f4f-8fa0-83c132a6c437",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062415_6ee751c0-889d-4f4f-8fa0-83c132a6c437.mp3"
+    },
+    {
+      "key": "found-belt",
+      "who": "frog",
+      "text": "찾았다! 금제 허리띠야!",
+      "spokenText": "찾았다! 금제 허리띠야!",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "d53483b5-6823-4e30-9d13-079269934d15",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062415_d53483b5-6823-4e30-9d13-079269934d15.mp3"
+    },
+    {
+      "key": "line-found-1",
+      "who": "snake",
+      "text": "이걸 쓰던 사람… 우리 주인이었을까?",
+      "spokenText": "이걸 쓰던 사람… 우리 주인이었을까?",
+      "voiceId": "30fc8796-ceb6-4a66-b3a7-4a145ef7f346",
+      "jobId": "7eae5946-2f65-4d8b-8270-9dee2605054b",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062415_7eae5946-2f65-4d8b-8270-9dee2605054b.mp3"
+    },
+    {
+      "key": "line-found-2",
+      "who": "frog",
+      "text": "반짝이는 건 기억나는데, 이름은 안 떠올라.",
+      "spokenText": "반짝이는 건 기억나는데, 이름은 안 떠올라.",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "747e08eb-af85-44e1-9182-b113f56d33d7",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062414_747e08eb-af85-44e1-9182-b113f56d33d7.mp3"
+    },
+    {
+      "key": "line-found-3",
+      "who": "snake",
+      "text": "잠깐, 저 돌이 우리 말을 듣고 있어.",
+      "spokenText": "잠깐, 저 돌이 우리 말을 듣고 있어.",
+      "voiceId": "30fc8796-ceb6-4a66-b3a7-4a145ef7f346",
+      "jobId": "eb4ad2c1-d2e6-4989-a940-ff7d27343b1b",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062415_eb4ad2c1-d2e6-4989-a940-ff7d27343b1b.mp3"
+    },
+    {
+      "key": "line-tooHard-0",
+      "who": "frog",
+      "text": "살살! 살살!",
+      "spokenText": "살살! 살살!",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "8a56212f-f9f1-4162-9ab1-98a8cbb45632",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062420_8a56212f-f9f1-4162-9ab1-98a8cbb45632.mp3"
+    },
+    {
+      "key": "line-collapse-0",
+      "who": "snake",
+      "text": "와르르… 천천히 톡톡 해.",
+      "spokenText": "와르르… 천천히 톡톡 해.",
+      "voiceId": "30fc8796-ceb6-4a66-b3a7-4a145ef7f346",
+      "jobId": "e6379ce9-d57e-4d87-b61a-c78ce9e1e81a",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062420_e6379ce9-d57e-4d87-b61a-c78ce9e1e81a.mp3"
+    },
+    {
+      "key": "line-glimmer-0",
+      "who": "frog",
+      "text": "어? 뭔가 반짝여!",
+      "spokenText": "어? 뭔가 반짝여!",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "bd95e46a-9c89-4367-a7db-47bb615ea54f",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062420_bd95e46a-9c89-4367-a7db-47bb615ea54f.mp3"
+    },
+    {
+      "key": "line-rockDrag-0",
+      "who": "snake",
+      "text": "돌은 문질러도 소용없어. 톡톡 두드려.",
+      "spokenText": "돌은 문질러도 소용없어. 톡톡 두드려.",
+      "voiceId": "30fc8796-ceb6-4a66-b3a7-4a145ef7f346",
+      "jobId": "e0760890-013b-4265-909e-aaa5c2836e12",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062420_e0760890-013b-4265-909e-aaa5c2836e12.mp3"
+    },
+    {
+      "key": "line-warn-0",
+      "who": "frog",
+      "text": "살살! 한 번만 더 하면 금 가!",
+      "spokenText": "살살! 한 번만 더 하면 금 가!",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "c2cc682c-459e-4fc9-94ee-4bed760e4da6",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062420_c2cc682c-459e-4fc9-94ee-4bed760e4da6.mp3"
+    },
+    {
+      "key": "line-crack1-0",
+      "who": "frog",
+      "text": "으악! 금 갔어! 살살!",
+      "spokenText": "으악! 금 갔어! 살살!",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "d79d9d7c-bcf1-4676-8ceb-852117d3277c",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062419_d79d9d7c-bcf1-4676-8ceb-852117d3277c.mp3"
+    },
+    {
+      "key": "line-crack2-0",
+      "who": "snake",
+      "text": "한 번만 더 가면 끝이야…",
+      "spokenText": "한 번만 더 가면 끝이야…",
+      "voiceId": "30fc8796-ceb6-4a66-b3a7-4a145ef7f346",
+      "jobId": "816a402e-f5ee-4a3a-933f-b8e254be38df",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062431_816a402e-f5ee-4a3a-933f-b8e254be38df.mp3"
+    },
+    {
+      "key": "line-broken-0",
+      "who": "frog",
+      "text": "으아아아!",
+      "spokenText": "으아아아!",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "c3214cfa-b712-451d-8847-8f6edc777a00",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062431_c3214cfa-b712-451d-8847-8f6edc777a00.mp3"
+    },
+    {
+      "key": "line-broken-1",
+      "who": "snake",
+      "text": "…복원실로 가자. 다시 파면 돼.",
+      "spokenText": "…복원실로 가자. 다시 파면 돼.",
+      "voiceId": "30fc8796-ceb6-4a66-b3a7-4a145ef7f346",
+      "jobId": "ed0e15a8-e1af-4c59-b2c2-1553f0aa3f59",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062431_ed0e15a8-e1af-4c59-b2c2-1553f0aa3f59.mp3"
+    },
+    {
+      "key": "line-worm-0",
+      "who": "frog",
+      "text": "지, 지렁이다!!",
+      "spokenText": "지, 지렁이다!!",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "dd03b6c0-4507-4458-b27b-6247197cec04",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062431_dd03b6c0-4507-4458-b27b-6247197cec04.mp3"
+    },
+    {
+      "key": "line-worm-1",
+      "who": "snake",
+      "text": "…저게 뭐가 무섭다고.",
+      "spokenText": "…저게 뭐가 무섭다고.",
+      "voiceId": "30fc8796-ceb6-4a66-b3a7-4a145ef7f346",
+      "jobId": "60a5d767-12bd-4824-bab7-f5d3cc4103f9",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062431_60a5d767-12bd-4824-bab7-f5d3cc4103f9.mp3"
+    },
+    {
+      "key": "line-star3-0",
+      "who": "snake",
+      "text": "완벽해. 내가 가르친 보람이 있네.",
+      "spokenText": "완벽해. 내가 가르친 보람이 있네.",
+      "voiceId": "30fc8796-ceb6-4a66-b3a7-4a145ef7f346",
+      "jobId": "645e5abc-7282-4e46-b9fd-a53597faf1c9",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062431_645e5abc-7282-4e46-b9fd-a53597faf1c9.mp3"
+    },
+    {
+      "key": "line-star3-1",
+      "who": "frog",
+      "text": "네가 뭘 가르쳤는데!",
+      "spokenText": "네가 뭘 가르쳤는데!",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "e5c18b02-04ac-4b5f-8b7a-810b2c31f51f",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062437_e5c18b02-04ac-4b5f-8b7a-810b2c31f51f.mp3"
+    },
+    {
+      "key": "line-star2-0",
+      "who": "frog",
+      "text": "찾았다! 조금 긁혔지만!",
+      "spokenText": "찾았다! 조금 긁혔지만!",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "87364e2d-1e82-4603-85d6-059c90af51c5",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062436_87364e2d-1e82-4603-85d6-059c90af51c5.mp3"
+    },
+    {
+      "key": "line-star2-1",
+      "who": "snake",
+      "text": "…다음엔 더 살살.",
+      "spokenText": "…다음엔 더 살살.",
+      "voiceId": "30fc8796-ceb6-4a66-b3a7-4a145ef7f346",
+      "jobId": "f75e07ce-6a2e-422e-8112-b7c59c596bf5",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062436_f75e07ce-6a2e-422e-8112-b7c59c596bf5.mp3"
+    },
+    {
+      "key": "line-star1-0",
+      "who": "snake",
+      "text": "찾긴 찾았네.",
+      "spokenText": "찾긴 찾았네.",
+      "voiceId": "30fc8796-ceb6-4a66-b3a7-4a145ef7f346",
+      "jobId": "d134e1cf-b7af-4164-9680-d3c731e96d7e",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062436_d134e1cf-b7af-4164-9680-d3c731e96d7e.mp3"
+    },
+    {
+      "key": "line-star1-1",
+      "who": "frog",
+      "text": "찾았으면 된 거지!",
+      "spokenText": "찾았으면 된 거지!",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "7e808fca-7748-41ee-be56-be713c3dd6aa",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062436_7e808fca-7748-41ee-be56-be713c3dd6aa.mp3"
+    },
+    {
+      "key": "line-powerUsed-0",
+      "who": "snake",
+      "text": "능력은 한 판에 한 번이야.",
+      "spokenText": "능력은 한 판에 한 번이야.",
+      "voiceId": "30fc8796-ceb6-4a66-b3a7-4a145ef7f346",
+      "jobId": "a54ed63c-1028-4453-a0be-666581fbf7d2",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062436_a54ed63c-1028-4453-a0be-666581fbf7d2.mp3"
+    },
+    {
+      "key": "line-powerMissFrog-0",
+      "who": "frog",
+      "text": "흙이 있는 곳을 눌러 줘!",
+      "spokenText": "흙이 있는 곳을 눌러 줘!",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "c67e53ff-01d5-4e56-adce-2f6a0d845320",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062444_c67e53ff-01d5-4e56-adce-2f6a0d845320.mp3"
+    },
+    {
+      "key": "line-powerMissTurtle-0",
+      "who": "snake",
+      "text": "흙을 걷어서 돌이 보이는 곳에.",
+      "spokenText": "흙을 걷어서 돌이 보이는 곳에.",
+      "voiceId": "30fc8796-ceb6-4a66-b3a7-4a145ef7f346",
+      "jobId": "4a13a1fe-1d4e-49b6-8a9c-3eff9a1f29f6",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062444_4a13a1fe-1d4e-49b6-8a9c-3eff9a1f29f6.mp3"
+    },
+    {
+      "key": "line-powerMissSnake-0",
+      "who": "snake",
+      "text": "나무가 보이는 틈이어야 들어가지.",
+      "spokenText": "나무가 보이는 틈이어야 들어가지.",
+      "voiceId": "30fc8796-ceb6-4a66-b3a7-4a145ef7f346",
+      "jobId": "787750d3-66dd-4c5a-9203-7804d445ec7d",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062445_787750d3-66dd-4c5a-9203-7804d445ec7d.mp3"
+    },
+    {
+      "key": "comic-crown-0",
+      "who": "frog",
+      "text": "머리에 금빛 숲이 올라가 있어!",
+      "spokenText": "머리에 금빛 숲이 올라가 있어!",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "4a4edd47-580d-4d93-b075-549d56b1217a",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062444_4a4edd47-580d-4d93-b075-549d56b1217a.mp3"
+    },
+    {
+      "key": "comic-crown-1",
+      "who": "snake",
+      "text": "걸을 때마다 달개가 달랑달랑. 눈부셨지.",
+      "spokenText": "걸을 때마다 달개가 달랑달랑. 눈부셨지.",
+      "voiceId": "30fc8796-ceb6-4a66-b3a7-4a145ef7f346",
+      "jobId": "a3e2afd2-ee6b-496d-a4ae-44101dc67b6b",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062444_a3e2afd2-ee6b-496d-a4ae-44101dc67b6b.mp3"
+    },
+    {
+      "key": "comic-crown-2",
+      "who": "bird",
+      "text": "멀리서도 누가 제일 높은 사람인지 보였어.",
+      "spokenText": "멀리서도 누가 제일 높은 사람인지 보였어.",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "1525931d-be9a-4e0a-a445-286d1993c176",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062444_1525931d-be9a-4e0a-a445-286d1993c176.mp3"
+    },
+    {
+      "key": "question-crown",
+      "who": "bird",
+      "text": "그러니까 금관은… 왕의 이름표야! 높은 사람이라는 표시야. 모자 가게에서 파는 거야.",
+      "spokenText": "그러니까 금관은… 왕의 이름표야! 높은 사람이라는 표시야. 모자 가게에서 파는 거야.",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "a6dd9876-573d-495f-a7c0-dd869378f014",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062455_a6dd9876-573d-495f-a7c0-dd869378f014.mp3"
+    },
+    {
+      "key": "answer-crown-0",
+      "who": "snake",
+      "text": "이름표면 글자가 있어야지. 금관엔 글자가 없어.",
+      "spokenText": "이름표면 글자가 있어야지. 금관엔 글자가 없어.",
+      "voiceId": "30fc8796-ceb6-4a66-b3a7-4a145ef7f346",
+      "jobId": "d4f1995a-da21-4a19-b184-33c005e484d7",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062455_d4f1995a-da21-4a19-b184-33c005e484d7.mp3"
+    },
+    {
+      "key": "answer-crown-1",
+      "who": "frog",
+      "text": "맞아! 그런데 누군지 이름은 아직 몰라.",
+      "spokenText": "맞아! 그런데 누군지 이름은 아직 몰라.",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "1fe4f8b7-33bc-4cc7-b2cb-357c720faffe",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062455_1fe4f8b7-33bc-4cc7-b2cb-357c720faffe.mp3"
+    },
+    {
+      "key": "answer-crown-2",
+      "who": "bird",
+      "text": "이 금으로 가게를 열면 열 채는 사겠다.",
+      "spokenText": "이 금으로 가게를 열면 열 채는 사겠다.",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "79804aa4-deba-49dd-9f73-9ddf71b942c7",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062455_79804aa4-deba-49dd-9f73-9ddf71b942c7.mp3"
+    },
+    {
+      "key": "comic-saddle-0",
+      "who": "frog",
+      "text": "말을 타고 달렸어. 안장 옆에 판이 달려 있었지.",
+      "spokenText": "말을 타고 달렸어. 안장 옆에 판이 달려 있었지.",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "b5d02806-4445-4c19-a47e-70a8a1c29761",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062455_b5d02806-4445-4c19-a47e-70a8a1c29761.mp3"
+    },
+    {
+      "key": "comic-saddle-1",
+      "who": "snake",
+      "text": "진흙이 튀어도 판이 막아 줬어. 그게 말다래.",
+      "spokenText": "진흙이 튀어도 판이 막아 줬어. 그게 말다래.",
+      "voiceId": "30fc8796-ceb6-4a66-b3a7-4a145ef7f346",
+      "jobId": "c9fa35f3-f454-4751-a961-38bd6b15341b",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062455_c9fa35f3-f454-4751-a961-38bd6b15341b.mp3"
+    },
+    {
+      "key": "comic-saddle-2",
+      "who": "bird",
+      "text": "자작나무 껍질에 하얀 말을 그렸어. 하늘을 나는 말!",
+      "spokenText": "자작나무 껍질에 하얀 말을 그렸어. 하늘을 나는 말!",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "d87767ac-35d9-4f92-8ed9-d826072a865b",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062508_d87767ac-35d9-4f92-8ed9-d826072a865b.mp3"
+    },
+    {
+      "key": "question-saddle",
+      "who": "bird",
+      "text": "말다래는 어디에 쓰는 물건? 방 벽에 거는 액자 말 안장 옆에 다는 가림판 썰매",
+      "spokenText": "말다래는 어디에 쓰는 물건? 방 벽에 거는 액자 말 안장 옆에 다는 가림판 썰매",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "63489d2a-0782-4324-ba82-a28b1a772586",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062508_63489d2a-0782-4324-ba82-a28b1a772586.mp3"
+    },
+    {
+      "key": "answer-saddle-0",
+      "who": "snake",
+      "text": "액자였으면 흙탕물이 왜 묻어 있겠어.",
+      "spokenText": "액자였으면 흙탕물이 왜 묻어 있겠어.",
+      "voiceId": "30fc8796-ceb6-4a66-b3a7-4a145ef7f346",
+      "jobId": "9be476d8-d69f-4a00-ade0-b5636e40167b",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062510_9be476d8-d69f-4a00-ade0-b5636e40167b.mp3"
+    },
+    {
+      "key": "answer-saddle-1",
+      "who": "frog",
+      "text": "맞아! 그래서 무덤 이름도 천마총이 됐어.",
+      "spokenText": "맞아! 그래서 무덤 이름도 천마총이 됐어.",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "6c2b93ef-32f2-40c0-a114-b7b87e82a8e3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062509_6c2b93ef-32f2-40c0-a114-b7b87e82a8e3.mp3"
+    },
+    {
+      "key": "answer-saddle-2",
+      "who": "bird",
+      "text": "그걸 타고 내려오면 그림이 다 닳겠다.",
+      "spokenText": "그걸 타고 내려오면 그림이 다 닳겠다.",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "3f7973f7-dc2d-4ec1-9d86-5fbdf0dd00d3",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062508_3f7973f7-dc2d-4ec1-9d86-5fbdf0dd00d3.mp3"
+    },
+    {
+      "key": "comic-glass-0",
+      "who": "snake",
+      "text": "아주 먼 서쪽 나라에서 유리를 불어 잔을 만들었어.",
+      "spokenText": "아주 먼 서쪽 나라에서 유리를 불어 잔을 만들었어.",
+      "voiceId": "30fc8796-ceb6-4a66-b3a7-4a145ef7f346",
+      "jobId": "eb979394-f4d8-4318-ae5a-70209d396d0a",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062508_eb979394-f4d8-4318-ae5a-70209d396d0a.mp3"
+    },
+    {
+      "key": "comic-glass-1",
+      "who": "bird",
+      "text": "상인들 손에서 손으로, 먼 길을 건너왔지.",
+      "spokenText": "상인들 손에서 손으로, 먼 길을 건너왔지.",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "9317f02f-3e7e-46d5-80cc-2ddf0d477622",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062517_9317f02f-3e7e-46d5-80cc-2ddf0d477622.mp3"
+    },
+    {
+      "key": "comic-glass-2",
+      "who": "frog",
+      "text": "신라에서는 보물처럼 귀하게 여겼어. 푸른빛!",
+      "spokenText": "신라에서는 보물처럼 귀하게 여겼어. 푸른빛!",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "d7a6c1f7-ab29-45a8-9dcd-ba30ff2a80d2",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062516_d7a6c1f7-ab29-45a8-9dcd-ba30ff2a80d2.mp3"
+    },
+    {
+      "key": "question-glass",
+      "who": "bird",
+      "text": "이 잔이 알려 주는 건? 신라 사람이 직접 서쪽에 갔다 먼 곳과 물건이 오갔다 유리는 신라 특산품이다",
+      "spokenText": "이 잔이 알려 주는 건? 신라 사람이 직접 서쪽에 갔다 먼 곳과 물건이 오갔다 유리는 신라 특산품이다",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "d7b91dc1-519f-45b6-88f7-00e87fdd33b8",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062516_d7b91dc1-519f-45b6-88f7-00e87fdd33b8.mp3"
+    },
+    {
+      "key": "answer-glass-0",
+      "who": "snake",
+      "text": "물건이 온 건 맞는데, 사람이 갔는지는 몰라.",
+      "spokenText": "물건이 온 건 맞는데, 사람이 갔는지는 몰라.",
+      "voiceId": "30fc8796-ceb6-4a66-b3a7-4a145ef7f346",
+      "jobId": "e2e7fb1f-cb94-4358-9ff7-67bbd8062979",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062516_e2e7fb1f-cb94-4358-9ff7-67bbd8062979.mp3"
+    },
+    {
+      "key": "answer-glass-1",
+      "who": "frog",
+      "text": "맞아! 신라는 먼 나라와도 이어져 있었어.",
+      "spokenText": "맞아! 신라는 먼 나라와도 이어져 있었어.",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "2253c6e0-6686-4eef-9a08-514fbff22fc5",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062516_2253c6e0-6686-4eef-9a08-514fbff22fc5.mp3"
+    },
+    {
+      "key": "answer-glass-2",
+      "who": "bird",
+      "text": "그랬으면 이렇게 귀하게 묻지 않았겠지.",
+      "spokenText": "그랬으면 이렇게 귀하게 묻지 않았겠지.",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "1f6960cf-206a-44ad-bb7d-046121b317aa",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062516_1f6960cf-206a-44ad-bb7d-046121b317aa.mp3"
+    },
+    {
+      "key": "comic-ewer-0",
+      "who": "bird",
+      "text": "새 부리처럼 생긴 주둥이로 물을 따랐어. 내 부리 같지?",
+      "spokenText": "새 부리처럼 생긴 주둥이로 물을 따랐어. 내 부리 같지?",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "a6977f24-143a-42a6-8897-2238c63af36c",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062525_a6977f24-143a-42a6-8897-2238c63af36c.mp3"
+    },
+    {
+      "key": "comic-ewer-1",
+      "who": "frog",
+      "text": "어느 날 손잡이가 툭! 깨져 버렸어.",
+      "spokenText": "어느 날 손잡이가 툭! 깨져 버렸어.",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "99ee19ef-4e0e-4f74-a9d0-2d2425f97c33",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062525_99ee19ef-4e0e-4f74-a9d0-2d2425f97c33.mp3"
+    },
+    {
+      "key": "comic-ewer-2",
+      "who": "snake",
+      "text": "버리지 않고 금실로 감아서 고쳤어.",
+      "spokenText": "버리지 않고 금실로 감아서 고쳤어.",
+      "voiceId": "30fc8796-ceb6-4a66-b3a7-4a145ef7f346",
+      "jobId": "ba74572e-db28-4aed-ab2e-92c566a4d4ae",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062525_ba74572e-db28-4aed-ab2e-92c566a4d4ae.mp3"
+    },
+    {
+      "key": "question-ewer",
+      "who": "bird",
+      "text": "이 병을 어떻게 여겼을까? 깨져서 버렸어 아껴서 고쳐 썼어 새 걸 하나 더 샀어",
+      "spokenText": "이 병을 어떻게 여겼을까? 깨져서 버렸어 아껴서 고쳐 썼어 새 걸 하나 더 샀어",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "180d2ffd-f77d-4b4e-8961-25f28b3957ee",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062525_180d2ffd-f77d-4b4e-8961-25f28b3957ee.mp3"
+    },
+    {
+      "key": "answer-ewer-0",
+      "who": "snake",
+      "text": "버렸으면 무덤에 왜 같이 묻혔겠어.",
+      "spokenText": "버렸으면 무덤에 왜 같이 묻혔겠어.",
+      "voiceId": "30fc8796-ceb6-4a66-b3a7-4a145ef7f346",
+      "jobId": "025037ea-d0f7-45df-ac9f-45dae8ea25fc",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062525_025037ea-d0f7-45df-ac9f-45dae8ea25fc.mp3"
+    },
+    {
+      "key": "answer-ewer-1",
+      "who": "frog",
+      "text": "맞아! 금실 수리 자국이 그 증거야.",
+      "spokenText": "맞아! 금실 수리 자국이 그 증거야.",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "41dd6d2a-9be2-4b3b-9e77-783d5270140c",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062525_41dd6d2a-9be2-4b3b-9e77-783d5270140c.mp3"
+    },
+    {
+      "key": "answer-ewer-2",
+      "who": "bird",
+      "text": "서쪽 나라까지 다시 주문하려면 몇 년은 걸려.",
+      "spokenText": "서쪽 나라까지 다시 주문하려면 몇 년은 걸려.",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "8f769fe4-c059-4fa3-aa50-e43916ada0b8",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062548_8f769fe4-c059-4fa3-aa50-e43916ada0b8.mp3"
+    },
+    {
+      "key": "comic-belt-0",
+      "who": "frog",
+      "text": "허리에 금판을 이어 만든 띠를 둘렀어.",
+      "spokenText": "허리에 금판을 이어 만든 띠를 둘렀어.",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "568cd18d-70f4-4eb3-84d2-f815bc38e65f",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062550_568cd18d-70f4-4eb3-84d2-f815bc38e65f.mp3"
+    },
+    {
+      "key": "comic-belt-1",
+      "who": "snake",
+      "text": "물고기, 굽은 옥, 작은 칼… 드리개가 달랑달랑.",
+      "spokenText": "물고기, 굽은 옥, 작은 칼… 드리개가 달랑달랑.",
+      "voiceId": "30fc8796-ceb6-4a66-b3a7-4a145ef7f346",
+      "jobId": "69a3768d-2c83-412a-bf6a-319a3d5aa4cd",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062548_69a3768d-2c83-412a-bf6a-319a3d5aa4cd.mp3"
+    },
+    {
+      "key": "comic-belt-2",
+      "who": "bird",
+      "text": "장인이 작은 금판을 하나하나 이어 붙였지.",
+      "spokenText": "장인이 작은 금판을 하나하나 이어 붙였지.",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "57da3d44-5dde-4b07-9b14-aa47a8c62942",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062548_57da3d44-5dde-4b07-9b14-aa47a8c62942.mp3"
+    },
+    {
+      "key": "question-belt",
+      "who": "bird",
+      "text": "물고기 모양은 뭘까? 낚시 도구 허리띠에 매단 장식 도시락",
+      "spokenText": "물고기 모양은 뭘까? 낚시 도구 허리띠에 매단 장식 도시락",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "f14c2392-502d-4ac1-96eb-f8de8300cee1",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062548_f14c2392-502d-4ac1-96eb-f8de8300cee1.mp3"
+    },
+    {
+      "key": "answer-belt-0",
+      "who": "snake",
+      "text": "금 물고기로 낚시하면 물고기가 도망가겠다.",
+      "spokenText": "금 물고기로 낚시하면 물고기가 도망가겠다.",
+      "voiceId": "30fc8796-ceb6-4a66-b3a7-4a145ef7f346",
+      "jobId": "57550540-e8d8-4bef-bbb8-dee48fa89348",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062548_57550540-e8d8-4bef-bbb8-dee48fa89348.mp3"
+    },
+    {
+      "key": "answer-belt-1",
+      "who": "frog",
+      "text": "맞아! 높은 사람의 화려한 꾸밈이야.",
+      "spokenText": "맞아! 높은 사람의 화려한 꾸밈이야.",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "cd486185-1b35-47db-9041-29339c771cf4",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062555_cd486185-1b35-47db-9041-29339c771cf4.mp3"
+    },
+    {
+      "key": "answer-belt-2",
+      "who": "bird",
+      "text": "…배고프니?",
+      "spokenText": "…배고프니?",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "a4ac26a2-c7eb-4875-a0f0-6921c9b49783",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062555_a4ac26a2-c7eb-4875-a0f0-6921c9b49783.mp3"
+    },
+    {
+      "key": "join-frog",
+      "who": "frog",
+      "text": "나는 두꺼비! 겁은 많은데 파는 건 잘해. 흙 위를 누르면 폴짝 뛰어서 넓게 걷어 줄게. 폴짝 흙 걷기. 누른 자리 둘레 세 칸씩 아홉 칸 흙을 한 번에 걷어.",
+      "spokenText": "나는 두꺼비! 겁은 많은데 파는 건 잘해. 흙 위를 누르면 폴짝 뛰어서 넓게 걷어 줄게. 폴짝 흙 걷기. 누른 자리 둘레 세 칸씩 아홉 칸 흙을 한 번에 걷어.",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "b0b3be82-3e91-488c-a5c6-7b105e6038db",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062556_b0b3be82-3e91-488c-a5c6-7b105e6038db.mp3"
+    },
+    {
+      "key": "join-bird",
+      "who": "bird",
+      "text": "나는 새! 위에서 보면 다 보여. 날 누르면 반짝이는 자리를 찍어 줄게. 반짝 탐색. 하늘에서 봐서 유물 자리를 삼 초 동안 알려 줘.",
+      "spokenText": "나는 새! 위에서 보면 다 보여. 날 누르면 반짝이는 자리를 찍어 줄게. 반짝 탐색. 하늘에서 봐서 유물 자리를 삼 초 동안 알려 줘.",
+      "voiceId": "d198dc0b-c4e5-5198-aa1d-ecf5ca0927c4",
+      "jobId": "417cb15a-b4b2-4593-9b31-248d4a130077",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062555_417cb15a-b4b2-4593-9b31-248d4a130077.mp3"
+    },
+    {
+      "key": "join-turtle",
+      "who": "turtle",
+      "text": "나는 거북. 느리지만 틀린 적은 없어. 돌이 보이면 날 불러. 등껍질로 밀어 줄게. 든든 돌 밀기. 흙이 걷힌 돌을 세 칸씩 아홉 칸 한 번에 밀어내. 와르르 없음.",
+      "spokenText": "나는 거북. 느리지만 틀린 적은 없어. 돌이 보이면 날 불러. 등껍질로 밀어 줄게. 든든 돌 밀기. 흙이 걷힌 돌을 세 칸씩 아홉 칸 한 번에 밀어내. 와르르 없음.",
+      "voiceId": "30fc8796-ceb6-4a66-b3a7-4a145ef7f346",
+      "jobId": "ee4e9781-2294-4db1-b8ec-bf8953bed69a",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062555_ee4e9781-2294-4db1-b8ec-bf8953bed69a.mp3"
+    },
+    {
+      "key": "join-snake",
+      "who": "snake",
+      "text": "…나는 뱀. 좁은 틈은 내 전문이야. 나무가 보이면 날 눌러. 금은 안 내고 들어가. 구불 틈 열기. 나무 틈으로 들어가 세 칸씩 아홉 칸 나무를 반 넘게 걷어.",
+      "spokenText": "…나는 뱀. 좁은 틈은 내 전문이야. 나무가 보이면 날 눌러. 금은 안 내고 들어가. 구불 틈 열기. 나무 틈으로 들어가 세 칸씩 아홉 칸 나무를 반 넘게 걷어.",
+      "voiceId": "30fc8796-ceb6-4a66-b3a7-4a145ef7f346",
+      "jobId": "5b00e869-53c5-4342-aec9-342b2aaf8cb4",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062555_5b00e869-53c5-4342-aec9-342b2aaf8cb4.mp3"
+    },
+    {
+      "key": "story-crown",
+      "who": "snake",
+      "text": "금관. 삼국 시대 신라 · 5세기 말~6세기 초. 약 1,500년 전. 경주 천마총. 금으로 만든 머리 장식, 금관. 두꺼비: 머리에 작은 금빛 숲이 올라갔네!. 뱀: 신라의 높은 지위를 보여 주는 화려한 관이야.. 누구의 관인지 정확한 이름은 아직 몰라.",
+      "spokenText": "금관. 삼국 시대 신라, 오 세기 말부터 육 세기 초. 약 천오백년 전. 경주 천마총. 금으로 만든 머리 장식, 금관. 두꺼비: 머리에 작은 금빛 숲이 올라갔네! 뱀: 신라의 높은 지위를 보여 주는 화려한 관이야. 누구의 관인지 정확한 이름은 아직 몰라.",
+      "voiceId": "30fc8796-ceb6-4a66-b3a7-4a145ef7f346",
+      "jobId": "07eec756-8439-4a28-818a-560eb16bca40",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062602_07eec756-8439-4a28-818a-560eb16bca40.mp3"
+    },
+    {
+      "key": "story-saddle",
+      "who": "snake",
+      "text": "천마 그림 말다래. 삼국 시대 신라. 약 1,500년 전의 무덤에서 발견. 경주 천마총. 말을 탈 때 진흙을 막아 주는 말다래. 두꺼비: 말에도 흙탕물 가림막이 있었어?. 뱀: 응! 안장 옆에 달아서 흙이 튀는 걸 막았지.. 원본은 보존하고, 여기서는 직접 그린 도판을 살펴봐.",
+      "spokenText": "천마 그림 말다래. 삼국 시대 신라. 약 천오백년 전의 무덤에서 발견. 경주 천마총. 말을 탈 때 진흙을 막아 주는 말다래. 두꺼비: 말에도 흙탕물 가림막이 있었어? 뱀: 응! 안장 옆에 달아서 흙이 튀는 걸 막았지. 원본은 보존하고, 여기서는 직접 그린 도판을 살펴봐.",
+      "voiceId": "30fc8796-ceb6-4a66-b3a7-4a145ef7f346",
+      "jobId": "101b2d99-cb6b-4523-80d3-bb1fd54c2729",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062602_101b2d99-cb6b-4523-80d3-bb1fd54c2729.mp3"
+    },
+    {
+      "key": "story-glass",
+      "who": "snake",
+      "text": "유리잔. 삼국 시대 신라 · 5세기 말~6세기 초. 약 1,500년 전. 경주 천마총. 푸른빛 유리로 만든 잔. 두꺼비: 신라 사람도 유리잔을 썼어?. 뱀: 이 귀한 잔도 천마총에서 나왔어. 푸른빛을 봐!. 유물은 신라와 먼 지역이 교류한 흔적을 알려 줘.",
+      "spokenText": "유리잔. 삼국 시대 신라, 오 세기 말부터 육 세기 초. 약 천오백년 전. 경주 천마총. 푸른빛 유리로 만든 잔. 두꺼비: 신라 사람도 유리잔을 썼어? 뱀: 이 귀한 잔도 천마총에서 나왔어. 푸른빛을 봐! 유물은 신라와 먼 지역이 교류한 흔적을 알려 줘.",
+      "voiceId": "30fc8796-ceb6-4a66-b3a7-4a145ef7f346",
+      "jobId": "f2705182-3aab-4f43-9dfb-c14c74b4ec94",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062602_f2705182-3aab-4f43-9dfb-c14c74b4ec94.mp3"
+    },
+    {
+      "key": "story-ewer",
+      "who": "snake",
+      "text": "봉수형 유리병. 삼국 시대 신라 · 5세기. 약 1,600년 전의 무덤에서 발견. 경주 황남대총 남쪽 무덤. 새 머리를 닮은 주둥이의 유리병. 새: 어? 병의 주둥이가 내 부리 같아!. 뱀: 그래서 봉수형 유리병이라고 불러. 액체를 따르는 병이야.. 그림의 금색 선은 손잡이를 고친 흔적을 표현했어.",
+      "spokenText": "봉수형 유리병. 삼국 시대 신라, 오 세기. 약 천육백년 전의 무덤에서 발견. 경주 황남대총 남쪽 무덤. 새 머리를 닮은 주둥이의 유리병. 새: 어? 병의 주둥이가 내 부리 같아! 뱀: 그래서 봉수형 유리병이라고 불러. 액체를 따르는 병이야. 그림의 금색 선은 손잡이를 고친 흔적을 표현했어.",
+      "voiceId": "30fc8796-ceb6-4a66-b3a7-4a145ef7f346",
+      "jobId": "62b3801f-7c97-4d4a-8336-0f9c4615acb2",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062602_62b3801f-7c97-4d4a-8336-0f9c4615acb2.mp3"
+    },
+    {
+      "key": "story-belt",
+      "who": "snake",
+      "text": "금제 허리띠. 삼국 시대 신라. 황남대총에 함께 묻힌 장신구. 경주 황남대총 북쪽 무덤. 금 장식을 연결한 허리띠. 두꺼비: 허리에 반짝이는 물건이 잔뜩 달렸네!. 뱀: 금판을 잇고 장식을 늘어뜨린 허리띠야.. 화려한 장신구는 무덤 주인의 높은 지위를 짐작하게 해.",
+      "spokenText": "금제 허리띠. 삼국 시대 신라. 황남대총에 함께 묻힌 장신구. 경주 황남대총 북쪽 무덤. 금 장식을 연결한 허리띠. 두꺼비: 허리에 반짝이는 물건이 잔뜩 달렸네! 뱀: 금판을 잇고 장식을 늘어뜨린 허리띠야. 화려한 장신구는 무덤 주인의 높은 지위를 짐작하게 해.",
+      "voiceId": "30fc8796-ceb6-4a66-b3a7-4a145ef7f346",
+      "jobId": "f6943987-c666-4793-8ca1-575dfd8fa019",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261021_062602_f6943987-c666-4793-8ca1-575dfd8fa019.mp3"
+    }
+  ]
+}

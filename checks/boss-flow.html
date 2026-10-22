@@ -1,0 +1,45 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><title>보스전 흐름 검증</title>
+<style>body{margin:0;font:16px sans-serif;background:#143c30;color:white}header{padding:8px;display:flex;gap:8px}button{padding:8px}iframe{display:block;width:100%;height:calc(100vh - 58px);border:0}</style>
+<header><button id="run">보스전 전체 검사</button><button id="preview">보스전 미리보기</button><span id="status">준비</span></header><iframe></iframe>
+<script type="module">
+const wait=ms=>new Promise(r=>setTimeout(r,ms)),status=document.querySelector('#status'),results=[];
+function check(ok,message){results.push({pass:!!ok,message});document.body.dataset.results=JSON.stringify(results);status.textContent=message;if(!ok)throw Error(message);}
+const base=new URL('../prototype/',location.href).href,source=await(await fetch(base+'index.html')).text();
+let frame=document.querySelector('iframe'),d,w;
+async function load(unlocked=true){
+ const seed=unlocked?{'silla-dig-stars-v1':JSON.stringify({version:1,stars:{crown:3,saddle:3,glass:3,ewer:3,belt:3}})}:{};
+ const script="window.fixtureStore="+JSON.stringify(seed)+";Object.defineProperty(window,'localStorage',{value:{getItem:k=>window.fixtureStore[k]??null,setItem:(k,v)=>window.fixtureStore[k]=v}});Math.random=()=>.5;";
+ const html=source.replace('<head>','<head><base href="'+base+'"><script>'+script+'<\/script>');
+ const f=document.createElement('iframe'),loaded=new Promise(r=>f.onload=r);f.srcdoc=html;frame.replaceWith(f);frame=f;await loaded;d=f.contentDocument;w=f.contentWindow;
+ for(let i=0;i<200&&!w.sillaDebug;i++)await wait(20);if(!w.sillaDebug)throw Error('앱 로딩 실패');
+}
+const click=s=>d.querySelector(s).click(),visible=s=>!d.querySelector(s).classList.contains('hidden'),state=()=>w.sillaDebug.boss;
+function talks(){for(let i=0;i<12&&visible('#boss-dialogue');i++)click('#boss-talk-next');}
+async function hit(id){click('[data-target="'+id+'"]');await wait(720);}
+document.querySelector('#preview').onclick=async()=>{await load();click('#btn-boss');};
+document.querySelector('#run').onclick=async()=>{results.length=0;delete document.body.dataset.done;delete document.body.dataset.error;try{
+ await load(false);check(d.querySelector('#btn-boss').disabled,'유물 미완료 시 보스 잠김');
+ await load();const starBefore=w.fixtureStore['silla-dig-stars-v1'];check(!d.querySelector('#btn-boss').disabled,'기존 5개 완료 기록으로 보스 해금');click('#btn-boss');
+ const rect=d.querySelector('#boss-dialogue').getBoundingClientRect();check(rect.width>=w.innerWidth*.98&&rect.height>=w.innerHeight*.98,'도입 대화 전체 화면');
+ check(parseFloat(w.getComputedStyle(d.querySelector('#boss-talk-text')).fontSize)>=27,'큰 대화 글자');
+ click('#boss-dialogue [data-voice-mute]');talks();check(state().phase==='play','도입·작전 설명 후 조작 시작');
+ click('[data-target="bush0"]');check(state().hearts===3,'토우 선택 전 목표는 기회 차감 없음');
+ for(let i=0;i<3;i++)click('[data-friend="frog"]');check(state().phase==='failed'&&visible('#boss-dialogue'),'세 번 실수하면 실패 대화');
+ talks();check(state().step===0&&state().hearts===3&&state().phase==='play','같은 단계부터 기회 회복하여 재도전');
+ click('[data-friend="bird"]');await hit('bush1');check(state().phase==='clear','새가 발자국 찾기 성공');
+ click('#boss-continue');talks();click('[data-friend="frog"]');for(let i=0;i<3;i++)await hit('soil'+i);
+ check(state().step===1&&state().phase==='clear','두꺼비로 흙더미 세 곳 제거');
+ click('#boss-continue');talks();click('[data-friend="turtle"]');click('[data-target="relic"]');
+ check(state().hearts===2,'거북이 유물 자리를 건드리면 실수');for(let i=0;i<3;i++)await hit('rock'+i);check(state().phase==='clear','거북으로 돌 세 개 막기');
+ click('#boss-continue');talks();click('[data-friend="snake"]');for(let i=0;i<3;i++)click('[data-target="gap2"]');
+ check(state().phase==='failed','뱀의 틈 순서 어기면 실패');talks();check(state().step===3&&state().done.length===0,'마지막 단계 실패 시 앞선 성공 유지');
+ click('[data-friend="snake"]');for(let i=0;i<3;i++)await hit('gap'+i);click('#boss-continue');check(state().phase==='won'&&visible('#boss-dialogue'),'승리 후 엔딩 이야기');
+ let ending=0;while(visible('#boss-dialogue')){ending++;click('#boss-talk-next');}check(ending===3&&visible('#boss-victory'),'엔딩 세 장 이후 수호 배지');
+ check(!w.fixtureStore['silla-guardian-v1'],'자동 저장 없음');click('#boss-save');check(JSON.parse(w.fixtureStore['silla-guardian-v1']).earned,'저장 버튼으로 배지 저장');
+ check(w.fixtureStore['silla-dig-stars-v1']===starBefore,'발굴 기록 보존');click('#boss-exit');check(w.sillaDebug.phase==='title'&&d.querySelector('#btn-boss').textContent.includes('수호'),'저장 후 제목 화면 복귀');
+ click('#btn-boss');talks();click('[data-friend="bird"]');click('[data-target="bush1"]');click('#boss-home');click('#btn-boss');await wait(800);
+ check(state().phase==='briefing'&&state().done.length===0,'효과 재생 중 나갔다 다시 들어와도 이전 타이머 취소');
+ const manifest=await(await fetch(base+'assets/voices/manifest.json')).json();check(Object.keys(manifest.clips).filter(k=>k.startsWith('boss-')).length===10,'보스 대사 10개 음원 연결');
+ document.body.dataset.done='true';status.textContent='통과 '+results.length+'개';talks();
+}catch(e){document.body.dataset.error=e.stack;status.textContent=e.message;}};
+</script></html>

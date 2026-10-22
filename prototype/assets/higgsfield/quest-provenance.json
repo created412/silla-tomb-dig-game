@@ -1,0 +1,51 @@
+{
+  "date": "2026-10-20",
+  "request": "Staged companion acquisition and abilities integrated into actual excavation; full Higgsfield art application.",
+  "additionalCredits": 0.75,
+  "totalCredits": 1.25,
+  "assets": [
+    {
+      "file": "dig-materials.png",
+      "jobId": "c8b35f3c-4339-48b1-a1f6-a98bc40cadfb",
+      "credits": 0.25,
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "low",
+        "resolution": "1k",
+        "aspect_ratio": "1:1",
+        "background": "opaque",
+        "count": 1,
+        "prompt": "Original polished 2D family archaeology adventure game art, handcrafted miniature diorama, tactile materials, warm honey lighting, jade foliage and ochre earth, coherent with clay animal toy companions. No letters, words, numbers, logos or watermarks. No people, skulls, ghosts, faces on artifacts. Production texture atlas, exact 2x2 equal square quadrants with no gaps, no frames, no borders. TOP LEFT: overhead seamless-looking fine ochre soil with tiny roots and pebbles, even lighting, no holes. TOP RIGHT: overhead tightly packed rounded grey-green archaeological stones, varied large sizes, no gaps beyond small dark seams. BOTTOM LEFT: overhead aged brown wooden planks with grain and tiny dust, no decorations. BOTTOM RIGHT: cozy miniature archaeology museum interior with warm wooden floor, jade green walls, empty pedestals, soft spotlights. Each of the first three quadrants is a flat orthographic material texture filling the entire square. All materials cleanly separated at exact horizontal and vertical midlines. Not an infographic."
+      }
+    },
+    {
+      "file": "relics-atlas.png",
+      "jobId": "4619c7ea-2e0a-444e-9048-718cfe8ff0dc",
+      "credits": 0.25,
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "low",
+        "resolution": "1k",
+        "aspect_ratio": "3:2",
+        "background": "opaque",
+        "count": 1,
+        "prompt": "Original polished 2D family archaeology adventure game art, handcrafted miniature diorama, tactile materials, warm honey lighting, jade foliage and ochre earth, coherent with clay animal toy companions. No letters, words, numbers, logos or watermarks. No people, skulls, ghosts, faces on artifacts. Educational illustrated artifact sprite atlas, exact 3 columns by 2 rows. Uniform SOLID PURE MAGENTA background #ff00ff everywhere, no shadows on background, no gradients in background. SIX separate objects centered with generous margin in their own cells. Top left: ancient Silla golden crown, thin gold headband with THREE tall upright tree-branch ornaments shaped like the Chinese character 出, TWO deer-antler uprights behind, tiny dangling circular gold spangles and comma-shaped green jade pendants, no face. Top middle: ancient brown rectangular horse saddle mudguard panel with an elegant white winged horse painted on its surface, no frame or writing. Top right: small deep cobalt blue ancient glass cup with narrow stem and round foot, delicate ribbed bowl. Bottom left: ancient teal glass ewer with bird-beak spout and curved handle, a small gold-wire repair wrapping the handle. Bottom middle: a horizontally displayed ancient golden belt made of small linked rectangular plaques, many hanging gold chains with tiny fish-shaped and comma-shaped jade ornaments. Bottom right: tiny diorama of TWO joined rounded grass burial mounds, no door or cave, on small oval earth base. Careful readable silhouettes, restrained museum illustration, realistic artifact construction, not fantasy crowns or drinking goblets with gems. Exact grid alignment. No text, no gridlines. Entire objects contained in cells, never touching others. Pure magenta must not occur inside any object."
+      }
+    },
+    {
+      "file": "twin-mounds.png",
+      "jobId": "119c695d-65d2-44e3-9a42-7800df269aee",
+      "credits": 0.25,
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "low",
+        "resolution": "1k",
+        "aspect_ratio": "16:9",
+        "background": "opaque",
+        "count": 1,
+        "prompt": "Original polished 2D family archaeology adventure game art, handcrafted miniature diorama, tactile materials, warm honey lighting, jade foliage and ochre earth, coherent with clay animal toy companions. No letters, words, numbers, logos or watermarks. No people, skulls, ghosts, faces on artifacts. Wide cinematic landscape for the SECOND chapter of an educational Silla burial mound exploration game. TWO very large ROUND GRASS COVERED BURIAL MOUNDS connected side by side, ancient Gyeongju Korean landscape, tiny stylized pine trees and distant layered mountains. A gently winding ochre path snakes around the two mounds and leads to a sunny flat archaeological work area in foreground. Stone edging and subtle ropes mark the work area. Soft mist and golden late afternoon sunlight, friendly sense of discovery, miniature clay diorama aesthetic. Broad open foreground for game controls and characters, clear readable twin mound silhouettes. Camera slightly elevated. No architecture, no temple, no roof, no entrance, no open doors, no treasure chests, no grave markers. This is fictional scenery inspired by the shape of the Hwangnamdaechong paired mounds, not a literal reconstruction. Edge to edge composition."
+      }
+    }
+  ],
+  "processing": "Atlas regions and chroma key processed once in local Canvas. No paid background removal; no runtime generation."
+}

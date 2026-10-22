@@ -1,0 +1,402 @@
+{
+  "language": "ko",
+  "audience": "유아·초등",
+  "direction": "다정하고 또박또박, 소리 지르지 않기. 문장 사이에 짧은 쉼. 낯선 낱말도 명확하게.",
+  "clips": [
+    {
+      "key": "line-wake-0",
+      "who": "frog",
+      "text": "우린 토우야. 신라 사람들이 흙으로 빚은 작은 인형."
+    },
+    {
+      "key": "line-wake-1",
+      "who": "snake",
+      "text": "무덤에 같이 묻혔다가… 지금 깼어."
+    },
+    {
+      "key": "line-wake-2",
+      "who": "frog",
+      "text": "오래 잠들었더니… 우리 주인이 기억 안 나."
+    },
+    {
+      "key": "line-wake-3",
+      "who": "snake",
+      "text": "저기 반짝이는 게 단서 아닐까?"
+    },
+    {
+      "key": "line-wake-4",
+      "who": "frog",
+      "text": "같이 찾아줄래? 나는 손이 너무 작아."
+    },
+    {
+      "key": "line-wake-5",
+      "who": "snake",
+      "text": "나는 손도 없어. 네 손을 빌려줘!"
+    },
+    {
+      "key": "found-crown",
+      "who": "frog",
+      "text": "찾았다! 금관이야!"
+    },
+    {
+      "key": "found-saddle",
+      "who": "frog",
+      "text": "찾았다! 천마 그림 말다래야!"
+    },
+    {
+      "key": "found-glass",
+      "who": "frog",
+      "text": "찾았다! 유리잔이야!"
+    },
+    {
+      "key": "found-ewer",
+      "who": "frog",
+      "text": "찾았다! 봉수형 유리병이야!"
+    },
+    {
+      "key": "found-belt",
+      "who": "frog",
+      "text": "찾았다! 금제 허리띠야!"
+    },
+    {
+      "key": "line-found-1",
+      "who": "snake",
+      "text": "이걸 쓰던 사람… 우리 주인이었을까?"
+    },
+    {
+      "key": "line-found-2",
+      "who": "frog",
+      "text": "반짝이는 건 기억나는데, 이름은 안 떠올라."
+    },
+    {
+      "key": "line-found-3",
+      "who": "snake",
+      "text": "잠깐, 저 돌이 우리 말을 듣고 있어."
+    },
+    {
+      "key": "line-tooHard-0",
+      "who": "frog",
+      "text": "살살! 살살!"
+    },
+    {
+      "key": "line-collapse-0",
+      "who": "snake",
+      "text": "와르르… 천천히 톡톡 해."
+    },
+    {
+      "key": "line-glimmer-0",
+      "who": "frog",
+      "text": "어? 뭔가 반짝여!"
+    },
+    {
+      "key": "line-rockDrag-0",
+      "who": "snake",
+      "text": "돌은 문질러도 소용없어. 톡톡 두드려."
+    },
+    {
+      "key": "line-warn-0",
+      "who": "frog",
+      "text": "살살! 한 번만 더 하면 금 가!"
+    },
+    {
+      "key": "line-crack1-0",
+      "who": "frog",
+      "text": "으악! 금 갔어! 살살!"
+    },
+    {
+      "key": "line-crack2-0",
+      "who": "snake",
+      "text": "한 번만 더 가면 끝이야…"
+    },
+    {
+      "key": "line-broken-0",
+      "who": "frog",
+      "text": "으아아아!"
+    },
+    {
+      "key": "line-broken-1",
+      "who": "snake",
+      "text": "…복원실로 가자. 다시 파면 돼."
+    },
+    {
+      "key": "line-worm-0",
+      "who": "frog",
+      "text": "지, 지렁이다!!"
+    },
+    {
+      "key": "line-worm-1",
+      "who": "snake",
+      "text": "…저게 뭐가 무섭다고."
+    },
+    {
+      "key": "line-star3-0",
+      "who": "snake",
+      "text": "완벽해. 내가 가르친 보람이 있네."
+    },
+    {
+      "key": "line-star3-1",
+      "who": "frog",
+      "text": "네가 뭘 가르쳤는데!"
+    },
+    {
+      "key": "line-star2-0",
+      "who": "frog",
+      "text": "찾았다! 조금 긁혔지만!"
+    },
+    {
+      "key": "line-star2-1",
+      "who": "snake",
+      "text": "…다음엔 더 살살."
+    },
+    {
+      "key": "line-star1-0",
+      "who": "snake",
+      "text": "찾긴 찾았네."
+    },
+    {
+      "key": "line-star1-1",
+      "who": "frog",
+      "text": "찾았으면 된 거지!"
+    },
+    {
+      "key": "line-powerUsed-0",
+      "who": "snake",
+      "text": "능력은 한 판에 한 번이야."
+    },
+    {
+      "key": "line-powerMissFrog-0",
+      "who": "frog",
+      "text": "흙이 있는 곳을 눌러 줘!"
+    },
+    {
+      "key": "line-powerMissTurtle-0",
+      "who": "snake",
+      "text": "흙을 걷어서 돌이 보이는 곳에."
+    },
+    {
+      "key": "line-powerMissSnake-0",
+      "who": "snake",
+      "text": "나무가 보이는 틈이어야 들어가지."
+    },
+    {
+      "key": "comic-crown-0",
+      "who": "frog",
+      "text": "머리에 금빛 숲이 올라가 있어!"
+    },
+    {
+      "key": "comic-crown-1",
+      "who": "snake",
+      "text": "걸을 때마다 달개가 달랑달랑. 눈부셨지."
+    },
+    {
+      "key": "comic-crown-2",
+      "who": "bird",
+      "text": "멀리서도 누가 제일 높은 사람인지 보였어."
+    },
+    {
+      "key": "question-crown",
+      "who": "bird",
+      "text": "그러니까 금관은… 왕의 이름표야! 높은 사람이라는 표시야. 모자 가게에서 파는 거야."
+    },
+    {
+      "key": "answer-crown-0",
+      "who": "snake",
+      "text": "이름표면 글자가 있어야지. 금관엔 글자가 없어."
+    },
+    {
+      "key": "answer-crown-1",
+      "who": "frog",
+      "text": "맞아! 그런데 누군지 이름은 아직 몰라."
+    },
+    {
+      "key": "answer-crown-2",
+      "who": "bird",
+      "text": "이 금으로 가게를 열면 열 채는 사겠다."
+    },
+    {
+      "key": "comic-saddle-0",
+      "who": "frog",
+      "text": "말을 타고 달렸어. 안장 옆에 판이 달려 있었지."
+    },
+    {
+      "key": "comic-saddle-1",
+      "who": "snake",
+      "text": "진흙이 튀어도 판이 막아 줬어. 그게 말다래."
+    },
+    {
+      "key": "comic-saddle-2",
+      "who": "bird",
+      "text": "자작나무 껍질에 하얀 말을 그렸어. 하늘을 나는 말!"
+    },
+    {
+      "key": "question-saddle",
+      "who": "bird",
+      "text": "말다래는 어디에 쓰는 물건? 방 벽에 거는 액자 말 안장 옆에 다는 가림판 썰매"
+    },
+    {
+      "key": "answer-saddle-0",
+      "who": "snake",
+      "text": "액자였으면 흙탕물이 왜 묻어 있겠어."
+    },
+    {
+      "key": "answer-saddle-1",
+      "who": "frog",
+      "text": "맞아! 그래서 무덤 이름도 천마총이 됐어."
+    },
+    {
+      "key": "answer-saddle-2",
+      "who": "bird",
+      "text": "그걸 타고 내려오면 그림이 다 닳겠다."
+    },
+    {
+      "key": "comic-glass-0",
+      "who": "snake",
+      "text": "아주 먼 서쪽 나라에서 유리를 불어 잔을 만들었어."
+    },
+    {
+      "key": "comic-glass-1",
+      "who": "bird",
+      "text": "상인들 손에서 손으로, 먼 길을 건너왔지."
+    },
+    {
+      "key": "comic-glass-2",
+      "who": "frog",
+      "text": "신라에서는 보물처럼 귀하게 여겼어. 푸른빛!"
+    },
+    {
+      "key": "question-glass",
+      "who": "bird",
+      "text": "이 잔이 알려 주는 건? 신라 사람이 직접 서쪽에 갔다 먼 곳과 물건이 오갔다 유리는 신라 특산품이다"
+    },
+    {
+      "key": "answer-glass-0",
+      "who": "snake",
+      "text": "물건이 온 건 맞는데, 사람이 갔는지는 몰라."
+    },
+    {
+      "key": "answer-glass-1",
+      "who": "frog",
+      "text": "맞아! 신라는 먼 나라와도 이어져 있었어."
+    },
+    {
+      "key": "answer-glass-2",
+      "who": "bird",
+      "text": "그랬으면 이렇게 귀하게 묻지 않았겠지."
+    },
+    {
+      "key": "comic-ewer-0",
+      "who": "bird",
+      "text": "새 부리처럼 생긴 주둥이로 물을 따랐어. 내 부리 같지?"
+    },
+    {
+      "key": "comic-ewer-1",
+      "who": "frog",
+      "text": "어느 날 손잡이가 툭! 깨져 버렸어."
+    },
+    {
+      "key": "comic-ewer-2",
+      "who": "snake",
+      "text": "버리지 않고 금실로 감아서 고쳤어."
+    },
+    {
+      "key": "question-ewer",
+      "who": "bird",
+      "text": "이 병을 어떻게 여겼을까? 깨져서 버렸어 아껴서 고쳐 썼어 새 걸 하나 더 샀어"
+    },
+    {
+      "key": "answer-ewer-0",
+      "who": "snake",
+      "text": "버렸으면 무덤에 왜 같이 묻혔겠어."
+    },
+    {
+      "key": "answer-ewer-1",
+      "who": "frog",
+      "text": "맞아! 금실 수리 자국이 그 증거야."
+    },
+    {
+      "key": "answer-ewer-2",
+      "who": "bird",
+      "text": "서쪽 나라까지 다시 주문하려면 몇 년은 걸려."
+    },
+    {
+      "key": "comic-belt-0",
+      "who": "frog",
+      "text": "허리에 금판을 이어 만든 띠를 둘렀어."
+    },
+    {
+      "key": "comic-belt-1",
+      "who": "snake",
+      "text": "물고기, 굽은 옥, 작은 칼… 드리개가 달랑달랑."
+    },
+    {
+      "key": "comic-belt-2",
+      "who": "bird",
+      "text": "장인이 작은 금판을 하나하나 이어 붙였지."
+    },
+    {
+      "key": "question-belt",
+      "who": "bird",
+      "text": "물고기 모양은 뭘까? 낚시 도구 허리띠에 매단 장식 도시락"
+    },
+    {
+      "key": "answer-belt-0",
+      "who": "snake",
+      "text": "금 물고기로 낚시하면 물고기가 도망가겠다."
+    },
+    {
+      "key": "answer-belt-1",
+      "who": "frog",
+      "text": "맞아! 높은 사람의 화려한 꾸밈이야."
+    },
+    {
+      "key": "answer-belt-2",
+      "who": "bird",
+      "text": "…배고프니?"
+    },
+    {
+      "key": "join-frog",
+      "who": "frog",
+      "text": "나는 두꺼비! 겁은 많은데 파는 건 잘해. 흙 위를 누르면 폴짝 뛰어서 넓게 걷어 줄게. 폴짝 흙 걷기. 누른 자리 둘레 세 칸씩 아홉 칸 흙을 한 번에 걷어."
+    },
+    {
+      "key": "join-bird",
+      "who": "bird",
+      "text": "나는 새! 위에서 보면 다 보여. 날 누르면 반짝이는 자리를 찍어 줄게. 반짝 탐색. 하늘에서 봐서 유물 자리를 삼 초 동안 알려 줘."
+    },
+    {
+      "key": "join-turtle",
+      "who": "turtle",
+      "text": "나는 거북. 느리지만 틀린 적은 없어. 돌이 보이면 날 불러. 등껍질로 밀어 줄게. 든든 돌 밀기. 흙이 걷힌 돌을 세 칸씩 아홉 칸 한 번에 밀어내. 와르르 없음."
+    },
+    {
+      "key": "join-snake",
+      "who": "snake",
+      "text": "…나는 뱀. 좁은 틈은 내 전문이야. 나무가 보이면 날 눌러. 금은 안 내고 들어가. 구불 틈 열기. 나무 틈으로 들어가 세 칸씩 아홉 칸 나무를 반 넘게 걷어."
+    },
+    {
+      "key": "story-crown",
+      "who": "snake",
+      "text": "금관. 삼국 시대 신라 · 5세기 말~6세기 초. 약 1,500년 전. 경주 천마총. 금으로 만든 머리 장식, 금관. 두꺼비: 머리에 작은 금빛 숲이 올라갔네!. 뱀: 신라의 높은 지위를 보여 주는 화려한 관이야.. 누구의 관인지 정확한 이름은 아직 몰라."
+    },
+    {
+      "key": "story-saddle",
+      "who": "snake",
+      "text": "천마 그림 말다래. 삼국 시대 신라. 약 1,500년 전의 무덤에서 발견. 경주 천마총. 말을 탈 때 진흙을 막아 주는 말다래. 두꺼비: 말에도 흙탕물 가림막이 있었어?. 뱀: 응! 안장 옆에 달아서 흙이 튀는 걸 막았지.. 원본은 보존하고, 여기서는 직접 그린 도판을 살펴봐."
+    },
+    {
+      "key": "story-glass",
+      "who": "snake",
+      "text": "유리잔. 삼국 시대 신라 · 5세기 말~6세기 초. 약 1,500년 전. 경주 천마총. 푸른빛 유리로 만든 잔. 두꺼비: 신라 사람도 유리잔을 썼어?. 뱀: 이 귀한 잔도 천마총에서 나왔어. 푸른빛을 봐!. 유물은 신라와 먼 지역이 교류한 흔적을 알려 줘."
+    },
+    {
+      "key": "story-ewer",
+      "who": "snake",
+      "text": "봉수형 유리병. 삼국 시대 신라 · 5세기. 약 1,600년 전의 무덤에서 발견. 경주 황남대총 남쪽 무덤. 새 머리를 닮은 주둥이의 유리병. 새: 어? 병의 주둥이가 내 부리 같아!. 뱀: 그래서 봉수형 유리병이라고 불러. 액체를 따르는 병이야.. 그림의 금색 선은 손잡이를 고친 흔적을 표현했어."
+    },
+    {
+      "key": "story-belt",
+      "who": "snake",
+      "text": "금제 허리띠. 삼국 시대 신라. 황남대총에 함께 묻힌 장신구. 경주 황남대총 북쪽 무덤. 금 장식을 연결한 허리띠. 두꺼비: 허리에 반짝이는 물건이 잔뜩 달렸네!. 뱀: 금판을 잇고 장식을 늘어뜨린 허리띠야.. 화려한 장신구는 무덤 주인의 높은 지위를 짐작하게 해."
+    }
+  ]
+}

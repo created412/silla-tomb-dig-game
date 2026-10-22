@@ -1,0 +1,7 @@
+.music-toggle { border: 1px solid #9db69e; border-radius: 12px; min-height: 44px; padding: 8px 12px; background: #234b3e; color: #fff5d5; font: inherit; font-size: 16px; cursor: pointer; white-space: nowrap; }
+.music-toggle[aria-pressed="false"] { opacity: .75; }
+.music-compact { min-width: 44px; padding: 6px; font-size: 24px; flex-shrink: 0; }
+#field-music { display: none; position: absolute; right: 12px; top: 8px; z-index: 7; min-height: 40px; font-size: 15px; }
+#stage:is([data-phase="dig"], [data-phase="found"], [data-phase="broken"], [data-phase="result"]) #field-music { display: block; }
+.voice-controls .music-toggle { font-size: 16px; }
+@media(max-width:740px) { .voice-controls button { padding: 8px 9px; font-size: 14px; } .voice-controls .music-toggle { font-size: 14px; } }

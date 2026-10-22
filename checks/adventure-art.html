@@ -1,0 +1,33 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><title>탐험 소품 검증</title>
+<style>body{margin:0;background:#173c32;color:white;font:15px sans-serif}header{display:flex;gap:8px;padding:8px;flex-wrap:wrap}button,select{padding:8px}iframe{display:block;border:0;margin:auto;width:1100px;height:700px}</style>
+<header><select id="scene" aria-label="장면"><option value="snake">뱀 터널</option><option value="frog">흙더미</option><option value="turtle">바위</option><option value="goal">발굴 현장</option><option value="start">발판과 표지</option></select><select id="size" aria-label="크기"><option>1100x700</option><option>390x844</option><option>844x390</option><option>320x568</option></select><button id="preview">장면 보기</button><button id="play">직접 조작</button><span id="status">준비</span></header><iframe></iframe>
+<script type="module">
+// Test-only scene placement. The shipped game exposes no skip/teleport controls.
+const base=new URL('../prototype/',location.href).href,source=await(await fetch(base+'index.html')).text();
+let main=await(await fetch(base+'src/main.js')).text();main=main.replace(/from '\.\/([^']+)'/g,(_,p)=>`from '${base}src/${p}'`);main+='\nwindow.artFixture={openCard,startAdventure};';
+const moduleURL=URL.createObjectURL(new Blob([main],{type:'text/javascript'}));
+const seed={'silla-dig-stars-v1':JSON.stringify({version:1,stars:{crown:3,saddle:3,glass:3,ewer:3,belt:3}})};
+const setup=`const seed=${JSON.stringify(seed)};Object.defineProperty(window,'localStorage',{value:{getItem:k=>seed[k]??null,setItem(){}}});`;
+const html=source.replace('<head>',`<head><base href="${base}"><script>${setup}<\/script>`).replace(/src="src\/main\.js[^\"]*"/,`src="${moduleURL}"`);
+const frame=document.querySelector('iframe');let d,w;
+frame.onload=()=>{d=frame.contentDocument;w=frame.contentWindow;document.querySelector('#status').textContent='앱 준비';};frame.srcdoc=html;
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+document.querySelector('#preview').onclick=async()=>{
+ const [width,height]=document.querySelector('#size').value.split('x');frame.style.width=width+'px';frame.style.height=height+'px';
+ const scene=document.querySelector('#scene').value,index=scene==='frog'||scene==='start'?0:scene==='turtle'?2:3;
+ w.artFixture.openCard(index);w.artFixture.startAdventure();
+ for(let i=0;i<8&&!d.querySelector('#dialogue').classList.contains('hidden');i++){await wait(180);d.querySelector('#dialogue-next').click();}
+ const s=w.sillaDebug.adventure;Object.assign(s.player,{x:scene==='start'?110:scene==='goal'?2100:scene==='frog'?1790:scene==='turtle'?910:665,y:460,vx:0,vy:0,grounded:true});
+ s.checkpoint={x:s.player.x-170,y:460};s.status='preview';await wait(600);
+ document.querySelector('#status').textContent='미리보기 · 그림만 정지';
+};
+document.querySelector('#play').onclick=()=>{w.sillaDebug.adventure.status='play';document.querySelector('#status').textContent='실제 조작 · 이동과 능력';d.querySelector('#adventure-action').focus();};
+const demo=document.createElement('button');demo.textContent='터널 통과 검사';document.querySelector('header').append(demo);
+demo.onclick=async()=>{
+ const s=w.sillaDebug.adventure;s.status='play';
+ const send=(selector,type,id)=>d.querySelector(selector).dispatchEvent(new w.PointerEvent(type,{bubbles:true,pointerId:id,pointerType:'touch',buttons:type==='pointerdown'?1:0}));
+ send('[data-move="right"]','pointerdown',41);send('#adventure-action','pointerdown',42);
+ await wait(2400);send('[data-move="right"]','pointerup',41);send('#adventure-action','pointerup',42);
+ document.querySelector('#status').textContent=s.opened.size>0&&s.player.x>840?'통과 검사 성공 · 실제 이동/능력 입력':'통과 검사 미완료';
+};
+</script></html>

@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-20",
+  "purpose": "User-requested minimal-credit Higgsfield game visual redesign",
+  "startingCredits": 69.86,
+  "assets": [
+    {
+      "file": "companions-atlas.png",
+      "jobId": "0ab15572-6031-4c2b-9b90-4d1b49e8caca",
+      "credits": 0.25,
+      "params": {
+        "model": "gpt_image_2_5",
+        "aspect_ratio": "1:1",
+        "quality": "low",
+        "resolution": "1k",
+        "background": "transparent",
+        "count": 1,
+        "prompt": "Original premium family adventure game art, handcrafted miniature clay diorama, tactile matte ceramic and felt-like moss, rounded sculpted forms, rich jade greens, ochre clay, warm honey sunlight, soft ambient occlusion, charming and polished, no text, no lettering, no logos, no watermark. A production-ready transparent sprite atlas of exactly FOUR original adorable Silla-inspired fired-clay animal toy companions, arranged in a precise 2 by 2 grid of equal square cells. TOP LEFT: a squat friendly ochre TOAD with small bumpy cheeks and stout legs. TOP RIGHT: a relaxed terracotta SNAKE with a coiled body and gently raised head. BOTTOM LEFT: a sturdy small TURTLE with muted jade ceramic shell, ochre clay head and four feet. BOTTOM RIGHT: a plump little BIRD with ochre clay body, dark teal wing tips and spread wings. Full-body front three-quarter views, small shiny black bead eyes, handmade thumbprint surface, subtle individual personalities, collectible toy quality. Each animal centered inside its own quadrant with ample transparent padding, never crossing central horizontal or vertical divider. Identical lighting and style on all four. No accessories, no ground plane, no scenery, no drawn grid, no frames, no labels, no text. All backgrounds fully transparent. Soft minimal contact shadow only under each creature. Clearly readable silhouettes. These are fictional characters, not replicas of excavated objects."
+      },
+      "processing": "Original opaque image; hand-traced Canvas paths in src/clay-art.js isolate four characters. No paid background-removal service."
+    },
+    {
+      "file": "silla-world.png",
+      "jobId": "dcda58aa-6146-4107-a481-154565d58066",
+      "credits": 0.25,
+      "params": {
+        "model": "gpt_image_2_5",
+        "aspect_ratio": "16:9",
+        "count": 1,
+        "prompt": "Original premium family adventure game art, handcrafted miniature clay diorama, tactile matte ceramic and felt-like moss, rounded sculpted forms, rich jade greens, ochre clay, warm honey sunlight, soft ambient occlusion, charming and polished, no text, no lettering, no logos, no watermark. Wide cinematic landscape of ancient Silla burial mounds in Gyeongju, Korea. Peaceful rounded grass-covered royal tumuli, no caves or tomb doors. A large rounded grassy mound on the RIGHT with an archaeological excavation patch at its base, winding ochre footpath in foreground, small brush and wooden field toolbox on the path, mossy stones, scattered tiny wildflowers, delicate sunbeams through distant stylized pine trees. Left third is open quiet dark jade woodland for UI title overlay, detailed landscape in center and right. Low isometric camera, great depth and layered scenery. Cozy discovery atmosphere for ages 10-12, not scary. No characters or people, no skulls, no ghosts, no crown. Landscape fills whole frame edge to edge, not floating island, not framed.",
+        "quality": "low",
+        "resolution": "1k",
+        "background": "opaque"
+      }
+    }
+  ],
+  "failed": [
+    {
+      "jobId": "fd37b8bd-1ed8-4ab8-ba66-12b0e33cbb3d",
+      "model": "z_image",
+      "netCredits": 0
+    }
+  ],
+  "historicalScope": "Fictional game scenery and Silla-inspired characters, not archaeological reconstructions. Historical artifacts remain original educational Canvas drawings."
+}

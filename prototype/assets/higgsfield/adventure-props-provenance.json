@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-22",
+  "purpose": "Replace rough adventure terrain, gates and checkpoints at user's request",
+  "jobId": "27bba345-3fb0-4e8d-8655-16117edcd5b7",
+  "status": "completed",
+  "estimatedCredits": 0.25,
+  "count": 1,
+  "file": "adventure-props-atlas.png",
+  "sourceUrl": "https://d8j0ntlcm91z4.cloudfront.net/user_3GB6W3XP0HdsF9ZzejW682EtS9T/hf_20261022_073232_27bba345-3fb0-4e8d-8655-16117edcd5b7.png",
+  "params": {
+    "model": "gpt_image_2_5",
+    "aspect_ratio": "3:2",
+    "quality": "low",
+    "resolution": "1k",
+    "background": "transparent",
+    "count": 1,
+    "prompt": "Create a polished production game prop sprite atlas for a warm Korean Silla archaeology children's side-scrolling adventure. Art style: photographed handcrafted miniature clay diorama, believable ochre earth, tactile terracotta, moss, weathered wood, lush olive foliage, warm afternoon light from upper left, subtle ambient occlusion. Match cute realistic clay toy animal companions and detailed Gyeongju burial mound scenery. NOT flat vectors, NOT generic UI icons. Exactly SIX isolated full props in a precise THREE COLUMNS by TWO ROWS equal-cell grid, each separate, centered with generous clear padding, no object crossing cells. Transparent background everywhere including openings, NO checkerboard painted in, no floor backdrop. Camera straight-on side view with a little visible top surface, suitable 2D platform game. TOP LEFT: a broad horizontal cutaway earth platform chunk, roughly twice as wide as tall, level walkable mossy grass top, softly irregular dirt edge, detailed soil strata and embedded small rounded pebbles and fine roots on vertical face, no floating decorations. TOP MIDDLE: a short handcrafted wooden wayfinding signpost, natural small blank dark wood arrow board pointing RIGHT lashed with rope to one weathered wooden upright, tiny leaf sprig and stones at base, NO text, NO flag. TOP RIGHT: a low wide arch formed from an old gnarled tree root and mossy rocks, opening is fully see-through, CLEAR open gap in lower middle for small snake to crawl THROUGH, no door, no building or tomb, natural woodland obstacle. BOTTOM LEFT: a small low loose earth mound with rounded clods, small pebbles and two grass tufts, clearly removable dirt not a grave. BOTTOM MIDDLE: one rounded lumpy gray brown boulder with subtle cracks and a little moss, no sharp points. BOTTOM RIGHT: a welcoming tiny archaeological field station: blank wooden marker, small wicker field-tool basket with a brush, two low wooden stakes linked by a short rope, warm little cloth pennant; no excavated artifacts, no bones, no people. All six have coherent scale-independent richly crafted materials, clean readable silhouettes. Absolutely no lettering, no labels, no borders, no watermark. Keep shadows contained close to each asset. Premium children's game environment assets, not a single scene."
+  },
+  "processing": "Opaque output normalized with hand-traced local Canvas silhouettes in adventure-art.js; no paid background removal. Natural root arch is a fictional woodland obstacle, not a reconstruction of a tomb."
+}
