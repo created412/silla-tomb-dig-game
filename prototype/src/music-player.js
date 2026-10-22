@@ -2,7 +2,7 @@
 export function createMusicPlayer(onChange = () => {}) {
   const audio = new Audio();
   audio.id = 'game-bgm'; audio.hidden = true; audio.preload = 'none'; audio.loop = true;
-  audio.src = new URL('../assets/music/towoo-adventure.mp3', import.meta.url).href;
+  audio.src = new URL('../assets/music/towoo-silla-adventure.mp3', import.meta.url).href;
   audio.volume = 0;
   if (typeof document !== 'undefined') document.body.append(audio);
   let enabled = true, unlocked = false, hidden = false, speaking = false, pending = false, status = 'ready', fade = null;

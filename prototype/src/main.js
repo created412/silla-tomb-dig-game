@@ -21,6 +21,7 @@ import { paintDom, comicSheet } from './art-dom.js?v=guardian-1';
 import { createVoicePlayer } from './voice-player.js?v=guardian-1';
 import { createBossView } from './boss.js';
 import { bossUnlocked, loadBossBadge } from './boss-model.js';
+import { createMusicPlayer } from './music-player.js?v=suno-original-2';
 
 const TOP_PAD = 72, BOTTOM_PAD = 176, RIGHT_PAD = 126, SKY_BAND = 56; // CSS px. 아래 176 = 대사 상자(~60) + 토우(~100)
 const ADVANCE_GUARD_MS = 150, REVEAL_MS = 2400, PANEL_MIN_MS = 1500;
@@ -46,7 +47,31 @@ const renderer = createRenderer(canvas);
 const effects = createEffects(canvas);
 const sfx = createSfx();
 const dialogue = createDialogue(LINES);
+// 화면 안의 소리 제어에 음악 버튼을 함께 둔다. 발굴판의 여백은 바꾸지 않는다.
+for (const host of document.querySelectorAll('.voice-controls, .title-row, #card .row, .boss-header, .boss-award .row, #dex .dex-panel')) {
+  const button = document.createElement('button');
+  button.type = 'button'; button.dataset.musicToggle = ''; button.className = 'music-toggle';
+  if (host.classList.contains('boss-header')) button.classList.add('music-compact');
+  host.append(button);
+}
+function showMusicState({ enabled, status }) {
+  document.querySelectorAll('[data-music-toggle]').forEach(button => {
+    const label = !enabled ? '음악 꺼짐' : ['blocked', 'unavailable'].includes(status) ? '음악 다시 재생' : '음악 켜짐';
+    button.textContent = button.classList.contains('music-compact') ? (enabled ? '♫' : '♪') : `♪ ${label}`;
+    button.setAttribute('aria-pressed', String(enabled));
+    button.setAttribute('aria-label', `${label} · 배경음악 ${['blocked', 'unavailable'].includes(status) && enabled ? '다시 재생' : enabled ? '끄기' : '켜기'}`);
+    button.title = label;
+  });
+}
+const music = createMusicPlayer(showMusicState);
+showMusicState({ enabled: true, status: 'ready' });
+document.querySelectorAll('[data-music-toggle]').forEach(button => button.addEventListener('click', () => music.toggle()));
+document.addEventListener('pointerdown', e => { if (!e.target.closest('[data-music-toggle]')) music.unlock(); });
+document.addEventListener('keydown', e => { if (['Enter', ' '].includes(e.key) && !e.target.closest('[data-music-toggle]')) music.unlock(); });
+document.addEventListener('visibilitychange', () => music.setHidden(document.hidden));
+music.setHidden(document.hidden);
 const voice = createVoicePlayer(({ muted, status }) => {
+  music.setSpeaking(!muted && ['loading', 'playing'].includes(status));
   document.querySelectorAll('[data-voice-mute]').forEach(b => { b.textContent = muted ? '소리 꺼짐' : '소리 켜짐'; b.setAttribute('aria-pressed', String(muted)); });
   document.querySelectorAll('[data-voice-status]').forEach(e => { e.textContent = muted ? '' : status === 'playing' ? '듣는 중…' : status === 'paused' ? '다시 듣기를 눌러 줘' : status === 'unavailable' ? '목소리를 불러오지 못했어' : ''; });
   document.querySelectorAll('[data-voice-replay]').forEach(b => { b.disabled = muted; });
