@@ -5,7 +5,7 @@ import { hintForLayer } from './hud.js';
 import { layoutGrid, cellAt } from './grid.js';
 import { LINES } from './lines.js';
 import { createDialogue } from './dialogue.js';
-import { createRenderer } from './renderer.js?v=overlap-1';
+import { createRenderer } from './renderer.js?v=mobile-2';
 import { createSfx } from './sfx.js';
 import { attachInput } from './input.js';
 import { createEffects } from './effects.js';
@@ -23,7 +23,7 @@ import { createBossView } from './boss.js';
 import { bossUnlocked, loadBossBadge } from './boss-model.js';
 import { createMusicPlayer } from './music-player.js?v=suno-original-2';
 
-const TOP_PAD = 72, BOTTOM_PAD = 176, RIGHT_PAD = 126, SKY_BAND = 56; // CSS px. 아래 176 = 대사 상자(~60) + 토우(~100)
+const SKY_BAND = 56; // CSS px. 발굴 영역은 mobile.css의 #dig-bounds와 공유한다.
 const ADVANCE_GUARD_MS = 150, REVEAL_MS = 2400, PANEL_MIN_MS = 1500;
 const SKY_TIME = 0.15; // 하늘은 아침 해 고정 (시간 제한 없음)
 
@@ -135,14 +135,22 @@ function resize() {
   const rect = canvas.getBoundingClientRect();
   canvas.width = Math.round(rect.width * dpr);
   canvas.height = Math.round(rect.height * dpr);
+  const bounds = $('dig-bounds').getBoundingClientRect();
   layout = layoutGrid({
-    width: canvas.width - RIGHT_PAD * dpr,
-    height: canvas.height - (TOP_PAD + BOTTOM_PAD) * dpr,
+    width: bounds.width * dpr,
+    height: bounds.height * dpr,
     cols: COLS, rows: ROWS, padding: 16 * dpr,
   });
-  layout.y0 += TOP_PAD * dpr;
+  layout.x0 += (bounds.left - rect.left) * dpr;
+  layout.y0 += (bounds.top - rect.top) * dpr;
+  const friendBottom = Number(getComputedStyle(el.stage).getPropertyValue('--friend-bottom')) || 10;
+  renderer.setBottomInset(friendBottom > 10
+    ? Math.max(friendBottom, (parseFloat(getComputedStyle(el.powers).bottom) || 12) + 94)
+    : friendBottom);
 }
 window.addEventListener('resize', resize);
+// 주소 표시줄이 접히거나 화면을 돌려 실제 표시 영역이 바뀌어도 입력 좌표를 맞춘다.
+new ResizeObserver(resize).observe(el.stage);
 resize();
 
 // ---------- 대사 ----------

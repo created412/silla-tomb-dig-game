@@ -10,7 +10,7 @@ export function createRenderer(canvas) {
   const fx={dust:[],shakeUntil:0,flashUntil:0,flashStart:0,mood:'idle',moodUntil:0,speaker:null};
   const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
   let cache=null,cacheKey='',landscape=null,landscapeKey='';
-  let artifactId='crown',companion=false,bird=false,hintCells=[],hintUntil=0,secondScene=false,crew=null,friendsVisible=true;
+  let artifactId='crown',companion=false,bird=false,hintCells=[],hintUntil=0,secondScene=false,crew=null,friendsVisible=true,bottomInset=10;
   const dpr=()=>canvas.width/canvas.getBoundingClientRect().width;
   function landscapeScene() {
     const key=`${canvas.width}:${canvas.height}:${worldImage.naturalWidth}:${secondWorldImage.naturalWidth}:${secondScene}`;
@@ -21,14 +21,18 @@ export function createRenderer(canvas) {
     // 말풍선·팝업에 토우가 나오면 배경의 토우는 그리지 않는다.
     if(!friendsVisible)return;
     const w=canvas.width,h=canvas.height,dp=dpr();
-    let size=Math.min(135*dp,h*.23),fy=h-10*dp,left=Math.max(size*.62,w*.12),right=w-left;
+    let size=Math.min(135*dp,h*.23),fy=h-bottomInset*dp,left=Math.max(size*.62,w*.12),right=w-left;
     if(phase==='title'){size=Math.min(220*dp,h*.37);fy=h*.87;left=w*.68-size*.45;right=w*.77+size*.3;}
     else if(phase==='found'||phase==='again'){
       left=Math.max(size*.62,w*.12);right=w-left;
       if(!reduced.matches){left-=Math.pow(1-foundProgress,2)*w*.25;right+=Math.pow(1-foundProgress,2)*w*.25;}
     }
     const mood=t<fx.moodUntil?fx.mood:(phase==='found'||phase==='again'?'artifactRevealed':'idle');
-    if(crew){crew.forEach((who,i)=>drawCharacter(ctx,who,w*(.09+i*.82/Math.max(1,crew.length-1)),fy,size*.7,t+i*90,mood,fx.speaker===who,reduced.matches));return;}
+    if(crew){
+      const compact=bottomInset>10&&phase!=='title';
+      const actorSize=compact?Math.min(size*.7,w/crew.length*.84):size*.7;
+      crew.forEach((who,i)=>drawCharacter(ctx,who,compact?w*(i+.5)/crew.length:w*(.09+i*.82/Math.max(1,crew.length-1)),fy,actorSize,t+i*90,mood,fx.speaker===who,reduced.matches));return;
+    }
     if(companion&&phase!=='title') {
       drawCharacter(ctx,'frog',w*.07,fy,size*.72,t,mood,fx.speaker==='frog',reduced.matches);
       drawCharacter(ctx,'turtle',w*.17,fy,size*.72,t+90,mood,fx.speaker==='turtle',reduced.matches);
@@ -98,6 +102,7 @@ export function createRenderer(canvas) {
       if(t<fx.flashUntil&&!reduced.matches){const a=1-(t-fx.flashStart)/(fx.flashUntil-fx.flashStart);ctx.fillStyle=`rgba(255,226,149,${a*.48})`;ctx.fillRect(0,0,w,h);}
     },
     addDust:emit,
+    setBottomInset(px){bottomInset=px;},
     setArtifact(id){artifactId=id;hintUntil=0;},setScene(second){secondScene=second;},setCrew(list){crew=[...list];},setCompanion(joined){companion=joined;},setBird(joined){bird=joined;},hint(cells,until){hintCells=cells;hintUntil=until;},
     react(mood,t){fx.mood=mood;fx.moodUntil=t+(mood==='artifactRevealed'?3200:1900);},
     speak(who){fx.speaker=who;},shake(ms,t){fx.shakeUntil=t+ms;},flash(ms,t){fx.flashStart=t;fx.flashUntil=t+ms;},

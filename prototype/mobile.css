@@ -1,0 +1,153 @@
+/* 캔버스와 화면 UI가 공유하는 발굴 영역. PC의 기존 여백은 유지한다. */
+#dig-bounds { position: absolute; inset: 72px 126px 176px 0; pointer-events: none; visibility: hidden; }
+#stage { --friend-bottom: 10; }
+/* 생각구름의 두꺼비 아래에 발굴 버튼·상태 글자가 겹쳐 보이지 않게 한다. */
+#stage:has(#comic:not(.hidden)) :is(#powers, #hud, #field-music) { visibility: hidden; }
+
+@media (max-width: 740px), (max-height: 540px) and (max-width: 1100px) {
+  #stage { --friend-bottom: 106; }
+  #dig-bounds { top: calc(108px + env(safe-area-inset-top, 0px)); right: env(safe-area-inset-right, 0px); bottom: calc(196px + env(safe-area-inset-bottom, 0px)); left: env(safe-area-inset-left, 0px); }
+  #field-music { top: max(6px, env(safe-area-inset-top, 0px)); right: max(10px, env(safe-area-inset-right, 0px)); min-height: 44px; font-size: 14px; }
+  #hud { top: calc(55px + env(safe-area-inset-top, 0px)); left: max(12px, env(safe-area-inset-left, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); display: grid; grid-template-columns: 1fr auto; gap: 5px 8px; }
+  #level-name { font-size: 17px; }
+  #cracks { font-size: 20px; grid-column: 2; grid-row: 1; }
+  #hint { grid-column: 1 / -1; grid-row: 2; font-size: 17px; line-height: 1.35; text-align: left; }
+  #powers { top: auto; bottom: max(12px, env(safe-area-inset-bottom, 0px)); left: max(12px, env(safe-area-inset-left, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); transform: none; flex-direction: row; justify-content: center; gap: 6px; z-index: 8; }
+  button.power { flex: 1; width: auto; max-width: 120px; min-width: 0; min-height: 78px; padding: 6px 2px; border-width: 2px; border-radius: 15px; }
+  button.power .emoji { font-size: 23px; }
+  button.power .name { font-size: 16px; }
+  button.power .desc { font-size: 11px; line-height: 1.2; }
+  button.power[aria-pressed="true"] { transform: none; }
+  #reaction { bottom: calc(104px + env(safe-area-inset-bottom, 0px)); left: max(10px, env(safe-area-inset-left, 0px)); width: calc(100% - 24px); max-width: 430px; }
+  .reaction-face { width: 80px; height: 86px; flex-basis: 80px; }
+  .reaction-bubble { min-width: 0; padding: 10px 34px 12px 12px; }
+  #reaction-text { font-size: 18px; overflow-wrap: anywhere; }
+  .overlay { padding: max(12px, env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); }
+  #title { background: linear-gradient(90deg, #0e2c24f5, #0e2c24bc); }
+  .title-box { width: 100%; max-width: 600px; min-width: 0; }
+  #title h1 { font-size: clamp(25px, 6.5vw, 38px); margin-bottom: 16px; line-height: 1.25; }
+  #title .kicker { font-size: 15px; }
+  #levels { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  button.level { width: 100%; min-width: 0; min-height: 98px; padding: 6px; }
+  button.level .name { font-size: 15px; overflow-wrap: anywhere; }
+  .title-row { gap: 8px; }
+  .title-row .big { font-size: 18px; min-width: 0; padding: 10px 14px; }
+  #shelf { max-width: 100%; }
+  #shelf canvas { width: 44px; height: 44px; }
+  .sub { font-size: 15px; line-height: 1.5; }
+  .boss-entry { margin-top: 12px; padding: 12px; }
+  .boss-entry strong { font-size: 22px; }
+  #card { overflow-y: auto; align-items: flex-start; }
+  #card .panel { margin-block: auto; }
+  .panel { padding: 20px 16px; }
+  .panel h2 { font-size: 28px; }
+  .panel p { font-size: 17px; line-height: 1.5; }
+  #card-friends { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #card-friends .chip { min-width: 0; padding: 6px; gap: 4px; font-size: 16px; }
+  #card-friends .chip canvas { width: 42px; height: 44px; flex-shrink: 0; }
+  #card-friends .chip small { font-size: 12px; }
+  .panel .rule { font-size: 15px; }
+  .panel .row { gap: 8px; }
+  button.big { min-height: 48px; min-width: 0; font-size: 19px; padding: 10px 16px; }
+  .bottom-panel { padding: 14px 16px max(16px, env(safe-area-inset-bottom, 0px)); gap: 10px; max-height: 68%; overflow-y: auto; }
+  .result-text h2 { font-size: 25px; }
+  .result-text p { font-size: 17px; }
+  #result-stars { font-size: 30px; }
+  .bottom-panel .row { gap: 8px; width: 100%; }
+  .bottom-panel .row button { flex: 1; }
+  #story { width: calc(100% - 24px); padding: 20px; max-height: calc(100dvh - 24px); overflow-y: auto; font-size: 20px; }
+  #story h2 { font-size: 28px; }
+  #story-art { width: 42%; height: 140px; }
+  .dex-panel { padding: 18px 14px; }
+  #dex-close { min-width: 44px; min-height: 44px; }
+  .dex-about { clear: both; gap: 10px; align-items: flex-start; }
+  #dex-about-text p { font-size: 17px; }
+  #dex-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .dex-card { min-width: 0; padding: 10px 6px; }
+  .dex-card canvas { max-width: 100%; height: 100px; }
+  .dex-card h3 { font-size: 20px; }
+  .dex-card .power { font-size: 16px; }
+  .dex-card p { font-size: 15px; }
+  .story-copy { justify-content: flex-start; }
+  .story-copy > * { flex-shrink: 0; }
+  .story-overlay, #comic, #join { padding: max(10px, env(safe-area-inset-top, 0px)) max(10px, env(safe-area-inset-right, 0px)) max(10px, env(safe-area-inset-bottom, 0px)) max(10px, env(safe-area-inset-left, 0px)); }
+  .story-spread, .join-panel { min-height: 0; max-width: 100%; }
+  #comic .memory-stage { max-height: 100%; }
+  #comic .voice-controls button { min-height: 44px; }
+  #boss { overflow-y: auto; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+  .boss-header { flex-wrap: wrap; gap: 6px 10px; padding: 8px 12px 4px; }
+  .boss-header > div:first-child { flex: 1 1 calc(100% - 100px); }
+  #boss-heading { font-size: 21px; }
+  #boss-hearts { font-size: 23px; }
+  #boss-progress { flex-shrink: 0; gap: 0; padding: 0 4px; font-size: 12px; }
+  #boss-progress li { padding: 5px 6px; gap: 3px; white-space: nowrap; }
+  #boss-field { flex: 1 0 220px; min-height: 220px; margin: 0 8px; }
+  #boss-instruction { font-size: 18px; }
+  #boss-warning { font-size: 12px; left: 8px; top: 8px; padding: 6px 9px; }
+  .boss-controls { padding: 8px; }
+  .boss-friend { min-height: 82px; }
+  .boss-friend small { white-space: normal; }
+  .boss-target { width: 64px; height: 64px; }
+  .relic-target { width: 52px; height: 52px; }
+  .target-caption { font-size: 12px; min-width: 52px; padding: 4px 6px; }
+  #boss-helper { width: 90px; height: 90px; }
+  #boss-feedback { font-size: 15px; min-height: 22px; }
+  #boss-victory { align-items: start; padding: 12px; }
+  .boss-award { margin-block: auto; padding: 20px 14px; width: 100%; }
+  .boss-award h2 { font-size: 30px; }
+  .boss-award p { font-size: 18px; }
+  #boss-treasures canvas { height: 65px; }
+}
+
+@media (max-width: 740px) and (orientation: portrait) {
+  .story-spread, .join-panel { grid-template-columns: 1fr; grid-template-rows: minmax(120px, 34%) minmax(0, 1fr); }
+  .story-copy { padding: 14px 18px; }
+  .scene-label { font-size: 14px; top: 10px; left: 10px; padding: 6px 10px; }
+  .speaker-heading { min-height: 44px; font-size: 19px; gap: 8px; }
+  .speaker-heading canvas { width: 44px; height: 42px; flex-basis: 44px; }
+  #line, #join-intro, #boss-talk-text { font-size: 25px; margin: 12px 0; line-height: 1.5; }
+  .memory-stage { height: 100%; padding-bottom: 82px; }
+  .memory-cloud { grid-template-columns: 1fr; grid-template-rows: auto minmax(90px, 25%) minmax(0, 1fr); padding: 22px 22px 30px; gap: 8px; }
+  .memory-heading { display: block; padding: 18px 6px 0; }
+  #memory-intro { display: block; font-size: 17px; }
+  #comic-title { font-size: 12px; }
+  #comic-text { font-size: 23px; line-height: 1.45; }
+  .memory-thinker { height: 76px; left: 2%; gap: 4px; }
+  .memory-thinker canvas { width: 92px; height: 76px; flex-shrink: 0; }
+  .memory-thinker > span { font-size: 16px; }
+  .memory-thinker small { font-size: 10px; }
+}
+
+@media (max-height: 540px) and (orientation: landscape) and (max-width: 1100px) {
+  #stage { --friend-bottom: 10; }
+  #dig-bounds { top: calc(54px + env(safe-area-inset-top, 0px)); bottom: calc(86px + env(safe-area-inset-bottom, 0px)); }
+  #hud { top: max(8px, env(safe-area-inset-top, 0px)); right: 150px; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; }
+  #hint { grid-column: 2; grid-row: 1; text-align: center; font-size: 15px; }
+  #level-name { font-size: 15px; }
+  #cracks { grid-column: 3; font-size: 18px; }
+  #powers { left: 50%; right: auto; transform: translateX(-50%); width: min(60%, 500px); bottom: max(8px, env(safe-area-inset-bottom, 0px)); }
+  button.power { min-height: 64px; padding: 4px 2px; }
+  button.power .emoji { font-size: 20px; }
+  button.power .name { font-size: 14px; }
+  button.power .desc { font-size: 10px; }
+  #reaction { bottom: calc(84px + env(safe-area-inset-bottom, 0px)); max-width: 350px; }
+  .reaction-face { width: 60px; height: 64px; flex-basis: 60px; }
+  #reaction-text { font-size: 16px; }
+  #title .title-box { max-width: 820px; }
+  #levels { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  #title h1 { font-size: 26px; }
+  .story-spread, .join-panel { grid-template-columns: minmax(0, .8fr) minmax(0, 1fr); grid-template-rows: 1fr; }
+  .story-copy { padding: 12px 16px; }
+  #line, #join-intro, #boss-talk-text { font-size: 24px; }
+  #boss { display: grid; grid-template-columns: minmax(0, 1fr) 245px; grid-template-rows: auto auto minmax(200px, 1fr); }
+  .boss-header, #boss-progress { grid-column: 1 / -1; }
+  .boss-header { flex-wrap: nowrap; }
+  .boss-header > div:first-child { flex: 1; }
+  #boss-field { grid-column: 1; grid-row: 3; min-height: 200px; margin-bottom: 8px; }
+  .boss-controls { grid-column: 2; grid-row: 3; overflow-y: auto; }
+  #boss-friends { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; }
+  .boss-friend { display: grid; grid-template-columns: 36px 1fr; width: 100%; min-height: 60px; padding: 3px; }
+  .boss-friend canvas { width: 35px; height: 38px; }
+  .boss-friend strong { font-size: 16px; }
+  .boss-friend small { font-size: 10px; }
+}

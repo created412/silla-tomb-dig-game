@@ -1,0 +1,49 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><title>모바일 플레이 검증</title>
+<style>body{margin:0;background:#173c32;color:white;font:15px sans-serif}header{display:flex;gap:8px;padding:8px;flex-wrap:wrap}button,select{padding:8px}iframe{display:block;border:0;margin:auto;width:390px;height:844px}</style>
+<header><button id="run">모바일 전체 검사</button><select id="size" aria-label="화면 크기"><option>390x844</option><option>320x568</option><option>360x640</option><option>844x390</option><option>667x375</option><option>768x1024</option><option>1440x900</option></select><select id="scene" aria-label="장면"><option value="dig">발굴</option><option value="comic">기억</option><option value="join">합류</option><option value="boss">보스</option><option value="title">제목</option></select><button id="preview">미리보기</button><span id="status">준비</span></header><iframe></iframe>
+<script type="module">
+const base=new URL('../prototype/',location.href).href,wait=ms=>new Promise(r=>setTimeout(r,ms));
+const results=[],status=document.querySelector('#status');let frame=document.querySelector('iframe'),d,w;
+const source=await(await fetch(base+'index.html',{cache:'no-store'})).text();
+let main=await(await fetch(base+'src/main.js',{cache:'no-store'})).text();
+main=main.replace(/from '\.\/([^']+)'/g,(_,path)=>`from '${base}src/${path}'`);
+main+='\nwindow.mobileFixture={openCard,startLevel,showPanel,showJoin,clearTransient,showResult,openDex};';
+const moduleURL=URL.createObjectURL(new Blob([main],{type:'text/javascript'}));
+const seed={'silla-dig-stars-v1':JSON.stringify({version:1,stars:{crown:3,saddle:3,glass:3,ewer:3,belt:3}})};
+const script=`window.fixtureStore=${JSON.stringify(seed)};Object.defineProperty(window,'localStorage',{value:{getItem:k=>window.fixtureStore[k]??null,setItem:(k,v)=>window.fixtureStore[k]=v}});Math.random=()=>.5;`;
+const html=source.replace('<head>',`<head><base href="${base}"><script>${script}<\/script>`).replace(/src="src\/main\.js[^\"]*"/,`src="${moduleURL}"`);
+function check(ok,message){results.push({pass:!!ok,message});document.body.dataset.results=JSON.stringify(results);status.textContent=message;if(!ok)throw Error(message);}
+const click=id=>d.querySelector(id).click(),visible=id=>!d.querySelector(id).classList.contains('hidden');
+const painted=()=>new Promise(r=>w.requestAnimationFrame(()=>w.requestAnimationFrame(r)));
+async function load(size){const f=document.createElement('iframe'),ready=new Promise(r=>f.onload=r);const [width,height]=size.split('x');f.style.width=width+'px';f.style.height=height+'px';f.srcdoc=html;frame.replaceWith(f);frame=f;await ready;d=f.contentDocument;w=f.contentWindow;for(let i=0;i<200&&!w.mobileFixture;i++)await wait(20);if(!w.mobileFixture)throw Error('앱 로딩 실패');await painted();}
+async function talks(){for(let i=0;i<15&&visible('#dialogue');i++){click('#dialogue-next');await wait(160);}}
+function bossTalks(){for(let i=0;i<15&&visible('#boss-dialogue');i++)click('#boss-talk-next');}
+function rect(id){return d.querySelector(id).getBoundingClientRect();}
+function inside(r){return r.left>=-.5&&r.right<=w.innerWidth+.5&&r.top>=-.5&&r.bottom<=w.innerHeight+.5;}
+async function reach(id,label){await painted();const node=d.querySelector(id);node.scrollIntoView({block:'nearest',inline:'nearest'});await painted();const r=node.getBoundingClientRect();check(inside(r)&&r.height>=44,label);const at=d.elementFromPoint(r.x+r.width/2,r.y+r.height/2);check(node===at||node.contains(at),label+' · 다른 화면에 가리지 않음');}
+async function dig(){w.mobileFixture.openCard(4);w.mobileFixture.startLevel();await talks();await painted();}
+async function touchSoil(){const c=d.querySelector('#dig'),r=c.getBoundingClientRect(),l=w.sillaDebug.layout,dp=c.width/r.width;const before=w.sillaDebug.challenge.dig.soil[0];
+ const event=type=>c.dispatchEvent(new w.PointerEvent(type,{bubbles:true,pointerId:7,pointerType:'touch',isPrimary:true,clientX:r.left+(l.x0+l.cell*.5)/dp,clientY:r.top+(l.y0+l.cell*.5)/dp,buttons:type==='pointerup'?0:1}));
+ event('pointerdown');for(let i=0;i<25;i++){await wait(30);event('pointermove');}event('pointerup');check(w.sillaDebug.challenge.dig.soil[0]<before,'터치 문지르기로 흙 제거');}
+document.querySelector('#run').onclick=async()=>{results.length=0;delete document.body.dataset.error;delete document.body.dataset.done;try{
+ for(const size of ['320x568','360x640','390x844','667x375','844x390','768x1024','1440x900']){
+  await load(size);check(d.documentElement.scrollWidth<=w.innerWidth,size+' 가로 넘침 없음');await reach('#btn-boss',size+' 제목 마지막 버튼 접근');
+  w.mobileFixture.openCard(0);await reach('#btn-start',size+' 시작 버튼 접근');click('#btn-start');await reach('#dialogue-next',size+' 대화 다음 버튼 접근');await talks();await dig();
+  const l=w.sillaDebug.layout,dp=d.querySelector('#dig').width/w.innerWidth,board={left:l.x0/dp,top:l.y0/dp,right:(l.x0+l.cell*12)/dp,bottom:(l.y0+l.cell*7)/dp};
+  check(inside(board),size+' 발굴판 화면 안');const powers=[...d.querySelectorAll('#powers button')];check(powers.length===4&&powers.every(e=>inside(e.getBoundingClientRect())&&e.clientHeight>=44),size+' 토우 4개 터치 버튼');
+  if(w.innerWidth<=740&&w.innerHeight>w.innerWidth)check(board.right-board.left>=w.innerWidth*.85,size+' 세로 발굴판 가로폭 확보');
+  if(w.innerWidth<=740||w.innerHeight<=540)check(board.bottom<=rect('#powers').top,size+' 발굴판과 능력 버튼 분리');
+  await touchSoil();const before=w.sillaDebug.challenge.dig.soil[0];const portrait=w.innerHeight>w.innerWidth;frame.style.width=(portrait?844:390)+'px';frame.style.height=(portrait?390:844)+'px';await painted();check(w.sillaDebug.challenge.dig.soil[0]===before,size+' 화면 회전 시 진행 유지');const [sw,sh]=size.split('x');frame.style.width=sw+'px';frame.style.height=sh+'px';await painted();
+  w.mobileFixture.showPanel(0);await reach('#comic-next',size+' 기억 다음 버튼 접근');w.mobileFixture.showPanel(3);await reach('#comic-choices button:last-child',size+' 기억 질문 선택 접근');w.mobileFixture.clearTransient();
+  w.mobileFixture.showJoin('snake',()=>{});await reach('#join-ok',size+' 합류 버튼 접근');click('#join-ok');
+  w.mobileFixture.showResult('found');await reach('#btn-next',size+' 다음 무덤 버튼 접근');w.mobileFixture.clearTransient();click('#btn-home');click('#btn-boss');bossTalks();await painted();
+  const field=rect('#boss-field');check(field.width>=250&&field.height>=180,size+' 보스 조작 영역');
+  for(const node of d.querySelectorAll('.boss-target')){const r=node.getBoundingClientRect();check(r.width>=44&&r.height>=44&&r.left>=field.left&&r.right<=field.right&&r.top>=field.top&&r.bottom<=field.bottom,size+' 보스 목표 터치 범위');}
+  await reach('[data-friend="bird"]',size+' 새 능력 접근');click('[data-friend="bird"]');click('[data-target="bush1"]');await wait(720);check(w.sillaDebug.boss.phase==='clear',size+' 보스 능력으로 단계 성공');await reach('#boss-continue',size+' 보스 다음 단계 접근');
+ }
+ document.body.dataset.done='true';status.textContent=`통과 ${results.length}개`;
+}catch(e){document.body.dataset.error=e.stack;status.textContent=e.message;}};
+document.querySelector('#preview').onclick=async()=>{await load(document.querySelector('#size').value);const scene=document.querySelector('#scene').value;if(scene==='title')return;if(scene==='boss'){click('#btn-boss');bossTalks();return;}await dig();if(scene==='comic')w.mobileFixture.showPanel(0);if(scene==='join')w.mobileFixture.showJoin('snake',()=>{});};
+const rotate=document.createElement('button');rotate.textContent='회전 검사';document.querySelector('header').append(rotate);
+rotate.onclick=async()=>{results.length=0;delete document.body.dataset.done;delete document.body.dataset.error;try{await load('390x844');await dig();await touchSoil();const before=JSON.stringify(w.sillaDebug.challenge.dig.soil);for(const [width,height] of [[844,390],[390,844]]){frame.style.width=width+'px';frame.style.height=height+'px';await painted();check(w.innerWidth===width&&w.innerHeight===height,`${width}×${height} 실제 화면 회전`);check(JSON.stringify(w.sillaDebug.challenge.dig.soil)===before,'회전 후 발굴 진행 보존');}document.body.dataset.done='true';status.textContent=`회전 검사 통과 ${results.length}개`;}catch(e){document.body.dataset.error=e.stack;status.textContent=e.message;}};
+</script></html>
