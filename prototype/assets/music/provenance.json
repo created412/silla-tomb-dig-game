@@ -1,0 +1,15 @@
+{
+  "provider": "Suno",
+  "title": "YBN — 상상을 현실로 | Cinema Score",
+  "model": "v6",
+  "sourceUrl": "https://suno.com/song/ea6906b5-0ea6-4706-9e5b-78169763599d",
+  "owner": "menacingetude996",
+  "sourceCreated": "2026-10-19",
+  "downloaded": "2026-10-22",
+  "usage": "Existing track from the user account, reused for game BGM after new generation was blocked. Not newly generated for this game.",
+  "processing": "-20 LUFS target, -2 dBTP ceiling, 0.3s fade-in, 1s fade-out; 128 kbps stereo MP3",
+  "file": "towoo-adventure.mp3",
+  "durationSeconds": 47.6,
+  "bytes": 877858,
+  "sha256": "7856be8a1a835ff5451b5dcfc213e403a8b419a50269ec3c7ba176d256d27f67"
+}
