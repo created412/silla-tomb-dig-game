@@ -1,0 +1,76 @@
+/* 발굴 옆 한마디: 화면·입력·포커스를 가로채지 않는다. */
+#reaction { position: absolute; z-index: 9; left: 20px; bottom: 20px; width: min(430px, calc(100% - 40px)); display: flex; align-items: center; gap: 4px; pointer-events: none; }
+.reaction-face { position: relative; width: 126px; height: 126px; flex: 0 0 126px; }
+.reaction-face img, #reaction-actor { width: 100%; height: 100%; }
+#reaction[data-who="frog"][data-tone="alarm"] #reaction-actor, #reaction:not([data-who="frog"][data-tone="alarm"]) .reaction-face img { display: none; }
+.reaction-bubble { position: relative; flex: 1; border: 2px solid #dfbd76; border-radius: 24px 24px 24px 6px; padding: 12px 36px 14px 18px; background: #fff9e9; color: #2b4637; box-shadow: 0 6px 16px #102f3440; }
+.reaction-bubble::before { content: ''; position: absolute; left: -11px; bottom: 22px; width: 17px; height: 17px; background: #fff9e9; border-left: 2px solid #dfbd76; border-bottom: 2px solid #dfbd76; transform: rotate(45deg); }
+#reaction-who { font-size: 14px; font-weight: 700; color: #7b683c; }
+#reaction-text { margin: 5px 0 0; font-size: clamp(20px, 1.8vw, 25px); line-height: 1.4; font-weight: 800; word-break: keep-all; }
+#reaction-close { position: absolute; right: 0; top: 0; min-width: 44px; min-height: 44px; border: 0; background: transparent; color: #7b735c; font-size: 24px; cursor: pointer; pointer-events: auto; }
+
+/* 기억은 두꺼비 머리 위 생각구름에 떠오른다. 가장자리의 발굴 현장은 계속 보인다. */
+#comic { padding: 18px; background: #102c2459; background-image: none; }
+.memory-stage { position: relative; width: min(1120px, 94vw); height: min(780px, 94dvh); padding-bottom: 108px; }
+.memory-cloud { width: 100%; height: 100%; padding: 35px 48px 40px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); grid-template-rows: auto minmax(0, 1fr); gap: 14px 24px; background: url('assets/thought-cloud.svg') center / 100% 100% no-repeat; filter: drop-shadow(0 10px 20px #091d2b50); color: #294937; }
+.memory-heading { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: center; gap: 6px 18px; padding: 16px 32px 0; text-align: center; }
+#memory-intro { font-size: clamp(18px, 1.7vw, 25px); font-weight: 800; }
+#comic-title { font-size: 16px; color: #6b7b60; }
+#comic .scene-picture { border-radius: 38% 30% 32% 25% / 22% 26% 24% 24%; background: transparent; }
+#comic-canvas { width: 100%; height: 100%; border-radius: inherit; }
+#comic .story-copy { padding: 4px 6px 8px; background: transparent; }
+#comic .speaker-heading { min-height: 40px; gap: 8px; font-size: 19px; }
+#comic .speaker-heading canvas { width: 48px; height: 44px; flex-basis: 48px; }
+#comic-text { font-size: clamp(25px, 2.35vw, 35px); line-height: 1.5; margin: 12px 0 16px; }
+#comic .voice-controls { gap: 6px; margin-top: 8px; }
+#comic .voice-controls button { min-height: 44px; padding: 6px 9px; font-size: 14px; }
+#comic .story-next { min-height: 50px; margin-top: 12px; padding: 9px 16px; font-size: 21px; }
+#comic-choices { gap: 6px; }
+#comic-choices button { font-size: 19px; min-height: 44px; padding: 8px 12px; }
+.memory-thinker { position: absolute; bottom: 0; left: 8%; display: flex; align-items: center; gap: 14px; height: 100px; color: #fff8d8; text-shadow: 0 2px 5px #163c2b; }
+.memory-thinker canvas { width: 130px; height: 105px; }
+.memory-thinker > span { font-size: 22px; font-weight: 700; }
+.memory-thinker small { display: block; margin-top: 4px; font-size: 13px; font-weight: 400; }
+.memory-thinker i { position: absolute; border-radius: 50%; background: #fff9e9; border: 2px solid #b6c9bd; }
+.memory-thinker i:nth-child(1) { width: 35px; height: 28px; left: 125px; top: -22px; }
+.memory-thinker i:nth-child(2) { width: 23px; height: 20px; left: 108px; top: 8px; }
+.memory-thinker i:nth-child(3) { width: 12px; height: 12px; left: 96px; top: 29px; }
+@media(max-width: 740px) and (min-height: 600px) {
+  #reaction { left: 10px; bottom: 20px; width: calc(100% - 30px); max-width: 370px; }
+  .reaction-face { width: 92px; height: 100px; flex-basis: 92px; }
+  .reaction-bubble { padding: 10px 32px 12px 14px; }
+  #reaction-text { font-size: 20px; }
+  #comic { padding: 10px; }
+  .memory-stage { width: 100%; height: 96dvh; padding-bottom: 90px; }
+  .memory-cloud { grid-template-columns: 1fr; grid-template-rows: auto minmax(140px, 30%) minmax(0, 1fr); gap: 10px; padding: 30px 24px; }
+  .memory-heading { display: block; padding: 22px 12px 0; }
+  #memory-intro { display: block; font-size: 18px; }
+  #comic-title { font-size: 13px; }
+  #comic .story-copy { padding: 2px 6px 8px; }
+  #comic-text { font-size: 25px; margin: 8px 0; }
+  #comic .speaker-heading { min-height: 28px; font-size: 16px; }
+  #comic .speaker-heading canvas { width: 34px; height: 32px; flex-basis: 34px; }
+  .memory-thinker { height: 84px; left: 3%; gap: 2px; }
+  .memory-thinker canvas { width: 104px; height: 86px; }
+  .memory-thinker > span { font-size: 18px; }
+  .memory-thinker small { font-size: 11px; }
+  .memory-thinker i:nth-child(1) { left: 94px; top: -18px; }
+  .memory-thinker i:nth-child(2) { left: 81px; top: 12px; }
+  .memory-thinker i:nth-child(3) { left: 70px; top: 34px; }
+}
+@media(max-height: 620px) {
+  #comic { padding: 10px; }
+  .memory-stage { height: 96dvh; padding-bottom: 74px; }
+  .memory-cloud { padding: 25px 35px; gap: 8px 20px; }
+  #memory-intro { font-size: 18px; }
+  #comic-title { font-size: 13px; }
+  #comic-text { font-size: 25px; margin: 8px 0; }
+  .memory-thinker { height: 72px; }
+  .memory-thinker canvas { width: 92px; height: 76px; }
+  .memory-thinker > span { font-size: 18px; }
+  .memory-thinker i:nth-child(1) { left: 91px; top: -20px; }
+  .memory-thinker i:nth-child(2) { left: 77px; top: 9px; }
+  .memory-thinker i:nth-child(3) { left: 65px; top: 29px; }
+  #reaction { bottom: 12px; max-width: 365px; }
+  .reaction-face { width: 90px; height: 100px; flex-basis: 90px; }
+}

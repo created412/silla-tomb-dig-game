@@ -94,6 +94,32 @@ let glimmerShown = false;
 let panelsShown = 0, comicOpen = false, comicTimer = null, comicOnClose = null; // 4컷
 let joinQueue = [], joinOnDone = null;                                           // 합류 장면
 const now = () => performance.now();
+const SIDE_REACTIONS = new Set(['tooHard', 'warn', 'crack1', 'crack2', 'collapse', 'glimmer', 'rockDrag', 'powerUsed', 'powerMissFrog', 'powerMissTurtle', 'powerMissSnake']);
+let sideReactionId = null, sideReactionTimer = null;
+function hideSideReaction() {
+  clearTimeout(sideReactionTimer); sideReactionTimer = null;
+  if (sideReactionId) voice.stop();
+  sideReactionId = null; $('reaction').classList.add('hidden');
+}
+function showSideReaction(id, urgent = false) {
+  if (phase !== 'dig' || talkId || comicOpen || !el.join.classList.contains('hidden') || el.story.open) return;
+  if (sideReactionId === id || (sideReactionId && !urgent)) return;
+  const line = LINES[id]?.[0]; if (!line) return;
+  hideSideReaction();
+  sideReactionId = id;
+  const alarm = ['tooHard', 'warn', 'crack1', 'crack2', 'collapse'].includes(id);
+  $('reaction').dataset.who = line.who;
+  $('reaction').dataset.tone = alarm ? 'alarm' : 'hint';
+  $('reaction-who').textContent = FRIENDS[line.who].name;
+  $('reaction-text').textContent = line.text;
+  $('reaction-actor').dataset.actor = line.who;
+  $('reaction-actor').dataset.mood = alarm ? 'tooHard' : 'glimmer';
+  $('reaction').classList.remove('hidden');
+  renderer.speak(line.who);
+  voice.say(`line-${id}-0`);
+  sideReactionTimer = setTimeout(hideSideReaction, line.text.length > 18 ? 7000 : 5000);
+}
+$('reaction-close').addEventListener('click', hideSideReaction);
 // 받침에 따라 조사 고르기: josa('금관','을','를') → '을', josa('말다래','을','를') → '를'
 function josa(word, withBatchim, without) {
   const code = word.charCodeAt(word.length - 1);
@@ -137,10 +163,15 @@ function showLine(line) {
   voice.say(id === 'found' && lineIndex === 0 ? `found-${level.id}` : `line-${id}-${lineIndex}`);
 }
 
-// 모든 대사는 직접 넘긴다. 짧은 반응도 읽는 동안 발굴 입력을 막는다.
+// 짧은 안내는 발굴 옆 말풍선. 긴 이야기만 직접 넘기는 대화창을 쓴다.
 function playReaction(id) {
   if (talkId || comicOpen || !el.join.classList.contains('hidden') || el.story.open) return;
   if (id === 'glimmer' && glimmerShown) return;
+  if (SIDE_REACTIONS.has(id)) {
+    if (id === 'glimmer') glimmerShown = true;
+    showSideReaction(id); return;
+  }
+  hideSideReaction();
   if (!dialogue.playIfIdle(id)) return;
   if (id === 'glimmer') glimmerShown = true;
   reactionId = id; lineIndex = 0;
@@ -150,6 +181,8 @@ function playReaction(id) {
 // 꼭 보여야 하는 반응: 보이던 반응을 끊고 바로 띄운다 (지렁이, 금)
 function forceReaction(id) {
   if (talkId) return;
+  if (SIDE_REACTIONS.has(id)) { showSideReaction(id, true); return; }
+  hideSideReaction();
   reactionId = id; lineIndex = 0;
   dialogue.play(id);
   showLine(dialogue.current());
@@ -158,6 +191,7 @@ function forceReaction(id) {
 // 만담: 탭으로 넘기고, 끝나면 onEnd
 let talkEnd = null;
 function playTalk(id, onEnd) {
+  hideSideReaction();
   reactionId = null; lineIndex = 0;
   talkId = id; talkEnd = onEnd;
   dialogue.play(id);
@@ -190,6 +224,7 @@ document.addEventListener('keydown', e => {
 // ---------- 단계 ----------
 // 화면을 넘길 때 이전 화면의 타이머·대사 큐·만화·합류가 따라오지 않게 전부 비운다
 function clearTransient() {
+  hideSideReaction();
   for (const t of resultTimers) clearTimeout(t); resultTimers = [];
   reactionId = null;
   clearTimeout(comicTimer); comicTimer = null;
@@ -199,6 +234,7 @@ function clearTransient() {
   showLine(null);
 }
 function setPhase(next) {
+  if (next !== 'dig') hideSideReaction();
   phase = next;
   el.stage.dataset.phase = phase;
   el.title.classList.toggle('hidden', phase !== 'title');
@@ -291,11 +327,14 @@ function startLevel() {
 // ---------- 4컷 기억 조각 ----------
 // n: 0~2 이야기 컷, 3 질문 컷. 닫히면 onClose.
 function showPanel(n, onClose) {
+  hideSideReaction();
   voice.stop();
   const comic = COMICS[level.id]; if (!comic) { onClose?.(); return; }
   comicOpen = true; comicOnClose = onClose; panelsShown = Math.max(panelsShown, n + 1);
   setSelectedPower(null);
   el.comicTitle.textContent = `${comic.title} · ${n + 1} / 4`;
+  $('memory-intro').textContent = n === 3 ? '떠오른 기억을 함께 이어 볼까?' : '두꺼비에게 옛 기억이 떠올랐어';
+  el.comic.dataset.memoryKind = n === 3 ? 'question' : 'memory';
   el.comicCanvas.dataset.comic = level.id; el.comicCanvas.dataset.panel = String(n);
   el.comicChoices.innerHTML = ''; el.comicChoices.classList.toggle('hidden', n !== 3);
   el.comicNext.classList.toggle('hidden', n === 3);
@@ -349,7 +388,7 @@ el.comicNext.addEventListener('click', () => { if (!el.comicNext.disabled) close
 
 // 발굴 중 컷 열기 조건: 1컷 = 유물 칸 하나가 나무까지 드러남, 2컷 = 유물 3칸 이상 완전히 드러남
 function checkComicCues() {
-  if (!ch || inputBlocked() || phase !== 'dig') return;
+  if (!ch || inputBlocked() || sideReactionId || phase !== 'dig') return;
   if (panelsShown === 0) {
     for (const i of ch.dig.artifactCells) if (ch.dig.soil[i] === 0 && ch.dig.rock[i] === 0) { showPanel(0); return; }
   } else if (panelsShown === 1 && ch.dig.revealed.size >= 3) {
@@ -359,6 +398,7 @@ function checkComicCues() {
 
 // ---------- 합류 장면 ----------
 function showJoin(who, onDone) {
+  hideSideReaction();
   const f = FRIENDS[who];
   el.joinActor.dataset.actor = who;
   el.joinName.textContent = `${f.emoji} ${f.name}`;

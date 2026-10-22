@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="boss.css">
   <link rel="stylesheet" href="music.css">
+  <link rel="stylesheet" href="memory.css?v=thought-1">
 </head>
 <body>
   <div id="stage" data-phase="title">
@@ -22,6 +23,11 @@
     </div>
 
     <div id="powers" class="hidden" aria-label="토우 능력"></div>
+
+    <aside id="reaction" class="hidden" aria-label="토우 친구의 한마디" data-who="frog">
+      <div class="reaction-face" aria-hidden="true"><img src="assets/startled-toad.svg" alt=""><canvas id="reaction-actor" data-actor="frog" data-mood="tooHard"></canvas></div>
+      <div class="reaction-bubble"><span id="reaction-who">두꺼비</span><p id="reaction-text" role="status" aria-live="polite" aria-atomic="true"></p><button id="reaction-close" type="button" aria-label="말풍선 닫기">×</button></div>
+    </aside>
 
     <div id="dialogue" class="story-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="dialogue-title">
       <div class="story-spread">
@@ -78,9 +84,11 @@
       </div>
     </div>
 
-    <div id="comic" class="story-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="comic-title">
-      <div class="story-spread comic-box">
-        <div class="scene-picture"><canvas id="comic-canvas" data-comic="" data-panel="0" aria-label="기억 조각 그림"></canvas><p class="scene-label" id="comic-title"></p></div>
+    <div id="comic" class="story-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="memory-intro comic-title">
+      <div class="memory-stage">
+      <div class="memory-cloud">
+        <header class="memory-heading"><span id="memory-intro">두꺼비에게 옛 기억이 떠올랐어</span><span id="comic-title"></span></header>
+        <div class="scene-picture"><canvas id="comic-canvas" data-comic="" data-panel="0" aria-label="두꺼비 머릿속에 떠오른 옛 기억 그림"></canvas></div>
         <div class="story-copy">
           <div class="speaker-heading"><canvas id="comic-actor" data-actor="frog" aria-hidden="true"></canvas><span id="comic-who"></span></div>
           <p id="comic-text" aria-live="polite"></p>
@@ -88,6 +96,8 @@
           <div class="voice-controls"><button data-voice-replay>↻ 다시 듣기</button><button data-voice-mute aria-pressed="false">소리 켜짐</button><span data-voice-status></span></div>
           <button id="comic-next" class="big story-next" disabled>계속 발굴하기 →</button>
         </div>
+      </div>
+      <div class="memory-thinker" aria-hidden="true"><i></i><i></i><i></i><canvas data-actor="frog" data-mood="glimmer"></canvas><span>아… 조금씩 기억나!<small>토우의 기억으로 상상한 장면</small></span></div>
       </div>
     </div>
 
@@ -147,6 +157,6 @@
       <div class="voice-controls"><button data-voice-replay>↻ 다시 듣기</button><button data-voice-mute aria-pressed="false">소리 켜짐</button><span data-voice-status></span></div>
     </dialog>
   </div>
-  <script type="module" src="src/main.js?v=suno-original-2"></script>
+  <script type="module" src="src/main.js?v=thought-1"></script>
 </body>
 </html>
